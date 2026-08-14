@@ -150,5 +150,4 @@ npm run test
 
 ---
 
-## 📚 Interview Preparation
-For an in-depth breakdown of system design decisions, data modeling, concurrency mechanisms, and sample technical interview questions, read [`INTERVIEW_PREP.md`](file:///c:/Users/DELL/Desktop/AlgoPrep/INTERVIEW_PREP.md).
+
