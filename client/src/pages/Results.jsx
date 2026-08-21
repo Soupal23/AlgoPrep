@@ -163,7 +163,7 @@ export const Results = () => {
     return (
       <div className="max-w-md mx-auto my-12 p-8 glass-panel rounded-2xl border border-rose-800 text-center space-y-4">
         <p className="text-rose-300 font-semibold">{error || 'Attempt result not found'}</p>
-        <Link to="/" className="inline-block px-5 py-2 rounded-xl bg-slate-800 text-white text-sm font-semibold">
+        <Link to="/dashboard" className="inline-block px-5 py-2 rounded-xl bg-slate-800 text-white text-sm font-semibold">
           Return to Dashboard
         </Link>
       </div>
@@ -183,7 +183,7 @@ export const Results = () => {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
-      <Link to="/" className="inline-flex items-center gap-2 text-sm text-cyan-400 hover:underline font-medium">
+      <Link to="/dashboard" className="inline-flex items-center gap-2 text-sm text-cyan-400 hover:underline font-medium">
         <ArrowLeft className="w-4 h-4" /> Back to Dashboard
       </Link>
 

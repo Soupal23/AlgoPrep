@@ -82,7 +82,7 @@ export const Profile = () => {
           <div className="p-12 text-center space-y-4">
             <p className="text-slate-400 text-sm">You have not completed any test attempts yet.</p>
             <Link
-              to="/"
+              to="/dashboard"
               className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-indigo-600 text-white font-bold text-sm shadow-md"
             >
               <span>Explore Available Tests</span>

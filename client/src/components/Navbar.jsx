@@ -32,7 +32,7 @@ export const Navbar = () => {
         {user ? (
           <nav className="flex items-center gap-2 sm:gap-6">
             <Link
-              to="/"
+              to="/dashboard"
               className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 transition-colors"
             >
               <ListChecks className="w-4 h-4 text-cyan-400" />
