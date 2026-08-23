@@ -85,7 +85,7 @@ export const submitAttempt = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user?.userId;
-    const { answers, questionStates, version, timeSpentSeconds } = req.body;
+    const { answers, questionStates, version } = req.body;
 
     if (!userId) {
       res.status(401).json({ error: 'Unauthorized' });
@@ -139,7 +139,7 @@ export const submitAttempt = async (req, res) => {
     const elapsedSeconds = Math.floor((now.getTime() - startTime) / 1000);
     const maxAllowedSeconds = test.timeLimitMinutes * 60 + 60;
 
-    const actualTimeSpent = timeSpentSeconds || Math.min(elapsedSeconds, test.timeLimitMinutes * 60);
+    const actualTimeSpent = Math.min(elapsedSeconds, test.timeLimitMinutes * 60);
 
     const questions = await Question.find({ testId: test._id });
     const scoringResult = calculateScore(attempt.answers, questions, test.markingScheme);
