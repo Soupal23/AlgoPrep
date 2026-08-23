@@ -29,7 +29,7 @@ export const getLeaderboard = async (req, res, next) => {
       { $sort: { score: -1, timeSpentSeconds: 1 } },
       {
         $setWindowFields: {
-          sortBy: { score: -1 },
+          sortBy: { score: -1, timeSpentSeconds: 1 },
           output: {
             rank: { $documentNumber: {} }
           }
