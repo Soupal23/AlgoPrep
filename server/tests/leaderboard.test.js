@@ -116,4 +116,75 @@ describe('Phase 3 — Leaderboard, Percentile & Tie-Breaker Aggregation', () => 
     expect(historyRes.body.attempts).toHaveLength(1);
     expect(historyRes.body.attempts[0].score).toBe(40);
   });
+
+  it('should only consider a user’s first attempt on the leaderboard when a user re-takes a test', async () => {
+    // User 1 (Alice) re-takes the test and gets a higher score (60) with faster time (100s)
+    const a1SecondRes = await supertest(app).post(`/api/tests/${testDoc._id}/start`).set('Authorization', `Bearer ${user1Token}`);
+    const att1SecondId = a1SecondRes.body.attemptId;
+    await supertest(app)
+      .post(`/api/attempts/${att1SecondId}/submit`)
+      .set('Authorization', `Bearer ${user1Token}`)
+      .send({ timeSpentSeconds: 100 });
+
+    await Attempt.findByIdAndUpdate(att1SecondId, {
+      score: 60,
+      maxScore: 60,
+      accuracy: 100,
+      timeSpentSeconds: 100,
+      status: 'submitted',
+      startedAt: new Date(Date.now() + 10000)
+    });
+
+    const lbRes = await supertest(app)
+      .get(`/api/leaderboard?testId=${testDoc._id}`)
+      .set('Authorization', `Bearer ${user1Token}`);
+
+    expect(lbRes.status).toBe(200);
+    // Still 3 participants, not 4
+    expect(lbRes.body.totalParticipants).toBe(3);
+
+    const aliceEntries = lbRes.body.leaderboard.filter(entry => entry.user._id === user1Id);
+    // Alice should appear only ONCE in the leaderboard
+    expect(aliceEntries).toHaveLength(1);
+    // Alice's entry should be her FIRST attempt (score 40, time 300s), NOT her second attempt (score 60, time 100s)
+    expect(aliceEntries[0].score).toBe(40);
+    expect(aliceEntries[0].timeSpentSeconds).toBe(300);
+  });
+
+  it('should correctly select the 1st attempt when a candidate takes a test 3 times even if startedAt is null or missing on later attempts', async () => {
+    // User 3 (Charlie) takes the test 2 more times (total 3 attempts)
+    // Attempt 1: score 20 (already created in beforeAll / 1st test)
+    // Attempt 2: score 8 (attempt 2 created later, set startedAt to null/undefined)
+    const c2Res = await supertest(app).post(`/api/tests/${testDoc._id}/start`).set('Authorization', `Bearer ${user3Token}`);
+    const c2Id = c2Res.body.attemptId;
+    await Attempt.findByIdAndUpdate(c2Id, {
+      score: 8,
+      maxScore: 60,
+      accuracy: 13.3,
+      timeSpentSeconds: 14,
+      status: 'submitted',
+      startedAt: null
+    });
+
+    // Attempt 3: score 12
+    const c3Res = await supertest(app).post(`/api/tests/${testDoc._id}/start`).set('Authorization', `Bearer ${user3Token}`);
+    const c3Id = c3Res.body.attemptId;
+    await Attempt.findByIdAndUpdate(c3Id, {
+      score: 12,
+      maxScore: 60,
+      accuracy: 20,
+      timeSpentSeconds: 20,
+      status: 'submitted'
+    });
+
+    const lbRes = await supertest(app)
+      .get(`/api/leaderboard?testId=${testDoc._id}`)
+      .set('Authorization', `Bearer ${user3Token}`);
+
+    expect(lbRes.status).toBe(200);
+    const charlieEntries = lbRes.body.leaderboard.filter(entry => entry.user._id === user3Id);
+    expect(charlieEntries).toHaveLength(1);
+    // Charlie's entry MUST be his very first attempt (score 20), NOT attempt 2 (score 8) or attempt 3 (score 12)
+    expect(charlieEntries[0].score).toBe(20);
+  });
 });

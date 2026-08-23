@@ -21,15 +21,45 @@ export const getLeaderboard = async (req, res, next) => {
     const userObjId = userId && mongoose.Types.ObjectId.isValid(userId) ? new mongoose.Types.ObjectId(userId) : null;
 
     // Aggregation Pipeline
-    // 1. $match stage: Uses index on Attempt.score to filter submitted attempts
-    // 2. $sort stage: Multi-field sorting by score desc, timeSpentSeconds asc (tie breaker)
-    // 3. $setWindowFields stage: Generates rank using $documentNumber over the pre-sorted stream
+    // 1. $match stage: Filter submitted/expired attempts
+    // 2. $sort stage: Sort chronologically to identify first attempt
+    // 3. $group stage: Deduplicate by (userId, testId), taking the first attempt
+    // 4. $replaceRoot stage: Restore attempt document structure
+    // 5. $sort stage: Multi-field sorting by score desc, timeSpentSeconds asc (tie breaker)
+    // 6. $setWindowFields stage: Generates rank using $documentNumber over the pre-sorted stream
     const pipeline = [
       { $match: matchStage },
-      { $sort: { score: -1, timeSpentSeconds: 1 } },
+      {
+        $addFields: {
+          firstAttemptKey: {
+            $ifNull: [
+              '$startedAt',
+              { $ifNull: ['$submittedAt', { $ifNull: ['$createdAt', '$_id'] }] }
+            ]
+          }
+        }
+      },
+      { $sort: { firstAttemptKey: 1, _id: 1 } },
+      {
+        $group: {
+          _id: { userId: '$userId', testId: '$testId' },
+          firstAttempt: { $first: '$$ROOT' }
+        }
+      },
+      { $replaceRoot: { newRoot: '$firstAttempt' } },
+      {
+        $addFields: {
+          compositeScore: {
+            $subtract: [
+              '$score',
+              { $divide: [{ $ifNull: ['$timeSpentSeconds', 0] }, 100000000] }
+            ]
+          }
+        }
+      },
       {
         $setWindowFields: {
-          sortBy: { score: -1 },
+          sortBy: { compositeScore: -1 },
           output: {
             rank: { $documentNumber: {} }
           }
