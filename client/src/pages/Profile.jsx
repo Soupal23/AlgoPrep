@@ -106,7 +106,7 @@ export const Profile = () => {
                         {testTopic}
                       </span>
                       <span className="text-[10px] font-mono text-slate-400">
-                        {new Date(att.submittedAt).toLocaleDateString()}
+                        {att.submittedAt ? new Date(att.submittedAt).toLocaleDateString() : 'Completed'}
                       </span>
                     </div>
 

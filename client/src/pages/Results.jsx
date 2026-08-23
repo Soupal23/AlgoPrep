@@ -25,14 +25,13 @@ export const Results = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [reviewRes, leaderboardRes] = await Promise.all([
-        api.getAttemptReview(id),
-        api.getLeaderboard('', 1, 1)
-      ]);
-
+      const reviewRes = await api.getAttemptReview(id);
       setAttempt(reviewRes.attempt);
       setTest(reviewRes.test);
       setQuestions(reviewRes.questions || []);
+
+      const testId = reviewRes.test?._id || reviewRes.attempt?.testId?._id || reviewRes.attempt?.testId || '';
+      const leaderboardRes = await api.getLeaderboard(testId, 1, 1);
 
       if (leaderboardRes.myStats) {
         setMyStats(leaderboardRes.myStats);
@@ -201,7 +200,7 @@ export const Results = () => {
           </div>
 
           <Link
-            to={`/test/${test?._id}`}
+            to={`/test/${test?._id}?retake=true`}
             className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs font-semibold border border-slate-700 transition-colors flex items-center gap-2"
           >
             <RotateCcw className="w-4 h-4" />

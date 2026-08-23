@@ -148,7 +148,11 @@ export const submitAttempt = async (req, res) => {
     attempt.maxScore = scoringResult.maxScore;
     attempt.accuracy = scoringResult.accuracy;
     attempt.timeSpentSeconds = actualTimeSpent;
-    attempt.status = elapsedSeconds > maxAllowedSeconds ? 'expired' : 'submitted';
+    attempt.score = scoringResult.score;
+    attempt.maxScore = scoringResult.maxScore;
+    attempt.accuracy = scoringResult.accuracy;
+    attempt.timeSpentSeconds = actualTimeSpent;
+    attempt.status = 'submitted';
     attempt.submittedAt = now;
     if (typeof version === 'number') {
       attempt.lastSavedVersion = version;
@@ -203,7 +207,7 @@ export const getUserAttempts = async (req, res) => {
   try {
     const userId = req.user?.userId;
 
-    const attempts = await Attempt.find({ userId, status: { $in: ['submitted', 'expired'] } })
+    const attempts = await Attempt.find({ userId, status: 'submitted' })
       .populate('testId', 'title topic timeLimitMinutes totalQuestions markingScheme')
       .sort({ submittedAt: -1 });
 

@@ -126,7 +126,8 @@ class ApiService {
   }
 
   async startTest(testId) {
-    return this.request(`/tests/${testId}/start`, {
+    const query = window.location.search.includes('retake=true') ? '?retake=true' : '';
+    return this.request(`/tests/${testId}/start${query}`, {
       method: 'POST'
     });
   }

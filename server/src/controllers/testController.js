@@ -59,7 +59,9 @@ export const startTestAttempt = async (req, res) => {
       const startTime = new Date(attempt.startedAt).getTime();
       const maxAllowedTimeMs = (test.timeLimitMinutes * 60 + 60) * 1000;
 
-      if (now.getTime() - startTime > maxAllowedTimeMs) {
+      const isExplicitFresh = req.query.fresh === 'true' || req.query.retake === 'true';
+
+      if (now.getTime() - startTime > maxAllowedTimeMs || isExplicitFresh) {
         attempt.status = 'expired';
         await attempt.save();
         attempt = null;

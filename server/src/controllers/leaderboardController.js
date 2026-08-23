@@ -10,43 +10,55 @@ export const getLeaderboard = async (req, res, next) => {
     const limitNum = parseInt(limit, 10);
     const skip = (pageNum - 1) * limitNum;
 
-    const matchStage = {
-      status: { $in: ['submitted', 'expired'] }
+    const baseFilter = {
+      status: 'submitted'
     };
 
     if (testId && mongoose.Types.ObjectId.isValid(testId)) {
-      matchStage.testId = new mongoose.Types.ObjectId(testId);
+      baseFilter.testId = new mongoose.Types.ObjectId(testId);
     }
 
     const userObjId = userId && mongoose.Types.ObjectId.isValid(userId) ? new mongoose.Types.ObjectId(userId) : null;
 
-    // Aggregation Pipeline
-    // 1. $match stage: Filter submitted/expired attempts
-    // 2. $sort stage: Sort chronologically to identify first attempt
-    // 3. $group stage: Deduplicate by (userId, testId), taking the first attempt
-    // 4. $replaceRoot stage: Restore attempt document structure
-    // 5. $sort stage: Multi-field sorting by score desc, timeSpentSeconds asc (tie breaker)
-    // 6. $setWindowFields stage: Generates rank using $documentNumber over the pre-sorted stream
+    // ===================================================================
+    // STEP 1: Find the absolute first attempt per (userId, testId).
+    //
+    // Strategy: First get all distinct (userId, testId) pairs. Then for
+    // each pair, run an explicit findOne query sorted by _id ASC.
+    // Explicit find().sort({ _id: 1 }) cannot be reordered by MongoDB's
+    // aggregation query optimizer, ensuring the candidate's earliest created
+    // document (_id ASC) is locked 100% reliably.
+    // ===================================================================
+    const distinctPairs = await Attempt.aggregate([
+      { $match: baseFilter },
+      { $group: { _id: { userId: '$userId', testId: '$testId' } } }
+    ]);
+
+    const firstAttemptQueries = distinctPairs.map(pair =>
+      Attempt.findOne({
+        userId: pair._id.userId,
+        testId: pair._id.testId,
+        status: 'submitted'
+      })
+        .sort({ _id: 1 })
+        .select('_id')
+        .lean()
+    );
+
+    const firstAttemptDocs = await Promise.all(firstAttemptQueries);
+    const firstAttemptIds = firstAttemptDocs
+      .filter(doc => doc !== null)
+      .map(doc => doc._id);
+
+    if (firstAttemptIds.length === 0) {
+      return res.json({ leaderboard: [], totalParticipants: 0, page: pageNum, limit: limitNum, totalPages: 0, myStats: null });
+    }
+
+    // ===================================================================
+    // STEP 2: Fetch those exact first-attempts, rank, and paginate
+    // ===================================================================
     const pipeline = [
-      { $match: matchStage },
-      {
-        $addFields: {
-          firstAttemptKey: {
-            $ifNull: [
-              '$startedAt',
-              { $ifNull: ['$submittedAt', { $ifNull: ['$createdAt', '$_id'] }] }
-            ]
-          }
-        }
-      },
-      { $sort: { firstAttemptKey: 1, _id: 1 } },
-      {
-        $group: {
-          _id: { userId: '$userId', testId: '$testId' },
-          firstAttempt: { $first: '$$ROOT' }
-        }
-      },
-      { $replaceRoot: { newRoot: '$firstAttempt' } },
+      { $match: { _id: { $in: firstAttemptIds } } },
       {
         $addFields: {
           compositeScore: {
@@ -60,14 +72,13 @@ export const getLeaderboard = async (req, res, next) => {
       {
         $setWindowFields: {
           sortBy: { compositeScore: -1 },
-          output: {
-            rank: { $documentNumber: {} }
-          }
+          output: { rank: { $documentNumber: {} } }
         }
       },
       {
         $facet: {
           leaderboard: [
+            { $sort: { compositeScore: -1 } },
             { $skip: skip },
             { $limit: limitNum },
             {
@@ -78,7 +89,7 @@ export const getLeaderboard = async (req, res, next) => {
                 as: 'user'
               }
             },
-            { $unwind: { path: '$user', preserveNullAndEmptyArrays: true } },
+            { $unwind: { path: '$user', preserveNullAndEmptyArrays: false } },
             {
               $lookup: {
                 from: 'tests',
@@ -106,6 +117,7 @@ export const getLeaderboard = async (req, res, next) => {
           currentUserRank: userObjId
             ? [
                 { $match: { userId: userObjId } },
+                { $sort: { compositeScore: -1 } },
                 { $limit: 1 }
               ]
             : []

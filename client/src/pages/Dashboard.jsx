@@ -179,7 +179,7 @@ export const Dashboard = () => {
                   </div>
 
                   <button
-                    onClick={() => navigate(`/test/${test._id}`)}
+                    onClick={() => navigate(`/test/${test._id}${isAttempted ? '?retake=true' : ''}`)}
                     className={`w-full py-3 rounded-xl font-bold border transition-all flex items-center justify-center gap-2 ${
                       isAttempted
                         ? 'bg-slate-800/90 border-cyan-800/60 text-cyan-300 hover:bg-cyan-900/40 hover:border-cyan-500'
