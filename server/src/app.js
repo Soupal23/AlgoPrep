@@ -10,6 +10,7 @@ import adminRoutes from './routes/adminRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import teacherRoutes from './routes/teacherRoutes.js';
 import membershipRoutes from './routes/membershipRoutes.js';
+import announcementRoutes from './routes/announcementRoutes.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 const app = express();
@@ -32,6 +33,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/teachers', teacherRoutes);
 app.use('/api/memberships', membershipRoutes);
+app.use('/api/announcements', announcementRoutes);
 
 app.use(errorHandler);
 
