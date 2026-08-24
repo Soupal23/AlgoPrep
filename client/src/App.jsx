@@ -28,6 +28,10 @@ import { TeacherAnnouncements } from './pages/TeacherAnnouncements';
 import { TeacherLectures } from './pages/TeacherLectures';
 import { TeacherTests } from './pages/TeacherTests';
 
+// Phase 7B Pages
+import { TeachHere } from './pages/TeachHere';
+import { AdminDashboard } from './pages/AdminDashboard';
+
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
   if (!isAuthenticated) {
@@ -45,6 +49,7 @@ export const AppContent = () => {
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/teach-here" element={<TeachHere />} />
 
           {/* Student Routes */}
           <Route
@@ -126,6 +131,16 @@ export const AppContent = () => {
             element={
               <RoleRoute allowedRoles={['teacher']}>
                 <TeacherTests />
+              </RoleRoute>
+            }
+          />
+
+          {/* Admin Routes */}
+          <Route
+            path="/admin"
+            element={
+              <RoleRoute allowedRoles={['admin']}>
+                <AdminDashboard />
               </RoleRoute>
             }
           />

@@ -7,6 +7,9 @@ import { User } from '../models/User.js';
 import { Test } from '../models/Test.js';
 import { Question } from '../models/Question.js';
 import { Attempt } from '../models/Attempt.js';
+import { Membership } from '../models/Membership.js';
+import { Announcement } from '../models/Announcement.js';
+import { RecordedLecture } from '../models/RecordedLecture.js';
 import { seedTestsData } from './seedData.js';
 
 export const runSeed = async () => {
@@ -15,8 +18,8 @@ export const runSeed = async () => {
     await connectDB();
   }
 
-  // Only remove demo accounts so custom user-registered accounts are NEVER deleted
-  await User.deleteMany({ email: { $in: ['student@algoprep.com', 'admin@algoprep.com'] } });
+  // Clear demo accounts and test data
+  await User.deleteMany({ email: { $in: ['student@algoprep.com', 'teacher@algoprep.com', 'admin@algoprep.com'] } });
   await Test.deleteMany({});
   await Question.deleteMany({});
   await Attempt.deleteMany({});
@@ -24,22 +27,33 @@ export const runSeed = async () => {
   console.log('Cleared test records and refreshed demo accounts.');
 
   const defaultPassword = await bcrypt.hash('password123', 10);
-  const demoUser = await User.create({
+
+  // 1. Demo Student
+  const demoStudent = await User.create({
     name: 'Alex Student',
     email: 'student@algoprep.com',
     password: defaultPassword,
     role: 'student',
+    bio: 'Computer science student preparing for CBT assessments.',
     isActive: true
   });
 
-  let adminRawPassword = config.adminSeedPassword;
-  if (!adminRawPassword) {
-    adminRawPassword = crypto.randomBytes(8).toString('hex');
-    console.log(`Generated admin password: ${adminRawPassword} — save this, it will not be shown again`);
-  }
+  // 2. Demo Teacher
+  const demoTeacher = await User.create({
+    name: 'Prof Alan Turing',
+    email: 'teacher@algoprep.com',
+    password: defaultPassword,
+    role: 'teacher',
+    bio: 'Pioneer of theoretical computer science, algorithms, and AI.',
+    subjectFocus: 'Algorithms & Data Structures',
+    isActive: true
+  });
 
+  // 3. Demo Admin
+  let adminRawPassword = config.adminSeedPassword || 'password123';
   const adminHashedPassword = await bcrypt.hash(adminRawPassword, 10);
-  const adminUser = await User.create({
+
+  const demoAdmin = await User.create({
     name: 'Admin Instructor',
     email: 'admin@algoprep.com',
     password: adminHashedPassword,
@@ -47,8 +61,35 @@ export const runSeed = async () => {
     isActive: true
   });
 
-  console.log(`Created demo users: ${demoUser.email} & ${adminUser.email}`);
+  // Create membership between demo student and demo teacher
+  await Membership.create({
+    studentId: demoStudent._id,
+    teacherId: demoTeacher._id,
+    status: 'active'
+  });
 
+  // Create sample announcement
+  await Announcement.create({
+    teacherId: demoTeacher._id,
+    title: 'Welcome to Advanced Algorithms 101',
+    content: 'Class starts this week! Check the lectures tab for video recordings and practice tests.'
+  });
+
+  // Create sample recorded lecture
+  await RecordedLecture.create({
+    teacherId: demoTeacher._id,
+    title: 'Lecture 1: Asymptotic Analysis & Big-O Notation',
+    description: 'Overview of runtime complexity bounds and dynamic memory optimization.',
+    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    embedUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ'
+  });
+
+  console.log(`Created demo users:`);
+  console.log(` - Student: ${demoStudent.email} (password: password123)`);
+  console.log(` - Teacher: ${demoTeacher.email} (password: password123)`);
+  console.log(` - Admin:   ${demoAdmin.email} (password: ${adminRawPassword})`);
+
+  // Seed core tests
   for (const testItem of seedTestsData) {
     const testDoc = await Test.create({
       title: testItem.title,
@@ -57,7 +98,8 @@ export const runSeed = async () => {
       timeLimitMinutes: testItem.timeLimitMinutes,
       markingScheme: testItem.markingScheme,
       totalQuestions: testItem.questions.length,
-      createdBy: adminUser._id
+      teacherId: demoTeacher._id,
+      createdBy: demoAdmin._id
     });
 
     const questionDocs = testItem.questions.map((q) => ({
@@ -77,11 +119,13 @@ export const runSeed = async () => {
 };
 
 if (process.argv[1]?.includes('seed')) {
-  runSeed().then(() => {
-    disconnectDB();
-    process.exit(0);
-  }).catch((err) => {
-    console.error('Seed Error:', err);
-    process.exit(1);
-  });
+  runSeed()
+    .then(() => {
+      disconnectDB();
+      process.exit(0);
+    })
+    .catch((err) => {
+      console.error('Seed Error:', err);
+      process.exit(1);
+    });
 }
