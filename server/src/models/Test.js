@@ -12,6 +12,9 @@ const testSchema = new Schema(
     },
     totalQuestions: { type: Number, required: true, default: 10 },
     isAIGenerated: { type: Boolean, default: false },
+    teacherId: { type: Schema.Types.ObjectId, ref: 'User', default: null, index: true },
+    validFrom: { type: Date, default: null },
+    validUntil: { type: Date, default: null },
     createdBy: { type: Schema.Types.ObjectId, ref: 'User' }
   },
   { timestamps: true }
