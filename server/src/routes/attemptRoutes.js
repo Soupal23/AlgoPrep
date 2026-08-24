@@ -7,15 +7,15 @@ import {
   getAttemptReview,
   getAIRevisionPlan
 } from '../controllers/attemptController.js';
-import { authenticateJWT } from '../middleware/auth.js';
+import { authenticateJWT, requireRole } from '../middleware/auth.js';
 
 const router = Router();
 
-router.get('/user/my-attempts', authenticateJWT, getUserAttempts);
-router.get('/:id', authenticateJWT, getAttemptById);
-router.get('/:id/review', authenticateJWT, getAttemptReview);
-router.get('/:id/ai-revision', authenticateJWT, getAIRevisionPlan);
-router.patch('/:id/progress', authenticateJWT, saveProgress);
-router.post('/:id/submit', authenticateJWT, submitAttempt);
+router.get('/user/my-attempts', authenticateJWT, requireRole('student'), getUserAttempts);
+router.get('/:id', authenticateJWT, requireRole('student', 'admin'), getAttemptById);
+router.get('/:id/review', authenticateJWT, requireRole('student'), getAttemptReview);
+router.get('/:id/ai-revision', authenticateJWT, requireRole('student'), getAIRevisionPlan);
+router.patch('/:id/progress', authenticateJWT, requireRole('student'), saveProgress);
+router.post('/:id/submit', authenticateJWT, requireRole('student'), submitAttempt);
 
 export default router;

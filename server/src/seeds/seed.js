@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import { connectDB, disconnectDB } from '../config/db.js';
+import { config } from '../config/env.js';
 import { User } from '../models/User.js';
 import { Test } from '../models/Test.js';
 import { Question } from '../models/Question.js';
@@ -26,14 +28,23 @@ export const runSeed = async () => {
     name: 'Alex Student',
     email: 'student@algoprep.com',
     password: defaultPassword,
-    role: 'student'
+    role: 'student',
+    isActive: true
   });
 
+  let adminRawPassword = config.adminSeedPassword;
+  if (!adminRawPassword) {
+    adminRawPassword = crypto.randomBytes(8).toString('hex');
+    console.log(`Generated admin password: ${adminRawPassword} — save this, it will not be shown again`);
+  }
+
+  const adminHashedPassword = await bcrypt.hash(adminRawPassword, 10);
   const adminUser = await User.create({
     name: 'Admin Instructor',
     email: 'admin@algoprep.com',
-    password: defaultPassword,
-    role: 'admin'
+    password: adminHashedPassword,
+    role: 'admin',
+    isActive: true
   });
 
   console.log(`Created demo users: ${demoUser.email} & ${adminUser.email}`);

@@ -5,7 +5,10 @@ const userSchema = new Schema(
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, lowercase: true, trim: true, index: true },
     password: { type: String, required: true },
-    role: { type: String, enum: ['student', 'admin'], default: 'student' },
+    role: { type: String, enum: ['student', 'teacher', 'admin'], default: 'student' },
+    isActive: { type: Boolean, default: true },
+    bio: { type: String, default: '' },
+    avatarUrl: { type: String, default: '' },
     refreshToken: { type: String }
   },
   { timestamps: true }

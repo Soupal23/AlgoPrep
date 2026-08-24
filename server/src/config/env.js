@@ -14,5 +14,6 @@ export const config = {
   jwtAccessSecret: process.env.JWT_ACCESS_SECRET || 'algoprep_access_secret_super_secure_key_2026_jwt',
   jwtRefreshSecret: process.env.JWT_REFRESH_SECRET || 'algoprep_refresh_secret_super_secure_key_2026_jwt',
   geminiApiKey: process.env.GEMINI_API_KEY || '',
+  adminSeedPassword: process.env.ADMIN_SEED_PASSWORD || '',
   nodeEnv: process.env.NODE_ENV || 'development'
 };

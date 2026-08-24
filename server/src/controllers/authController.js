@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import { User } from '../models/User.js';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwt.js';
+import { config } from '../config/env.js';
 
 export const signupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -27,10 +28,12 @@ export const signup = async (req, res) => {
   const user = new User({
     name,
     email: email.toLowerCase(),
-    password: hashedPassword
+    password: hashedPassword,
+    role: 'student',
+    isActive: true
   });
 
-  const payload = { userId: user._id.toString(), email: user.email, role: user.role };
+  const payload = { userId: user._id.toString(), email: user.email, role: user.role, isActive: user.isActive };
   const accessToken = generateAccessToken(payload);
   const refreshToken = generateRefreshToken(payload);
 
@@ -39,7 +42,7 @@ export const signup = async (req, res) => {
 
   res.status(201).json({
     message: 'User registered successfully',
-    user: { id: user._id, name: user.name, email: user.email, role: user.role },
+    user: { id: user._id, name: user.name, email: user.email, role: user.role, isActive: user.isActive },
     accessToken,
     refreshToken
   });
@@ -51,6 +54,7 @@ export const login = async (req, res) => {
 
   let user = await User.findOne({ email: normalizedEmail });
 
+  const adminPass = config.adminSeedPassword || 'password123';
   // Auto-provision demo accounts if database has not been seeded yet
   if (!user && normalizedEmail === 'student@algoprep.com' && password === 'password123') {
     const hashedPassword = await bcrypt.hash('password123', 10);
@@ -58,20 +62,27 @@ export const login = async (req, res) => {
       name: 'Alex Student',
       email: 'student@algoprep.com',
       password: hashedPassword,
-      role: 'student'
+      role: 'student',
+      isActive: true
     });
-  } else if (!user && normalizedEmail === 'admin@algoprep.com' && password === 'password123') {
-    const hashedPassword = await bcrypt.hash('password123', 10);
+  } else if (!user && normalizedEmail === 'admin@algoprep.com' && password === adminPass) {
+    const hashedPassword = await bcrypt.hash(adminPass, 10);
     user = await User.create({
       name: 'Admin Instructor',
       email: 'admin@algoprep.com',
       password: hashedPassword,
-      role: 'admin'
+      role: 'admin',
+      isActive: true
     });
   }
 
   if (!user) {
     res.status(401).json({ error: 'Invalid email or password' });
+    return;
+  }
+
+  if (!user.isActive) {
+    res.status(403).json({ error: 'Account is deactivated' });
     return;
   }
 
@@ -81,7 +92,7 @@ export const login = async (req, res) => {
     return;
   }
 
-  const payload = { userId: user._id.toString(), email: user.email, role: user.role };
+  const payload = { userId: user._id.toString(), email: user.email, role: user.role, isActive: user.isActive };
   const accessToken = generateAccessToken(payload);
   const refreshToken = generateRefreshToken(payload);
 
@@ -90,7 +101,7 @@ export const login = async (req, res) => {
 
   res.json({
     message: 'Login successful',
-    user: { id: user._id, name: user.name, email: user.email, role: user.role },
+    user: { id: user._id, name: user.name, email: user.email, role: user.role, isActive: user.isActive },
     accessToken,
     refreshToken
   });
@@ -113,7 +124,12 @@ export const refresh = async (req, res) => {
       return;
     }
 
-    const newPayload = { userId: user._id.toString(), email: user.email, role: user.role };
+    if (!user.isActive) {
+      res.status(403).json({ error: 'Account is deactivated' });
+      return;
+    }
+
+    const newPayload = { userId: user._id.toString(), email: user.email, role: user.role, isActive: user.isActive };
     const newAccessToken = generateAccessToken(newPayload);
 
     res.json({ accessToken: newAccessToken });
