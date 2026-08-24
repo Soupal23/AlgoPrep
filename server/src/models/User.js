@@ -9,6 +9,7 @@ const userSchema = new Schema(
     isActive: { type: Boolean, default: true },
     bio: { type: String, default: '' },
     avatarUrl: { type: String, default: '' },
+    subjectFocus: { type: String, default: '' },
     refreshToken: { type: String }
   },
   { timestamps: true }

@@ -7,6 +7,8 @@ import aiRoutes from './routes/aiRoutes.js';
 import leaderboardRoutes from './routes/leaderboardRoutes.js';
 import teacherApplicationRoutes from './routes/teacherApplicationRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import teacherRoutes from './routes/teacherRoutes.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 const app = express();
@@ -26,6 +28,8 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
 app.use('/api/teacher-applications', teacherApplicationRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/teachers', teacherRoutes);
 
 app.use(errorHandler);
 
