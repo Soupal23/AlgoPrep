@@ -12,6 +12,7 @@ import teacherRoutes from './routes/teacherRoutes.js';
 import membershipRoutes from './routes/membershipRoutes.js';
 import announcementRoutes from './routes/announcementRoutes.js';
 import messageRoutes from './routes/messageRoutes.js';
+import lectureRoutes from './routes/lectureRoutes.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 const app = express();
@@ -36,6 +37,7 @@ app.use('/api/teachers', teacherRoutes);
 app.use('/api/memberships', membershipRoutes);
 app.use('/api/announcements', announcementRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/lectures', lectureRoutes);
 
 app.use(errorHandler);
 
