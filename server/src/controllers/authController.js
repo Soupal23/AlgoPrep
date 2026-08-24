@@ -1,13 +1,15 @@
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import { User } from '../models/User.js';
+import { TeacherApplication } from '../models/TeacherApplication.js';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwt.js';
 import { config } from '../config/env.js';
 
 export const signupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters')
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+  role: z.string().optional()
 });
 
 export const loginSchema = z.object({
@@ -16,20 +18,38 @@ export const loginSchema = z.object({
 });
 
 export const signup = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, role } = req.body;
+  const normalizedEmail = email.toLowerCase().trim();
 
-  const existingUser = await User.findOne({ email: email.toLowerCase() });
+  const existingUser = await User.findOne({ email: normalizedEmail });
   if (existingUser) {
     res.status(400).json({ error: 'User with this email already exists' });
     return;
   }
 
+  let finalRole = 'student';
+
+  if (role === 'teacher') {
+    const approvedApplication = await TeacherApplication.findOne({
+      email: normalizedEmail,
+      status: 'approved'
+    });
+
+    if (!approvedApplication) {
+      res.status(400).json({
+        error: 'Email is not whitelisted for teacher registration. Please submit a teacher application first.'
+      });
+      return;
+    }
+    finalRole = 'teacher';
+  }
+
   const hashedPassword = await bcrypt.hash(password, 10);
   const user = new User({
     name,
-    email: email.toLowerCase(),
+    email: normalizedEmail,
     password: hashedPassword,
-    role: 'student',
+    role: finalRole,
     isActive: true
   });
 
