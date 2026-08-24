@@ -86,10 +86,13 @@ class ApiService {
   }
 
   // Auth API
-  async signup(name, email, password) {
+  async signup(name, email, password, role) {
+    const payload = { name, email, password };
+    if (role) payload.role = role;
+
     const res = await this.request('/auth/signup', {
       method: 'POST',
-      body: JSON.stringify({ name, email, password })
+      body: JSON.stringify(payload)
     });
     this.setTokens(res.accessToken, res.refreshToken);
     this.setStoredUser(res.user);
@@ -116,6 +119,83 @@ class ApiService {
     }
   }
 
+  // User Profile API
+  async getProfile() {
+    return this.request('/users/profile');
+  }
+
+  async updateProfile(payload) {
+    const res = await this.request('/users/profile', {
+      method: 'PATCH',
+      body: JSON.stringify(payload)
+    });
+    if (res.user) {
+      this.setStoredUser(res.user);
+    }
+    return res;
+  }
+
+  async uploadAvatar(formData) {
+    const res = await this.request('/users/avatar', {
+      method: 'POST',
+      body: formData
+    });
+    if (res.user) {
+      this.setStoredUser(res.user);
+    }
+    return res;
+  }
+
+  // Teacher Directory API
+  async getTeachers() {
+    return this.request('/teachers');
+  }
+
+  async getTeacherById(id) {
+    return this.request(`/teachers/${id}`);
+  }
+
+  // Memberships API
+  async joinClass(teacherId) {
+    return this.request(`/memberships/join/${teacherId}`, { method: 'POST' });
+  }
+
+  async leaveClass(teacherId) {
+    return this.request(`/memberships/leave/${teacherId}`, { method: 'DELETE' });
+  }
+
+  async getMyTeachers() {
+    return this.request('/memberships/my-teachers');
+  }
+
+  async getTeacherRoster() {
+    return this.request('/memberships/roster');
+  }
+
+  async removeStudentFromRoster(studentId) {
+    return this.request(`/memberships/roster/${studentId}`, { method: 'DELETE' });
+  }
+
+  // Announcements API
+  async postAnnouncement(payload) {
+    return this.request('/announcements', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  }
+
+  async getMyAnnouncements() {
+    return this.request('/announcements/mine');
+  }
+
+  async deleteAnnouncement(id) {
+    return this.request(`/announcements/${id}`, { method: 'DELETE' });
+  }
+
+  async getStudentAnnouncementsFeed() {
+    return this.request('/announcements/feed');
+  }
+
   // Tests API
   async getTests() {
     return this.request('/tests');
@@ -125,10 +205,98 @@ class ApiService {
     return this.request(`/tests/${id}`);
   }
 
+  async createTeacherTest(payload) {
+    return this.request('/tests', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  }
+
   async startTest(testId) {
     const query = window.location.search.includes('retake=true') ? '?retake=true' : '';
     return this.request(`/tests/${testId}/start${query}`, {
       method: 'POST'
+    });
+  }
+
+  // Lectures API
+  async postLecture(payload) {
+    return this.request('/lectures', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  }
+
+  async getMyLectures() {
+    return this.request('/lectures/mine');
+  }
+
+  async deleteLecture(id) {
+    return this.request(`/lectures/${id}`, { method: 'DELETE' });
+  }
+
+  async getStudentLecturesFeed() {
+    return this.request('/lectures/feed');
+  }
+
+  async getLectureById(id) {
+    return this.request(`/lectures/${id}`);
+  }
+
+  // Messages API
+  async sendMessage(recipientId, content) {
+    return this.request('/messages', {
+      method: 'POST',
+      body: JSON.stringify({ recipientId, content })
+    });
+  }
+
+  async getConversations() {
+    return this.request('/messages/conversations');
+  }
+
+  async getConversationMessages(conversationId, params = {}) {
+    const query = new URLSearchParams();
+    if (params.page) query.append('page', params.page);
+    if (params.limit) query.append('limit', params.limit);
+    if (params.since) query.append('since', params.since);
+    const qStr = query.toString() ? `?${query.toString()}` : '';
+    return this.request(`/messages/conversations/${conversationId}${qStr}`);
+  }
+
+  // Teacher Application API
+  async submitTeacherApplication(formData) {
+    return this.request('/teacher-applications/apply', {
+      method: 'POST',
+      body: formData
+    });
+  }
+
+  async getTeacherApplications(status = '') {
+    const qStr = status ? `?status=${status}` : '';
+    return this.request(`/admin/teacher-applications${qStr}`);
+  }
+
+  async updateTeacherApplicationStatus(id, status) {
+    return this.request(`/admin/teacher-applications/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status })
+    });
+  }
+
+  // Admin User Moderation API
+  async getAdminUsers(params = {}) {
+    const query = new URLSearchParams();
+    if (params.role) query.append('role', params.role);
+    if (params.isActive !== undefined) query.append('isActive', params.isActive.toString());
+    const qStr = query.toString() ? `?${query.toString()}` : '';
+    return this.request(`/admin/users${qStr}`);
+  }
+
+  async updateUserStatus(id, isActive) {
+    return this.request(`/admin/users/${id}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ isActive })
     });
   }
 

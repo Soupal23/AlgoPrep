@@ -23,6 +23,7 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "puppeteer": "^25.8.0",
     "supertest": "^7.0.0",
     "vitest": "^3.0.6"
   }
