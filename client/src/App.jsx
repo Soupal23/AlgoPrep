@@ -4,7 +4,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { Navbar } from './components/Navbar';
 import { RoleRoute } from './components/RoleRoute';
 
-// Pages
+// Core & Student Pages
 import { Landing } from './pages/Landing';
 import { Dashboard } from './pages/Dashboard';
 import { Login } from './pages/Login';
@@ -20,6 +20,13 @@ import { BrowseTeachers } from './pages/BrowseTeachers';
 import { AnnouncementFeed } from './pages/AnnouncementFeed';
 import { RecordedLectures } from './pages/RecordedLectures';
 import { Messages } from './pages/Messages';
+
+// Phase 6B Pages
+import { TeacherDashboard } from './pages/TeacherDashboard';
+import { TeacherRoster } from './pages/TeacherRoster';
+import { TeacherAnnouncements } from './pages/TeacherAnnouncements';
+import { TeacherLectures } from './pages/TeacherLectures';
+import { TeacherTests } from './pages/TeacherTests';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
@@ -77,6 +84,48 @@ export const AppContent = () => {
             element={
               <RoleRoute allowedRoles={['student']}>
                 <TestTaking />
+              </RoleRoute>
+            }
+          />
+
+          {/* Teacher Routes */}
+          <Route
+            path="/teacher/dashboard"
+            element={
+              <RoleRoute allowedRoles={['teacher']}>
+                <TeacherDashboard />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/teacher/roster"
+            element={
+              <RoleRoute allowedRoles={['teacher']}>
+                <TeacherRoster />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/teacher/announcements"
+            element={
+              <RoleRoute allowedRoles={['teacher']}>
+                <TeacherAnnouncements />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/teacher/lectures"
+            element={
+              <RoleRoute allowedRoles={['teacher']}>
+                <TeacherLectures />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/teacher/tests"
+            element={
+              <RoleRoute allowedRoles={['teacher']}>
+                <TeacherTests />
               </RoleRoute>
             }
           />
