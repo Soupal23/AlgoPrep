@@ -98,7 +98,6 @@ export const runSeed = async () => {
       timeLimitMinutes: testItem.timeLimitMinutes,
       markingScheme: testItem.markingScheme,
       totalQuestions: testItem.questions.length,
-      teacherId: demoTeacher._id,
       createdBy: demoAdmin._id
     });
 

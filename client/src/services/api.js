@@ -76,10 +76,20 @@ class ApiService {
       }
     }
 
-    const data = await response.json();
+    const text = await response.text();
+    let data = {};
+    if (text) {
+      try {
+        data = JSON.parse(text);
+      } catch (err) {
+        if (!response.ok) {
+          throw new Error(`Server connection error (${response.status}): Could not connect to backend server.`);
+        }
+      }
+    }
 
     if (!response.ok) {
-      throw new Error(data.error || 'Request failed');
+      throw new Error(data.error || `Request failed with status ${response.status}`);
     }
 
     return data;

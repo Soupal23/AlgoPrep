@@ -44,7 +44,7 @@ export const Messages = () => {
 
   // Polling messages every 5 seconds
   useEffect(() => {
-    if (!activeConv) return;
+    if (!activeConv || String(activeConv.conversationId).startsWith('temp-')) return;
     fetchMessages(activeConv.conversationId, false);
 
     const interval = setInterval(() => {
@@ -77,6 +77,12 @@ export const Messages = () => {
   };
 
   const fetchMessages = async (convId, showSpinner = true) => {
+    if (!convId || String(convId).startsWith('temp-')) {
+      setMessages([]);
+      if (showSpinner) setLoadingMsgs(false);
+      return;
+    }
+
     try {
       if (showSpinner) setLoadingMsgs(true);
       const res = await api.getConversationMessages(convId);

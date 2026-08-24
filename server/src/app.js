@@ -15,11 +15,14 @@ import messageRoutes from './routes/messageRoutes.js';
 import lectureRoutes from './routes/lectureRoutes.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
+import path from 'path';
+
 const app = express();
 
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use('/uploads', express.static(path.resolve('uploads')));
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', service: 'AlgoPrep Server', timestamp: new Date() });
