@@ -1,8 +1,10 @@
+import http from 'http';
 import app from './app.js';
 import { connectDB } from './config/db.js';
 import { config } from './config/env.js';
 import { Test } from './models/Test.js';
 import { runSeed } from './seeds/seed.js';
+import { initSocketServer } from './socket/socketManager.js';
 
 const startServer = async () => {
   await connectDB();
@@ -14,7 +16,10 @@ const startServer = async () => {
     await runSeed();
   }
 
-  app.listen(config.port, () => {
+  const httpServer = http.createServer(app);
+  initSocketServer(httpServer);
+
+  httpServer.listen(config.port, () => {
     console.log(`🚀 AlgoPrep Server running on port ${config.port} [${config.nodeEnv}]`);
   });
 };

@@ -3,6 +3,7 @@ import { Conversation } from '../models/Conversation.js';
 import { Message } from '../models/Message.js';
 import { Membership } from '../models/Membership.js';
 import { User } from '../models/User.js';
+import { getIO } from '../socket/socketManager.js';
 
 export const sendMessage = async (req, res, next) => {
   try {
@@ -60,6 +61,21 @@ export const sendMessage = async (req, res, next) => {
       receiverId: recipientId,
       content: content.trim()
     });
+
+    // Emit real-time new_message event to all sockets in this conversation room
+    try {
+      getIO().to(`conv:${conversation._id}`).emit('new_message', {
+        _id: message._id,
+        conversationId: conversation._id,
+        senderId,
+        receiverId: recipientId,
+        content: message.content,
+        createdAt: message.createdAt,
+        readAt: null
+      });
+    } catch {
+      // Socket.IO may not be ready in test environments — ignore gracefully
+    }
 
     res.status(201).json({
       message: 'Message sent successfully',
