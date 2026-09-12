@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
-import { MessageSquare, Send, Users, AlertCircle, Plus, CheckCheck, Wifi, WifiOff } from 'lucide-react';
+import { MessageSquare, Send, Users, AlertCircle, Plus, CheckCheck, Wifi, WifiOff, X } from 'lucide-react';
 
 // How long after the last keystroke before we emit typing_stop
 const TYPING_DEBOUNCE_MS = 3000;
@@ -239,9 +239,6 @@ export const Messages = () => {
       const res = await api.getConversations();
       const list = res.conversations || [];
       setConversations(list);
-      if (list.length > 0 && !activeConvRef.current) {
-        setActiveConv(list[0]);
-      }
     } catch (err) {
       setError(err.message || 'Failed to load conversations');
     } finally {
@@ -543,30 +540,42 @@ export const Messages = () => {
                   const partner = getPartner(activeConv);
                   const online = isPartnerOnline(activeConv);
                   return (
-                    <div className="flex items-center gap-3">
-                      <div className="relative">
-                        <div className="w-9 h-9 rounded-xl overflow-hidden bg-indigo-900 flex items-center justify-center text-white text-xs font-bold">
-                          {partner?.avatarUrl ? (
-                            <img src={`/${partner.avatarUrl}`} alt={partner.name} className="w-full h-full object-cover" />
-                          ) : (
-                            <span>{partner?.name ? partner.name[0].toUpperCase() : 'U'}</span>
+                    <>
+                      <div className="flex items-center gap-3">
+                        <div className="relative">
+                          <div className="w-9 h-9 rounded-xl overflow-hidden bg-indigo-900 flex items-center justify-center text-white text-xs font-bold">
+                            {partner?.avatarUrl ? (
+                              <img src={`/${partner.avatarUrl}`} alt={partner.name} className="w-full h-full object-cover" />
+                            ) : (
+                              <span>{partner?.name ? partner.name[0].toUpperCase() : 'U'}</span>
+                            )}
+                          </div>
+                          {online && (
+                            <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-slate-950 block" />
                           )}
                         </div>
-                        {online && (
-                          <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-slate-950 block" />
-                        )}
+                        <div>
+                          <h3 className="text-sm font-bold text-white">{partner?.name}</h3>
+                          <span className="text-[10px] font-mono text-slate-400 capitalize">
+                            {online ? (
+                              <span className="text-emerald-400">● Online</span>
+                            ) : (
+                              partner?.role
+                            )}
+                          </span>
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="text-sm font-bold text-white">{partner?.name}</h3>
-                        <span className="text-[10px] font-mono text-slate-400 capitalize">
-                          {online ? (
-                            <span className="text-emerald-400">● Online</span>
-                          ) : (
-                            partner?.role
-                          )}
-                        </span>
-                      </div>
-                    </div>
+
+                      {/* Close Chat Button */}
+                      <button
+                        onClick={() => setActiveConv(null)}
+                        title="Close chat"
+                        className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/80 border border-transparent hover:border-slate-700 transition-all flex items-center gap-1.5 text-xs font-mono"
+                      >
+                        <X className="w-4 h-4" />
+                        <span className="text-[11px] font-medium hidden sm:inline">Close</span>
+                      </button>
+                    </>
                   );
                 })()}
               </div>
@@ -643,12 +652,23 @@ export const Messages = () => {
               </form>
             </>
           ) : (
-            <div className="p-16 text-center space-y-3 m-auto text-slate-500">
-              <MessageSquare className="w-12 h-12 mx-auto text-slate-700" />
-              <p className="text-sm font-bold text-white">Select a Conversation</p>
-              <p className="text-xs text-slate-400 max-w-xs mx-auto">
-                Choose an existing chat from the left sidebar or start a new message.
-              </p>
+            <div className="p-12 text-center space-y-4 m-auto text-slate-500 max-w-sm">
+              <div className="w-16 h-16 rounded-3xl bg-slate-900 border border-slate-800 flex items-center justify-center mx-auto text-emerald-400 shadow-xl">
+                <MessageSquare className="w-8 h-8" />
+              </div>
+              <div className="space-y-1.5">
+                <h3 className="text-lg font-extrabold text-white">Message Someone</h3>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Select an active conversation from the sidebar or click below to start a new chat.
+                </p>
+              </div>
+              <button
+                onClick={openNewChatModal}
+                className="mt-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-indigo-600 text-white text-xs font-bold shadow-lg hover:opacity-95 transition-opacity inline-flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Start New Chat</span>
+              </button>
             </div>
           )}
         </div>
