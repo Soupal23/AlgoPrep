@@ -70,7 +70,7 @@ export const Messages = () => {
       if (currentConv && String(msg.conversationId) === String(currentConv.conversationId)) {
         // Append to current thread
         setMessages((prev) => {
-          // Deduplicate in case the sender also gets the event
+          // Deduplicate in case sender/socket also pushed the event
           if (prev.some((m) => String(m._id) === String(msg._id))) return prev;
           return [...prev, msg];
         });
@@ -84,13 +84,35 @@ export const Messages = () => {
         }));
       }
       // Bubble the last message preview up in the sidebar
-      setConversations((prev) =>
-        prev.map((c) =>
+      setConversations((prev) => {
+        const exists = prev.some((c) => String(c.conversationId) === String(msg.conversationId));
+        if (!exists) {
+          fetchConversations();
+          return prev;
+        }
+        return prev.map((c) =>
           String(c.conversationId) === String(msg.conversationId)
             ? { ...c, lastMessage: { content: msg.content, senderId: msg.senderId }, lastMessageAt: msg.createdAt }
             : c
-        ).sort((a, b) => new Date(b.lastMessageAt) - new Date(a.lastMessageAt))
-      );
+        ).sort((a, b) => new Date(b.lastMessageAt) - new Date(a.lastMessageAt));
+      });
+    };
+
+    const onNewConversation = (conv) => {
+      setConversations((prev) => {
+        const exists = prev.some((c) => String(c.conversationId) === String(conv.conversationId));
+        if (exists) {
+          return prev.map((c) =>
+            String(c.conversationId) === String(conv.conversationId) ? { ...c, ...conv } : c
+          ).sort((a, b) => new Date(b.lastMessageAt) - new Date(a.lastMessageAt));
+        }
+        const filtered = prev.filter(
+          (c) => !(String(c.conversationId).startsWith('temp-') && String(c.partner?._id) === String(conv.partner?._id))
+        );
+        return [conv, ...filtered].sort((a, b) => new Date(b.lastMessageAt) - new Date(a.lastMessageAt));
+      });
+
+      socket.emit('join_conversation', { conversationId: conv.conversationId });
     };
 
     const onPartnerTyping = ({ conversationId }) => {
@@ -110,7 +132,7 @@ export const Messages = () => {
         // Mark all sent messages as read
         setMessages((prev) =>
           prev.map((m) =>
-            String(m.senderId) === user.id && !m.readAt
+            (String(m.senderId) === user.id || String(m.senderId) === user._id) && !m.readAt
               ? { ...m, readAt: new Date().toISOString() }
               : m
           )
@@ -134,6 +156,7 @@ export const Messages = () => {
     };
 
     socket.on('new_message', onNewMessage);
+    socket.on('new_conversation', onNewConversation);
     socket.on('partner_typing', onPartnerTyping);
     socket.on('partner_stopped_typing', onPartnerStoppedTyping);
     socket.on('messages_read', onMessagesRead);
@@ -145,6 +168,7 @@ export const Messages = () => {
 
     return () => {
       socket.off('new_message', onNewMessage);
+      socket.off('new_conversation', onNewConversation);
       socket.off('partner_typing', onPartnerTyping);
       socket.off('partner_stopped_typing', onPartnerStoppedTyping);
       socket.off('messages_read', onMessagesRead);
@@ -228,22 +252,62 @@ export const Messages = () => {
 
     const partner = getPartner(activeConv);
     const recipient = partner?._id || partner;
+    const sentText = newMessageText.trim();
 
     // Stop typing immediately
     stopTyping();
 
     try {
       setSending(true);
-      const res = await api.sendMessage(recipient, newMessageText);
       setNewMessageText('');
-      // If socket is connected, new_message event will update the UI.
-      // If not, fall back to a REST fetch.
-      if (!isConnected) {
-        fetchMessages(res.conversationId, false);
-      }
-      if (String(activeConv.conversationId).startsWith('temp-')) {
-        // Upgrade temp conversation to real one
-        fetchConversations();
+      const res = await api.sendMessage(recipient, sentText);
+      const sentMsg = res.data;
+      const realConvId = res.conversationId;
+
+      // Optimistically append sent message to message list
+      setMessages((prev) => {
+        if (prev.some((m) => String(m._id) === String(sentMsg._id))) return prev;
+        return [...prev, sentMsg];
+      });
+
+      const isTemp = String(activeConv.conversationId).startsWith('temp-');
+
+      // Check if conversation ID changed (from temp or new conv)
+      if (isTemp || String(activeConv.conversationId) !== String(realConvId)) {
+        const updatedConv = {
+          ...activeConv,
+          conversationId: realConvId,
+          lastMessageAt: sentMsg.createdAt,
+          lastMessage: { content: sentMsg.content, senderId: user.id || user._id }
+        };
+
+        setConversations((prev) => {
+          const filtered = prev.filter(
+            (c) =>
+              String(c.conversationId) !== String(activeConv.conversationId) &&
+              String(c.conversationId) !== String(realConvId)
+          );
+          return [updatedConv, ...filtered];
+        });
+
+        setActiveConv(updatedConv);
+
+        if (socket) {
+          socket.emit('join_conversation', { conversationId: realConvId });
+        }
+      } else {
+        // Update sidebar last message preview
+        setConversations((prev) =>
+          prev.map((c) =>
+            String(c.conversationId) === String(realConvId)
+              ? {
+                  ...c,
+                  lastMessage: { content: sentMsg.content, senderId: user.id || user._id },
+                  lastMessageAt: sentMsg.createdAt
+                }
+              : c
+          ).sort((a, b) => new Date(b.lastMessageAt) - new Date(a.lastMessageAt))
+        );
       }
     } catch (err) {
       alert(err.message || 'Failed to send message');

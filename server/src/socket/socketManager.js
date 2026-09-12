@@ -70,6 +70,9 @@ export function initSocketServer(httpServer) {
     const userId = socket.userId;
     addOnlineUser(userId, socket.id);
 
+    // Join user-specific socket room for personal events (like new_conversation alerts)
+    socket.join(`user:${userId}`);
+
     // Send currently online users list to newly connected socket
     socket.emit('online_users_list', Array.from(onlineUsers.keys()));
 

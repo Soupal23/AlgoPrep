@@ -76,9 +76,10 @@ export const sendMessage = async (req, res, next) => {
       content: content.trim()
     });
 
-    // Emit real-time new_message event to all sockets in this conversation room
+    // Emit real-time events to conversation room AND user-specific rooms
     try {
-      getIO().to(`conv:${conversation._id}`).emit('new_message', {
+      const io = getIO();
+      const messagePayload = {
         _id: message._id,
         conversationId: conversation._id,
         senderId,
@@ -86,7 +87,47 @@ export const sendMessage = async (req, res, next) => {
         content: message.content,
         createdAt: message.createdAt,
         readAt: null
-      });
+      };
+
+      // Emit new_message to conversation room as well as individual user rooms (Socket.IO deduplicates)
+      io.to(`conv:${conversation._id}`)
+        .to(`user:${senderId}`)
+        .to(`user:${recipientId}`)
+        .emit('new_message', messagePayload);
+
+      // Populate conversation details for real-time sidebar creation
+      const populatedConv = await Conversation.findById(conversation._id)
+        .populate('participants', 'name email avatarUrl role subjectFocus');
+
+      if (populatedConv) {
+        const senderPartner = populatedConv.participants.find((p) => p._id.toString() !== senderId);
+        const recipientPartner = populatedConv.participants.find((p) => p._id.toString() !== recipientId);
+
+        const lastMessageObj = {
+          content: message.content,
+          senderId,
+          readAt: null,
+          createdAt: message.createdAt
+        };
+
+        io.to(`user:${senderId}`).emit('new_conversation', {
+          conversationId: conversation._id,
+          type: conversation.type,
+          lastMessageAt: conversation.lastMessageAt,
+          participants: populatedConv.participants,
+          partner: senderPartner,
+          lastMessage: lastMessageObj
+        });
+
+        io.to(`user:${recipientId}`).emit('new_conversation', {
+          conversationId: conversation._id,
+          type: conversation.type,
+          lastMessageAt: conversation.lastMessageAt,
+          participants: populatedConv.participants,
+          partner: recipientPartner,
+          lastMessage: lastMessageObj
+        });
+      }
     } catch {
       // Socket.IO may not be ready in test environments — ignore gracefully
     }
