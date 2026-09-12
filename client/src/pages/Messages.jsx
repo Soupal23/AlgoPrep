@@ -520,7 +520,13 @@ export const Messages = () => {
                         </div>
                       </div>
                       <p className="text-[11px] text-slate-400 truncate mt-0.5">
-                        {conv.lastMessage?.content || 'Click to open conversation'}
+                        {(() => {
+                          if (!conv.lastMessage?.content) return 'Click to open conversation';
+                          const lastMsgSenderId = conv.lastMessage.senderId?._id || conv.lastMessage.senderId;
+                          const isMe = lastMsgSenderId && String(lastMsgSenderId) === String(user?.id || user?._id);
+                          const prefix = isMe ? 'You: ' : (partner?.name ? `${partner.name}: ` : '');
+                          return `${prefix}${conv.lastMessage.content}`;
+                        })()}
                       </p>
                     </div>
                   </button>
