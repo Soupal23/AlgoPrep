@@ -70,8 +70,16 @@ export function initSocketServer(httpServer) {
     const userId = socket.userId;
     addOnlineUser(userId, socket.id);
 
+    // Send currently online users list to newly connected socket
+    socket.emit('online_users_list', Array.from(onlineUsers.keys()));
+
     // Broadcast online status to everyone
     io.emit('online_status', { userId, online: true });
+
+    // Allow clients to request online users list at any time
+    socket.on('get_online_users', () => {
+      socket.emit('online_users_list', Array.from(onlineUsers.keys()));
+    });
 
     // ── join_conversation ──────────────────────────────────────────────────
     socket.on('join_conversation', async ({ conversationId }) => {

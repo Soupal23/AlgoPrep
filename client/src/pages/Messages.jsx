@@ -118,11 +118,17 @@ export const Messages = () => {
       }
     };
 
+    const onOnlineUsersList = (userList) => {
+      if (Array.isArray(userList)) {
+        setOnlineUsers(new Set(userList.map(String)));
+      }
+    };
+
     const onOnlineStatus = ({ userId, online }) => {
       setOnlineUsers((prev) => {
         const next = new Set(prev);
-        if (online) next.add(userId);
-        else next.delete(userId);
+        if (online) next.add(String(userId));
+        else next.delete(String(userId));
         return next;
       });
     };
@@ -132,6 +138,10 @@ export const Messages = () => {
     socket.on('partner_stopped_typing', onPartnerStoppedTyping);
     socket.on('messages_read', onMessagesRead);
     socket.on('online_status', onOnlineStatus);
+    socket.on('online_users_list', onOnlineUsersList);
+
+    // Request the latest list of online user IDs
+    socket.emit('get_online_users');
 
     return () => {
       socket.off('new_message', onNewMessage);
@@ -139,6 +149,7 @@ export const Messages = () => {
       socket.off('partner_stopped_typing', onPartnerStoppedTyping);
       socket.off('messages_read', onMessagesRead);
       socket.off('online_status', onOnlineStatus);
+      socket.off('online_users_list', onOnlineUsersList);
     };
   }, [socket, user]);
 
@@ -168,6 +179,13 @@ export const Messages = () => {
   useEffect(() => {
     chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, partnerTyping]);
+
+  // ── Auto-fetch messages when active conversation changes ──────────────────
+  useEffect(() => {
+    if (activeConv?.conversationId) {
+      fetchMessages(activeConv.conversationId);
+    }
+  }, [activeConv?.conversationId]);
 
   // ── Data fetchers ────────────────────────────────────────────────────────
   const fetchConversations = async () => {
@@ -301,7 +319,9 @@ export const Messages = () => {
   const getPartner = (conv) => (user.role === 'student' ? conv?.teacher : conv?.student);
   const isPartnerOnline = (conv) => {
     const partner = getPartner(conv);
-    return partner && onlineUsers.has(partner._id);
+    if (!partner) return false;
+    const partnerId = String(partner._id || partner.id || partner);
+    return onlineUsers.has(partnerId);
   };
 
   // ── Render ───────────────────────────────────────────────────────────────
@@ -567,7 +587,7 @@ export const Messages = () => {
                 <p>No eligible contacts found.</p>
                 <p className="text-[11px] text-slate-500">
                   {user.role === 'student'
-                    ? 'You must join a teacher's class first to send them messages.'
+                    ? "You must join a teacher's class first to send them messages."
                     : 'Students must join your class roster before you can message them.'}
                 </p>
               </div>
