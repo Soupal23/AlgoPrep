@@ -51,7 +51,7 @@ export const Messages = () => {
   useEffect(() => {
     if (targetTeacherId && user?.role === 'student' && conversations.length >= 0) {
       const existing = conversations.find(
-        (c) => c.teacher?._id === targetTeacherId || c.teacher === targetTeacherId
+        (c) => c.partner?._id === targetTeacherId || c.partner === targetTeacherId
       );
       if (existing) {
         setActiveConv(existing);
@@ -226,8 +226,8 @@ export const Messages = () => {
     e.preventDefault();
     if (!newMessageText.trim() || !activeConv) return;
 
-    const recipient =
-      user.role === 'student' ? activeConv.teacher?._id : activeConv.student?._id;
+    const partner = getPartner(activeConv);
+    const recipient = partner?._id || partner;
 
     // Stop typing immediately
     stopTyping();
@@ -279,13 +279,8 @@ export const Messages = () => {
     setShowNewModal(true);
     setLoadingContacts(true);
     try {
-      if (user.role === 'student') {
-        const res = await api.getMyTeachers();
-        setContacts((res.teachers || []).map((m) => m.teacher));
-      } else if (user.role === 'teacher') {
-        const res = await api.getTeacherRoster();
-        setContacts((res.roster || []).map((m) => m.student));
-      }
+      const res = await api.getMessageContacts();
+      setContacts(res.contacts || []);
     } catch {
       setContacts([]);
     } finally {
@@ -296,17 +291,15 @@ export const Messages = () => {
   const startNewConversation = (contact) => {
     setShowNewModal(false);
     const existing = conversations.find(
-      (c) =>
-        (user.role === 'student' && c.teacher?._id === contact._id) ||
-        (user.role === 'teacher' && c.student?._id === contact._id)
+      (c) => c.partner?._id === contact._id
     );
     if (existing) {
       setActiveConv(existing);
     } else {
       const tempConv = {
         conversationId: `temp-${Date.now()}`,
-        student: user.role === 'student' ? user : contact,
-        teacher: user.role === 'teacher' ? user : contact,
+        partner: contact,
+        participants: [user, contact],
         lastMessageAt: new Date().toISOString()
       };
       setConversations([tempConv, ...conversations]);
@@ -316,7 +309,7 @@ export const Messages = () => {
   };
 
   // ── Helpers ──────────────────────────────────────────────────────────────
-  const getPartner = (conv) => (user.role === 'student' ? conv?.teacher : conv?.student);
+  const getPartner = (conv) => conv?.partner;
   const isPartnerOnline = (conv) => {
     const partner = getPartner(conv);
     if (!partner) return false;
@@ -335,7 +328,7 @@ export const Messages = () => {
           </div>
           <div>
             <h1 className="text-2xl font-extrabold text-white">Direct Messaging</h1>
-            <p className="text-xs text-slate-400">Private communication between enrolled students and instructors</p>
+            <p className="text-xs text-slate-400">Private communication between students, teachers, and admins</p>
           </div>
         </div>
 
@@ -559,7 +552,7 @@ export const Messages = () => {
               <MessageSquare className="w-12 h-12 mx-auto text-slate-700" />
               <p className="text-sm font-bold text-white">Select a Conversation</p>
               <p className="text-xs text-slate-400 max-w-xs mx-auto">
-                Choose an existing chat from the left sidebar or start a new message with your enrolled teachers.
+                Choose an existing chat from the left sidebar or start a new message.
               </p>
             </div>
           )}
@@ -588,7 +581,9 @@ export const Messages = () => {
                 <p className="text-[11px] text-slate-500">
                   {user.role === 'student'
                     ? "You must join a teacher's class first to send them messages."
-                    : 'Students must join your class roster before you can message them.'}
+                    : user.role === 'teacher'
+                    ? 'Students must join your class roster, or admins must be active, before you can message them.'
+                    : 'No active teachers found.'}
                 </p>
               </div>
             ) : (

@@ -150,7 +150,7 @@ export const AppContent = () => {
           <Route
             path="/messages"
             element={
-              <RoleRoute allowedRoles={['student', 'teacher']}>
+              <RoleRoute allowedRoles={['student', 'teacher', 'admin']}>
                 <Messages />
               </RoleRoute>
             }

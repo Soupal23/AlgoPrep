@@ -28,28 +28,42 @@ export const sendMessage = async (req, res, next) => {
       return;
     }
 
+    let convType;
     let studentId, teacherId;
-    if (sender.role === 'student' && recipient.role === 'teacher') {
-      studentId = senderId;
-      teacherId = recipientId;
-    } else if (sender.role === 'teacher' && recipient.role === 'student') {
-      teacherId = senderId;
-      studentId = recipientId;
+
+    if ((sender.role === 'student' && recipient.role === 'teacher') ||
+        (sender.role === 'teacher' && recipient.role === 'student')) {
+      convType = 'student-teacher';
+      studentId = sender.role === 'student' ? senderId : recipientId;
+      teacherId = sender.role === 'teacher' ? senderId : recipientId;
+    } else if ((sender.role === 'teacher' && recipient.role === 'admin') ||
+               (sender.role === 'admin' && recipient.role === 'teacher')) {
+      convType = 'teacher-admin';
     } else {
-      res.status(400).json({ error: 'Messages can only be exchanged between students and teachers' });
+      res.status(400).json({ error: 'Direct messaging is only allowed between students and teachers, or teachers and admins' });
       return;
     }
 
-    // Membership gating check
-    const membership = await Membership.findOne({ studentId, teacherId, status: 'active' });
-    if (!membership) {
-      res.status(403).json({ error: "Forbidden: You must join this teacher's class to send messages" });
-      return;
+    // Membership gating check (only for student-teacher conversations)
+    if (convType === 'student-teacher') {
+      const membership = await Membership.findOne({ studentId, teacherId, status: 'active' });
+      if (!membership) {
+        res.status(403).json({ error: "Forbidden: You must join this teacher's class to send messages" });
+        return;
+      }
     }
 
-    let conversation = await Conversation.findOne({ studentId, teacherId });
+    let conversation = await Conversation.findOne({
+      participants: { $all: [senderId, recipientId] },
+      type: convType
+    });
+
     if (!conversation) {
-      conversation = await Conversation.create({ studentId, teacherId, lastMessageAt: new Date() });
+      conversation = await Conversation.create({
+        participants: [senderId, recipientId],
+        type: convType,
+        lastMessageAt: new Date()
+      });
     } else {
       conversation.lastMessageAt = new Date();
       await conversation.save();
@@ -92,10 +106,9 @@ export const getConversations = async (req, res, next) => {
     const userId = req.user?.userId;
 
     const conversations = await Conversation.find({
-      $or: [{ studentId: userId }, { teacherId: userId }]
+      participants: userId
     })
-      .populate('studentId', 'name email avatarUrl role')
-      .populate('teacherId', 'name email avatarUrl role subjectFocus')
+      .populate('participants', 'name email avatarUrl role subjectFocus')
       .sort({ lastMessageAt: -1 });
 
     const result = await Promise.all(
@@ -104,11 +117,16 @@ export const getConversations = async (req, res, next) => {
           .sort({ createdAt: -1 })
           .select('content senderId readAt createdAt');
 
+        const partner = conv.participants.find(
+          (p) => p._id.toString() !== userId
+        );
+
         return {
           conversationId: conv._id,
+          type: conv.type,
           lastMessageAt: conv.lastMessageAt,
-          student: conv.studentId,
-          teacher: conv.teacherId,
+          participants: conv.participants,
+          partner,
           lastMessage: lastMsg
         };
       })
@@ -139,8 +157,9 @@ export const getConversationMessages = async (req, res, next) => {
       return;
     }
 
-    const isParticipant =
-      conversation.studentId.toString() === userId || conversation.teacherId.toString() === userId;
+    const isParticipant = conversation.participants.some(
+      (p) => p.toString() === userId
+    );
 
     if (!isParticipant) {
       res.status(403).json({ error: 'Forbidden: You are not a participant in this conversation' });
@@ -171,3 +190,36 @@ export const getConversationMessages = async (req, res, next) => {
     next(err);
   }
 };
+
+export const getContacts = async (req, res, next) => {
+  try {
+    const userId = req.user?.userId;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      res.status(404).json({ error: 'User not found' });
+      return;
+    }
+
+    let contacts = [];
+
+    if (user.role === 'student') {
+      const memberships = await Membership.find({ studentId: userId, status: 'active' })
+        .populate('teacherId', 'name email avatarUrl role subjectFocus');
+      contacts = memberships.map((m) => m.teacherId).filter(Boolean);
+    } else if (user.role === 'teacher') {
+      const memberships = await Membership.find({ teacherId: userId, status: 'active' })
+        .populate('studentId', 'name email avatarUrl role');
+      const students = memberships.map((m) => m.studentId).filter(Boolean);
+      const admins = await User.find({ role: 'admin', isActive: true }).select('name email avatarUrl role');
+      contacts = [...students, ...admins];
+    } else if (user.role === 'admin') {
+      contacts = await User.find({ role: 'teacher', isActive: true }).select('name email avatarUrl role subjectFocus');
+    }
+
+    res.json({ contacts });
+  } catch (err) {
+    next(err);
+  }
+};
+

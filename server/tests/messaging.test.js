@@ -28,7 +28,7 @@ beforeEach(async () => {
   await Message.deleteMany({});
 });
 
-describe('Phase 11 — Messaging (Teacher ↔ Student)', () => {
+describe('Phase 11 — Messaging (Teacher ↔ Student & Teacher ↔ Admin)', () => {
   it('should block non-member student from messaging teacher', async () => {
     const teacher = await User.create({
       name: 'Prof Newton',
@@ -119,7 +119,7 @@ describe('Phase 11 — Messaging (Teacher ↔ Student)', () => {
 
     expect(convListRes.status).toBe(200);
     expect(convListRes.body.conversations.length).toBe(1);
-    expect(convListRes.body.conversations[0].student.name).toBe('Student Enrolled');
+    expect(convListRes.body.conversations[0].partner.name).toBe('Student Enrolled');
 
     // 4. Student fetches messages history for the conversation
     const historyRes = await request(app)
@@ -135,4 +135,145 @@ describe('Phase 11 — Messaging (Teacher ↔ Student)', () => {
     const updatedTeacherMsg = await Message.findById(historyRes.body.messages[1]._id);
     expect(updatedTeacherMsg.readAt).not.toBeNull();
   });
+
+  it('should allow two-way messaging between teacher and admin without membership', async () => {
+    const teacher = await User.create({
+      name: 'Prof Newton',
+      email: 'newton@teacher.com',
+      password: 'password123',
+      role: 'teacher',
+      isActive: true
+    });
+
+    const admin = await User.create({
+      name: 'Admin Boss',
+      email: 'admin@algoprep.com',
+      password: 'password123',
+      role: 'admin',
+      isActive: true
+    });
+
+    const teacherToken = generateAccessToken({
+      userId: teacher._id.toString(),
+      email: teacher.email,
+      role: 'teacher',
+      isActive: true
+    });
+
+    const adminToken = generateAccessToken({
+      userId: admin._id.toString(),
+      email: admin.email,
+      role: 'admin',
+      isActive: true
+    });
+
+    // 1. Teacher messages Admin
+    const teacherMsgRes = await request(app)
+      .post('/api/messages')
+      .set('Authorization', `Bearer ${teacherToken}`)
+      .send({ recipientId: admin._id.toString(), content: 'Need assistance with classroom setup' });
+
+    expect(teacherMsgRes.status).toBe(201);
+    const conversationId = teacherMsgRes.body.conversationId;
+
+    // 2. Admin replies to Teacher
+    const adminMsgRes = await request(app)
+      .post('/api/messages')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ recipientId: teacher._id.toString(), content: 'I can help you set up the classroom.' });
+
+    expect(adminMsgRes.status).toBe(201);
+
+    // 3. Admin checks conversations
+    const adminConvsRes = await request(app)
+      .get('/api/messages/conversations')
+      .set('Authorization', `Bearer ${adminToken}`);
+
+    expect(adminConvsRes.status).toBe(200);
+    expect(adminConvsRes.body.conversations.length).toBe(1);
+    expect(adminConvsRes.body.conversations[0].partner.name).toBe('Prof Newton');
+  });
+
+  it('should block admin from messaging student directly', async () => {
+    const admin = await User.create({
+      name: 'Admin Boss',
+      email: 'admin@algoprep.com',
+      password: 'password123',
+      role: 'admin',
+      isActive: true
+    });
+
+    const student = await User.create({
+      name: 'Student One',
+      email: 'student1@algoprep.com',
+      password: 'password123',
+      role: 'student',
+      isActive: true
+    });
+
+    const adminToken = generateAccessToken({
+      userId: admin._id.toString(),
+      email: admin.email,
+      role: 'admin',
+      isActive: true
+    });
+
+    const res = await request(app)
+      .post('/api/messages')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ recipientId: student._id.toString(), content: 'Hello student' });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toContain('Direct messaging is only allowed');
+  });
+
+  it('should return correct contacts for each role via GET /api/messages/contacts', async () => {
+    const teacher = await User.create({
+      name: 'Teacher One',
+      email: 't1@test.com',
+      password: 'pass',
+      role: 'teacher',
+      isActive: true
+    });
+
+    const student = await User.create({
+      name: 'Student One',
+      email: 's1@test.com',
+      password: 'pass',
+      role: 'student',
+      isActive: true
+    });
+
+    const admin = await User.create({
+      name: 'Admin One',
+      email: 'a1@test.com',
+      password: 'pass',
+      role: 'admin',
+      isActive: true
+    });
+
+    await Membership.create({ studentId: student._id, teacherId: teacher._id });
+
+    const studentToken = generateAccessToken({ userId: student._id.toString(), role: 'student', isActive: true });
+    const teacherToken = generateAccessToken({ userId: teacher._id.toString(), role: 'teacher', isActive: true });
+    const adminToken = generateAccessToken({ userId: admin._id.toString(), role: 'admin', isActive: true });
+
+    // Student contacts -> teacher
+    const sRes = await request(app).get('/api/messages/contacts').set('Authorization', `Bearer ${studentToken}`);
+    expect(sRes.status).toBe(200);
+    expect(sRes.body.contacts.length).toBe(1);
+    expect(sRes.body.contacts[0].name).toBe('Teacher One');
+
+    // Teacher contacts -> student + admin
+    const tRes = await request(app).get('/api/messages/contacts').set('Authorization', `Bearer ${teacherToken}`);
+    expect(tRes.status).toBe(200);
+    expect(tRes.body.contacts.length).toBe(2);
+
+    // Admin contacts -> teacher
+    const aRes = await request(app).get('/api/messages/contacts').set('Authorization', `Bearer ${adminToken}`);
+    expect(aRes.status).toBe(200);
+    expect(aRes.body.contacts.length).toBe(1);
+    expect(aRes.body.contacts[0].name).toBe('Teacher One');
+  });
 });
+

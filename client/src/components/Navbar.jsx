@@ -126,6 +126,10 @@ export const Navbar = () => {
             <ShieldCheck className="w-4 h-4 text-rose-400" />
             <span>Admin Panel</span>
           </Link>
+          <Link to="/messages" className={linkClass('/messages')}>
+            <MessageSquare className="w-4 h-4 text-emerald-400" />
+            <span>Messages</span>
+          </Link>
           <Link to="/leaderboard" className={linkClass('/leaderboard')}>
             <Award className="w-4 h-4 text-yellow-400" />
             <span>Leaderboard</span>

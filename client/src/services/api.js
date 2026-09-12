@@ -265,6 +265,10 @@ class ApiService {
     return this.request('/messages/conversations');
   }
 
+  async getMessageContacts() {
+    return this.request('/messages/contacts');
+  }
+
   async getConversationMessages(conversationId, params = {}) {
     const query = new URLSearchParams();
     if (params.page) query.append('page', params.page);

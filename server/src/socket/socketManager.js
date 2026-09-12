@@ -88,8 +88,7 @@ export function initSocketServer(httpServer) {
         // Verify the user is a participant before allowing them to join
         const conv = await Conversation.findById(conversationId);
         if (!conv) return;
-        const isParticipant =
-          conv.studentId.toString() === userId || conv.teacherId.toString() === userId;
+        const isParticipant = conv.participants.some((p) => p.toString() === userId);
         if (!isParticipant) return;
 
         socket.join(`conv:${conversationId}`);
