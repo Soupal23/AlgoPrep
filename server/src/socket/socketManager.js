@@ -107,15 +107,21 @@ export function initSocketServer(httpServer) {
     });
 
     // ── typing_start ───────────────────────────────────────────────────────
-    socket.on('typing_start', ({ conversationId }) => {
-      if (!conversationId) return;
-      socket.to(`conv:${conversationId}`).emit('partner_typing', { conversationId, userId });
+    socket.on('typing_start', ({ conversationId, recipientId }) => {
+      if (conversationId && !String(conversationId).startsWith('temp-')) {
+        socket.to(`conv:${conversationId}`).emit('partner_typing', { conversationId, userId });
+      } else if (recipientId) {
+        io.to(`user:${recipientId}`).emit('partner_typing', { conversationId, userId });
+      }
     });
 
     // ── typing_stop ────────────────────────────────────────────────────────
-    socket.on('typing_stop', ({ conversationId }) => {
-      if (!conversationId) return;
-      socket.to(`conv:${conversationId}`).emit('partner_stopped_typing', { conversationId, userId });
+    socket.on('typing_stop', ({ conversationId, recipientId }) => {
+      if (conversationId && !String(conversationId).startsWith('temp-')) {
+        socket.to(`conv:${conversationId}`).emit('partner_stopped_typing', { conversationId, userId });
+      } else if (recipientId) {
+        io.to(`user:${recipientId}`).emit('partner_stopped_typing', { conversationId, userId });
+      }
     });
 
     // ── mark_read ──────────────────────────────────────────────────────────

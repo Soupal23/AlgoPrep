@@ -112,17 +112,37 @@ export const Messages = () => {
         return [conv, ...filtered].sort((a, b) => new Date(b.lastMessageAt) - new Date(a.lastMessageAt));
       });
 
+      // Auto-upgrade active conversation if it's currently a draft/temp chat for this partner
+      const currentActive = activeConvRef.current;
+      if (currentActive) {
+        const currentPartnerId = String(currentActive.partner?._id || currentActive.partner);
+        const convPartnerId = String(conv.partner?._id || conv.partner);
+        if (currentPartnerId === convPartnerId) {
+          setActiveConv(conv);
+        }
+      }
+
       socket.emit('join_conversation', { conversationId: conv.conversationId });
     };
 
-    const onPartnerTyping = ({ conversationId }) => {
-      if (String(conversationId) === String(activeConvRef.current?.conversationId)) {
+    const onPartnerTyping = ({ conversationId, userId }) => {
+      const currentActive = activeConvRef.current;
+      const activePartnerId = String(currentActive?.partner?._id || currentActive?.partner);
+      if (
+        (conversationId && String(conversationId) === String(currentActive?.conversationId)) ||
+        (userId && String(userId) === activePartnerId)
+      ) {
         setPartnerTyping(true);
       }
     };
 
-    const onPartnerStoppedTyping = ({ conversationId }) => {
-      if (String(conversationId) === String(activeConvRef.current?.conversationId)) {
+    const onPartnerStoppedTyping = ({ conversationId, userId }) => {
+      const currentActive = activeConvRef.current;
+      const activePartnerId = String(currentActive?.partner?._id || currentActive?.partner);
+      if (
+        (conversationId && String(conversationId) === String(currentActive?.conversationId)) ||
+        (userId && String(userId) === activePartnerId)
+      ) {
         setPartnerTyping(false);
       }
     };
@@ -320,17 +340,28 @@ export const Messages = () => {
   const stopTyping = useCallback(() => {
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     if (isTypingRef.current && socket && activeConvRef.current) {
-      socket.emit('typing_stop', { conversationId: activeConvRef.current.conversationId });
+      const partner = activeConvRef.current.partner;
+      const recipientId = partner?._id || partner;
+      socket.emit('typing_stop', {
+        conversationId: activeConvRef.current.conversationId,
+        recipientId
+      });
       isTypingRef.current = false;
     }
   }, [socket]);
 
   const handleInputChange = (e) => {
     setNewMessageText(e.target.value);
-    if (!socket || !activeConv || String(activeConv.conversationId).startsWith('temp-')) return;
+    if (!socket || !activeConv) return;
+
+    const partner = getPartner(activeConv);
+    const recipientId = partner?._id || partner;
 
     if (!isTypingRef.current) {
-      socket.emit('typing_start', { conversationId: activeConv.conversationId });
+      socket.emit('typing_start', {
+        conversationId: activeConv.conversationId,
+        recipientId
+      });
       isTypingRef.current = true;
     }
     // Reset debounce timer
