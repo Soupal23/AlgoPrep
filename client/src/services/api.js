@@ -68,11 +68,11 @@ class ApiService {
           });
         } else {
           this.clearTokens();
-          window.location.href = '/login';
+          window.location.href = '/';
         }
       } catch (err) {
         this.clearTokens();
-        window.location.href = '/login';
+        window.location.href = '/';
       }
     }
 

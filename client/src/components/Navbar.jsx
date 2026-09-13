@@ -24,7 +24,7 @@ export const Navbar = () => {
 
   const handleLogout = async () => {
     await logout();
-    navigate('/login');
+    navigate('/');
   };
 
   const isActive = (path) => location.pathname === path;
@@ -208,18 +208,6 @@ export const Navbar = () => {
             >
               <Briefcase className="w-4 h-4" />
               <span>Teach Here</span>
-            </Link>
-            <Link
-              to="/login"
-              className="text-xs sm:text-sm font-medium text-[#9f99b0] hover:text-[#f0eef5] transition-colors"
-            >
-              Log in
-            </Link>
-            <Link
-              to="/register"
-              className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm transition-colors"
-            >
-              Get Started
             </Link>
           </div>
         )}

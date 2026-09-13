@@ -6,7 +6,7 @@ export const RoleRoute = ({ children, allowedRoles }) => {
   const { user, isAuthenticated } = useAuth();
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
 
   const role = user?.role || 'student';
