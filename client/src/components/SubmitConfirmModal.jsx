@@ -25,8 +25,8 @@ export const SubmitConfirmModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0a0a0f]/90 backdrop-blur-md animate-fadeIn">
-      <div className="glass-panel max-w-lg w-full rounded-2xl p-6 border border-[#2a2240] shadow-xl bg-[#14111f]">
-        <div className="flex items-center gap-3 mb-4 pb-3 border-b border-[#2a2240]">
+      <div className="glass-panel max-w-lg w-full rounded-2xl p-6 border border-[#383050] shadow-xl bg-[#14111f]">
+        <div className="flex items-center gap-3 mb-4 pb-3 border-b border-[#383050]">
           <div className="p-2.5 rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
             <Send className="w-6 h-6" />
           </div>
@@ -37,19 +37,19 @@ export const SubmitConfirmModal = ({
         </div>
 
         <div className="grid grid-cols-3 gap-3 mb-6">
-          <div className="bg-[#1c1729] rounded-xl p-3 border border-[#2a2240] text-center">
+          <div className="bg-[#1c1729] rounded-xl p-3 border border-[#383050] text-center">
             <CheckCircle2 className="w-5 h-5 text-emerald-400 mx-auto mb-1" />
             <div className="text-xs text-[#9f99b0]">Answered</div>
             <div className="text-lg font-mono font-bold text-emerald-400">{answeredCount}</div>
           </div>
 
-          <div className="bg-[#1c1729] rounded-xl p-3 border border-[#2a2240] text-center">
+          <div className="bg-[#1c1729] rounded-xl p-3 border border-[#383050] text-center">
             <Bookmark className="w-5 h-5 text-purple-400 mx-auto mb-1" />
             <div className="text-xs text-[#9f99b0]">Marked</div>
             <div className="text-lg font-mono font-bold text-purple-400">{markedCount}</div>
           </div>
 
-          <div className="bg-[#1c1729] rounded-xl p-3 border border-[#2a2240] text-center">
+          <div className="bg-[#1c1729] rounded-xl p-3 border border-[#383050] text-center">
             <HelpCircle className="w-5 h-5 text-rose-400 mx-auto mb-1" />
             <div className="text-xs text-[#9f99b0]">Unattempted</div>
             <div className="text-lg font-mono font-bold text-rose-400">{unattemptedCount}</div>

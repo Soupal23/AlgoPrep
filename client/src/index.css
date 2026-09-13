@@ -13,13 +13,13 @@
   background: #14111f;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid #2a2240;
+  border: 1px solid #383050;
 }
 
 .glass-card {
   background: #1c1729;
   backdrop-filter: blur(8px);
-  border: 1px solid #2a2240;
+  border: 1px solid #383050;
 }
 
 /* Custom Scrollbars */

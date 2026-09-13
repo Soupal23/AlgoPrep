@@ -32,7 +32,7 @@ export const Navbar = () => {
   const linkClass = (path) =>
     `flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
       isActive(path)
-        ? 'bg-[#251e35] text-indigo-400 font-semibold border border-[#2a2240]'
+        ? 'bg-[#251e35] text-indigo-400 font-semibold border border-[#383050]'
         : 'text-[#9f99b0] hover:text-[#f0eef5] hover:bg-[#1c1729]'
     }`;
 
@@ -167,7 +167,7 @@ export const Navbar = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-[#2a2240] bg-[#14111f]/95 backdrop-blur-md">
+    <header className="sticky top-0 z-40 w-full border-b border-[#383050] bg-[#14111f]/95 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3 shrink-0">
           <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-sm">
@@ -185,7 +185,7 @@ export const Navbar = () => {
           <nav className="flex items-center gap-1 sm:gap-3 overflow-x-auto py-1">
             {renderNavLinks()}
 
-            <div className="h-4 w-px bg-[#2a2240] mx-1 shrink-0" />
+            <div className="h-4 w-px bg-[#383050] mx-1 shrink-0" />
 
             <div className="flex items-center gap-2 pl-1 shrink-0">
               <span className="hidden lg:inline-block text-xs font-mono text-[#9f99b0]">
@@ -204,7 +204,7 @@ export const Navbar = () => {
           <div className="flex items-center gap-3 sm:gap-4">
             <Link
               to="/teach-here"
-              className="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-purple-400 hover:text-purple-300 px-3 py-1.5 rounded-lg bg-[#1c1729] border border-[#2a2240] transition-colors"
+              className="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-purple-400 hover:text-purple-300 px-3 py-1.5 rounded-lg bg-[#1c1729] border border-[#383050] transition-colors"
             >
               <Briefcase className="w-4 h-4" />
               <span>Teach Here</span>

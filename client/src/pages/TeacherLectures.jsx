@@ -85,9 +85,9 @@ export const TeacherLectures = () => {
   return (
     <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
       {/* Header */}
-      <div className="bg-[#14111f] rounded-3xl p-8 border border-[#2a2240] space-y-2 shadow-xl">
+      <div className="bg-[#14111f] rounded-3xl p-8 border border-[#383050] space-y-2 shadow-xl">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#1c1729] border border-[#2a2240] flex items-center justify-center text-purple-400">
+          <div className="w-10 h-10 rounded-xl bg-[#1c1729] border border-[#383050] flex items-center justify-center text-purple-400">
             <Video className="w-5 h-5" />
           </div>
           <div>
@@ -110,7 +110,7 @@ export const TeacherLectures = () => {
       )}
 
       {/* Upload Form */}
-      <div className="bg-[#14111f] rounded-3xl p-8 border border-[#2a2240] shadow-xl space-y-6">
+      <div className="bg-[#14111f] rounded-3xl p-8 border border-[#383050] shadow-xl space-y-6">
         <h2 className="text-lg font-bold text-white flex items-center gap-2">
           <Plus className="w-5 h-5 text-purple-400" />
           <span>Publish New Video Lecture</span>
@@ -124,7 +124,7 @@ export const TeacherLectures = () => {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Masterclass: Dynamic Programming & Memoization"
-              className="w-full px-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#2a2240] text-white text-sm focus:outline-none focus:border-purple-400"
+              className="w-full px-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#383050] text-white text-sm focus:outline-none focus:border-purple-400"
               required
             />
           </div>
@@ -136,7 +136,7 @@ export const TeacherLectures = () => {
               value={videoUrl}
               onChange={(e) => setVideoUrl(e.target.value)}
               placeholder="https://www.youtube.com/watch?v=... or https://drive.google.com/file/d/.../view"
-              className="w-full px-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#2a2240] text-white text-sm focus:outline-none focus:border-purple-400"
+              className="w-full px-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#383050] text-white text-sm focus:outline-none focus:border-purple-400"
               required
             />
             <p className="text-[11px] text-slate-500 mt-1">
@@ -151,7 +151,7 @@ export const TeacherLectures = () => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Brief overview of key concepts covered in this recording..."
-              className="w-full px-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#2a2240] text-white text-sm focus:outline-none focus:border-purple-400"
+              className="w-full px-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#383050] text-white text-sm focus:outline-none focus:border-purple-400"
             />
           </div>
 
@@ -175,7 +175,7 @@ export const TeacherLectures = () => {
         {loading ? (
           <div className="p-12 text-center text-xs font-mono text-slate-400">Loading lectures...</div>
         ) : lectures.length === 0 ? (
-          <div className="bg-[#14111f] rounded-3xl p-8 text-center text-xs text-slate-500 border border-[#2a2240]">
+          <div className="bg-[#14111f] rounded-3xl p-8 text-center text-xs text-slate-500 border border-[#383050]">
             No video lectures published yet. Submit a YouTube or Google Drive link above.
           </div>
         ) : (
@@ -183,10 +183,10 @@ export const TeacherLectures = () => {
             {lectures.map((item) => (
               <div
                 key={item._id}
-                className="bg-[#14111f] rounded-2xl p-6 border border-[#2a2240] hover:border-purple-400/50 transition-all space-y-4 flex flex-col justify-between shadow-lg"
+                className="bg-[#14111f] rounded-2xl p-6 border border-[#383050] hover:border-purple-400/50 transition-all space-y-4 flex flex-col justify-between shadow-lg"
               >
                 <div className="space-y-3">
-                  <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black border border-[#2a2240]">
+                  <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black border border-[#383050]">
                     <iframe
                       src={item.embedUrl}
                       title={item.title}
@@ -207,13 +207,13 @@ export const TeacherLectures = () => {
                   </div>
 
                   {item.description && (
-                    <p className="text-xs text-slate-300 line-clamp-2 bg-[#1c1729] p-3 rounded-xl border border-[#2a2240]">
+                    <p className="text-xs text-slate-300 line-clamp-2 bg-[#1c1729] p-3 rounded-xl border border-[#383050]">
                       {item.description}
                     </p>
                   )}
                 </div>
 
-                <div className="pt-2 border-t border-[#2a2240] flex items-center justify-between text-[11px] font-mono text-slate-400">
+                <div className="pt-2 border-t border-[#383050] flex items-center justify-between text-[11px] font-mono text-slate-400">
                   <span>Uploaded {new Date(item.uploadedAt).toLocaleDateString()}</span>
                   <a
                     href={item.videoUrl}

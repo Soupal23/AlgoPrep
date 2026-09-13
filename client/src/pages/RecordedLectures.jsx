@@ -33,9 +33,9 @@ export const RecordedLectures = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
       {/* Header */}
-      <div className="bg-[#14111f] rounded-3xl p-8 border border-[#2a2240] space-y-2 shadow-xl">
+      <div className="bg-[#14111f] rounded-3xl p-8 border border-[#383050] space-y-2 shadow-xl">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#1c1729] border border-[#2a2240] flex items-center justify-center text-purple-400">
+          <div className="w-10 h-10 rounded-xl bg-[#1c1729] border border-[#383050] flex items-center justify-center text-purple-400">
             <Video className="w-5 h-5" />
           </div>
           <div>
@@ -57,8 +57,8 @@ export const RecordedLectures = () => {
           <p className="text-xs font-mono text-slate-400">Loading recorded lectures...</p>
         </div>
       ) : lectures.length === 0 ? (
-        <div className="bg-[#14111f] rounded-3xl p-12 text-center space-y-4 shadow-xl border border-[#2a2240]">
-          <div className="w-16 h-16 rounded-2xl bg-[#1c1729] border border-[#2a2240] flex items-center justify-center text-slate-500 mx-auto">
+        <div className="bg-[#14111f] rounded-3xl p-12 text-center space-y-4 shadow-xl border border-[#383050]">
+          <div className="w-16 h-16 rounded-2xl bg-[#1c1729] border border-[#383050] flex items-center justify-center text-slate-500 mx-auto">
             <Video className="w-8 h-8" />
           </div>
           <div className="space-y-1">
@@ -78,8 +78,8 @@ export const RecordedLectures = () => {
           {/* Main Video Player */}
           <div className="lg:col-span-2 space-y-4">
             {activeLecture ? (
-              <div className="bg-[#14111f] rounded-3xl p-6 border border-[#2a2240] space-y-4 shadow-xl">
-                <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black border border-[#2a2240] shadow-2xl">
+              <div className="bg-[#14111f] rounded-3xl p-6 border border-[#383050] space-y-4 shadow-xl">
+                <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black border border-[#383050] shadow-2xl">
                   <iframe
                     src={activeLecture.embedUrl}
                     title={activeLecture.title}
@@ -91,7 +91,7 @@ export const RecordedLectures = () => {
 
                 <div className="space-y-2 pt-2">
                   <div className="flex items-center justify-between gap-4">
-                    <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-[#1c1729] text-purple-300 border border-[#2a2240]">
+                    <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-[#1c1729] text-purple-300 border border-[#383050]">
                       Teacher: {activeLecture.teacherId?.name || 'Instructor'}
                     </span>
                     <span className="text-[10px] font-mono text-slate-400 flex items-center gap-1">
@@ -102,7 +102,7 @@ export const RecordedLectures = () => {
 
                   <h2 className="text-xl font-extrabold text-white">{activeLecture.title}</h2>
                   {activeLecture.description && (
-                    <p className="text-xs text-slate-300 bg-[#1c1729] p-4 rounded-xl border border-[#2a2240] leading-relaxed">
+                    <p className="text-xs text-slate-300 bg-[#1c1729] p-4 rounded-xl border border-[#383050] leading-relaxed">
                       {activeLecture.description}
                     </p>
                   )}
@@ -128,7 +128,7 @@ export const RecordedLectures = () => {
                     className={`w-full text-left p-4 rounded-2xl border transition-all flex items-start gap-3 ${
                       isSelected
                         ? 'bg-[#1c1729] border-purple-400 text-white shadow-md'
-                        : 'bg-[#14111f] border-[#2a2240] hover:border-slate-700'
+                        : 'bg-[#14111f] border-[#383050] hover:border-slate-700'
                     }`}
                   >
                     <PlayCircle className={`w-5 h-5 shrink-0 mt-0.5 ${isSelected ? 'text-purple-400' : 'text-slate-500'}`} />

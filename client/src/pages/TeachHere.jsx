@@ -47,9 +47,9 @@ export const TeachHere = () => {
         <span>Back to Home</span>
       </Link>
 
-      <div className="bg-[#14111f] rounded-3xl p-8 border border-[#2a2240] space-y-3 shadow-xl">
+      <div className="bg-[#14111f] rounded-3xl p-8 border border-[#383050] space-y-3 shadow-xl">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-[#1c1729] border border-[#2a2240] flex items-center justify-center text-purple-400 shadow-lg">
+          <div className="w-12 h-12 rounded-2xl bg-[#1c1729] border border-[#383050] flex items-center justify-center text-purple-400 shadow-lg">
             <Briefcase className="w-6 h-6" />
           </div>
           <div>
@@ -66,7 +66,7 @@ export const TeachHere = () => {
       )}
 
       {submitted ? (
-        <div className="bg-[#14111f] rounded-3xl p-12 text-center space-y-6 shadow-2xl border border-[#2a2240]">
+        <div className="bg-[#14111f] rounded-3xl p-12 text-center space-y-6 shadow-2xl border border-[#383050]">
           <div className="w-16 h-16 rounded-2xl bg-emerald-950 border border-emerald-700 flex items-center justify-center text-emerald-400 mx-auto shadow-lg">
             <CheckCircle2 className="w-8 h-8" />
           </div>
@@ -76,7 +76,7 @@ export const TeachHere = () => {
               Thank you for applying to teach on AlgoPrep. Our administrative team will review your resume and email <strong className="text-purple-400 font-mono">{email}</strong> once your account is approved.
             </p>
           </div>
-          <div className="pt-4 border-t border-[#2a2240] flex justify-center gap-4">
+          <div className="pt-4 border-t border-[#383050] flex justify-center gap-4">
             <Link
               to="/login"
               className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md transition-colors"
@@ -86,7 +86,7 @@ export const TeachHere = () => {
           </div>
         </div>
       ) : (
-        <div className="bg-[#14111f] rounded-3xl p-8 border border-[#2a2240] shadow-xl space-y-6">
+        <div className="bg-[#14111f] rounded-3xl p-8 border border-[#383050] shadow-xl space-y-6">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
@@ -96,7 +96,7 @@ export const TeachHere = () => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g. Dr. Donald Knuth"
-                  className="w-full px-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#2a2240] text-white text-sm focus:outline-none focus:border-purple-400"
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#383050] text-white text-sm focus:outline-none focus:border-purple-400"
                   required
                 />
               </div>
@@ -108,7 +108,7 @@ export const TeachHere = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="knuth@university.edu"
-                  className="w-full px-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#2a2240] text-white text-sm focus:outline-none focus:border-purple-400"
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#383050] text-white text-sm focus:outline-none focus:border-purple-400"
                   required
                 />
               </div>
@@ -121,7 +121,7 @@ export const TeachHere = () => {
                 value={subjectFocus}
                 onChange={(e) => setSubjectFocus(e.target.value)}
                 placeholder="e.g. Data Structures, Algorithms, Operating Systems"
-                className="w-full px-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#2a2240] text-white text-sm focus:outline-none focus:border-purple-400"
+                className="w-full px-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#383050] text-white text-sm focus:outline-none focus:border-purple-400"
                 required
               />
             </div>
@@ -133,13 +133,13 @@ export const TeachHere = () => {
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
                 placeholder="Tell us about your computer science background and teaching experience..."
-                className="w-full px-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#2a2240] text-white text-sm focus:outline-none focus:border-purple-400"
+                className="w-full px-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#383050] text-white text-sm focus:outline-none focus:border-purple-400"
               />
             </div>
 
             <div>
               <label className="block text-xs font-mono text-slate-400 mb-2">Upload Resume / CV (.pdf, .doc, .docx, .txt) *</label>
-              <div className="p-6 rounded-2xl bg-[#1c1729] border border-dashed border-[#2a2240] text-center space-y-3">
+              <div className="p-6 rounded-2xl bg-[#1c1729] border border-dashed border-[#383050] text-center space-y-3">
                 <FileText className="w-8 h-8 text-purple-400 mx-auto" />
                 <div>
                   <label

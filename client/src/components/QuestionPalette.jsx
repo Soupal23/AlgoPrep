@@ -26,7 +26,7 @@ export const QuestionPalette = ({
         break;
       case 'unvisited':
       default:
-        base = 'bg-[#251e35] border-[#2a2240] text-[#9f99b0] hover:bg-[#3a2f50]';
+        base = 'bg-[#251e35] border-[#383050] text-[#9f99b0] hover:bg-[#3a2f50]';
         break;
     }
 
@@ -46,8 +46,8 @@ export const QuestionPalette = ({
   );
 
   return (
-    <div className="glass-card rounded-2xl p-5 border border-[#2a2240] bg-[#1c1729] flex flex-col h-full">
-      <h3 className="text-sm font-semibold text-[#f0eef5] uppercase tracking-wider mb-4 pb-2 border-b border-[#2a2240] flex items-center justify-between">
+    <div className="glass-card rounded-2xl p-5 border border-[#383050] bg-[#1c1729] flex flex-col h-full">
+      <h3 className="text-sm font-semibold text-[#f0eef5] uppercase tracking-wider mb-4 pb-2 border-b border-[#383050] flex items-center justify-between">
         <span>Question Palette</span>
         <span className="text-xs font-mono text-purple-400">{questions.length} Questions</span>
       </h3>
@@ -78,7 +78,7 @@ export const QuestionPalette = ({
         })}
       </div>
 
-      <div className="mt-auto pt-4 border-t border-[#2a2240] space-y-2 text-xs">
+      <div className="mt-auto pt-4 border-t border-[#383050] space-y-2 text-xs">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="w-3 h-3 rounded-full bg-emerald-500 border border-emerald-400" />
@@ -115,7 +115,7 @@ export const QuestionPalette = ({
 
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-[#251e35] border border-[#2a2240]" />
+            <span className="w-3 h-3 rounded-full bg-[#251e35] border border-[#383050]" />
             <span className="text-[#6b6380]">Not Visited</span>
           </div>
           <span className="font-mono font-semibold text-[#6b6380]">{counts.unvisited}</span>

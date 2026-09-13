@@ -257,11 +257,11 @@ export const TestTaking = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-      <div className="bg-[#14111f] rounded-2xl p-4 sm:p-5 border border-[#2a2240] flex flex-wrap items-center justify-between gap-4 shadow-xl">
+      <div className="bg-[#14111f] rounded-2xl p-4 sm:p-5 border border-[#383050] flex flex-wrap items-center justify-between gap-4 shadow-xl">
         <div>
           <h1 className="text-xl font-extrabold text-white flex items-center gap-2">
             <span>{test.title}</span>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-[#1c1729] text-purple-400 border border-[#2a2240] font-mono">
+            <span className="text-xs px-2 py-0.5 rounded-full bg-[#1c1729] text-purple-400 border border-[#383050] font-mono">
               {test.topic}
             </span>
           </h1>
@@ -272,7 +272,7 @@ export const TestTaking = () => {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="hidden sm:flex items-center gap-1.5 text-xs text-slate-400 font-mono bg-[#1c1729] px-3 py-1.5 rounded-lg border border-[#2a2240]">
+          <div className="hidden sm:flex items-center gap-1.5 text-xs text-slate-400 font-mono bg-[#1c1729] px-3 py-1.5 rounded-lg border border-[#383050]">
             <Save className={`w-3.5 h-3.5 ${savingStatus === 'saving' ? 'text-amber-400 animate-spin' : 'text-purple-400'}`} />
             <span>
               {savingStatus === 'saving' ? 'Saving...' : savingStatus === 'saved' ? 'Saved' : 'Auto-Sync Active'}
@@ -300,9 +300,9 @@ export const TestTaking = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         <div className="lg:col-span-8 space-y-6">
-          <div className="bg-[#14111f] rounded-2xl p-6 sm:p-8 border border-[#2a2240] min-h-[420px] flex flex-col justify-between shadow-2xl">
+          <div className="bg-[#14111f] rounded-2xl p-6 sm:p-8 border border-[#383050] min-h-[420px] flex flex-col justify-between shadow-2xl">
             <div>
-              <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#2a2240]">
+              <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#383050]">
                 <span className="text-xs font-mono font-bold text-purple-400 uppercase tracking-wider">
                   Question {currentIndex + 1} of {questions.length}
                 </span>
@@ -329,12 +329,12 @@ export const TestTaking = () => {
                       className={`w-full p-4 rounded-xl text-left text-sm font-medium transition-all flex items-start gap-3 border ${
                         isSelected
                           ? 'bg-[#1c1729] border-purple-400 text-white ring-1 ring-purple-400 shadow-md'
-                          : 'bg-[#1c1729]/50 border-[#2a2240] text-slate-300 hover:bg-[#1c1729] hover:border-slate-700'
+                          : 'bg-[#1c1729]/50 border-[#383050] text-slate-300 hover:bg-[#1c1729] hover:border-slate-700'
                       }`}
                     >
                       <span
                         className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs font-mono shrink-0 transition-colors ${
-                          isSelected ? 'bg-purple-500 text-white font-bold' : 'bg-[#1c1729] text-slate-400 border border-[#2a2240]'
+                          isSelected ? 'bg-purple-500 text-white font-bold' : 'bg-[#1c1729] text-slate-400 border border-[#383050]'
                         }`}
                       >
                         {String.fromCharCode(65 + optIdx)}
@@ -346,7 +346,7 @@ export const TestTaking = () => {
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-6 mt-8 border-t border-[#2a2240]">
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-6 mt-8 border-t border-[#383050]">
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleClearAnswer}
@@ -362,7 +362,7 @@ export const TestTaking = () => {
                   className={`px-3.5 py-2 rounded-xl text-xs font-semibold border transition-colors flex items-center gap-1.5 ${
                     isMarked
                       ? 'bg-purple-950 border-purple-800 text-purple-300'
-                      : 'bg-[#1c1729] border-[#2a2240] text-purple-400 hover:bg-purple-950/50'
+                      : 'bg-[#1c1729] border-[#383050] text-purple-400 hover:bg-purple-950/50'
                   }`}
                 >
                   <Bookmark className="w-3.5 h-3.5" />
@@ -374,7 +374,7 @@ export const TestTaking = () => {
                 <button
                   onClick={handlePrev}
                   disabled={currentIndex === 0}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold bg-[#1c1729] border border-[#2a2240] text-slate-300 hover:bg-[#251e35] disabled:opacity-40 transition-colors flex items-center gap-1"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold bg-[#1c1729] border border-[#383050] text-slate-300 hover:bg-[#251e35] disabled:opacity-40 transition-colors flex items-center gap-1"
                 >
                   <ChevronLeft className="w-4 h-4" />
                   <span>Previous</span>

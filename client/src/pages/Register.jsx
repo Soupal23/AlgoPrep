@@ -37,7 +37,7 @@ export const Register = () => {
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4">
-      <div className="glass-panel max-w-md w-full rounded-3xl p-8 border border-[#2a2240] bg-[#14111f] shadow-xl">
+      <div className="glass-panel max-w-md w-full rounded-3xl p-8 border border-[#383050] bg-[#14111f] shadow-xl">
         <div className="text-center mb-8">
           <div className="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center mx-auto mb-4 shadow-sm">
             <Terminal className="w-6 h-6 text-white" />
@@ -57,7 +57,7 @@ export const Register = () => {
             <label className="block text-xs font-semibold uppercase tracking-wider text-[#9f99b0] mb-2">
               I am registering as:
             </label>
-            <div className="grid grid-cols-2 gap-3 p-1 rounded-xl bg-[#1c1729] border border-[#2a2240]">
+            <div className="grid grid-cols-2 gap-3 p-1 rounded-xl bg-[#1c1729] border border-[#383050]">
               <button
                 type="button"
                 onClick={() => setRole('student')}
@@ -105,7 +105,7 @@ export const Register = () => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Jane Doe"
-                className="w-full pl-11 pr-4 py-3 rounded-xl bg-[#1c1729] border border-[#2a2240] text-[#f0eef5] text-sm focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400 transition-colors"
+                className="w-full pl-11 pr-4 py-3 rounded-xl bg-[#1c1729] border border-[#383050] text-[#f0eef5] text-sm focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400 transition-colors"
               />
             </div>
           </div>
@@ -122,7 +122,7 @@ export const Register = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="jane@example.com"
-                className="w-full pl-11 pr-4 py-3 rounded-xl bg-[#1c1729] border border-[#2a2240] text-[#f0eef5] text-sm focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400 transition-colors"
+                className="w-full pl-11 pr-4 py-3 rounded-xl bg-[#1c1729] border border-[#383050] text-[#f0eef5] text-sm focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400 transition-colors"
               />
             </div>
           </div>
@@ -139,7 +139,7 @@ export const Register = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="At least 6 characters"
-                className="w-full pl-11 pr-4 py-3 rounded-xl bg-[#1c1729] border border-[#2a2240] text-[#f0eef5] text-sm focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400 transition-colors"
+                className="w-full pl-11 pr-4 py-3 rounded-xl bg-[#1c1729] border border-[#383050] text-[#f0eef5] text-sm focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400 transition-colors"
               />
             </div>
           </div>
@@ -154,7 +154,7 @@ export const Register = () => {
           </button>
         </form>
 
-        <div className="mt-6 pt-6 border-t border-[#2a2240] text-center space-y-2">
+        <div className="mt-6 pt-6 border-t border-[#383050] text-center space-y-2">
           <p className="text-xs text-[#9f99b0]">
             Already have an account?{' '}
             <Link to="/login" className="text-indigo-400 font-semibold hover:underline">

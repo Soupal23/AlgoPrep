@@ -413,9 +413,9 @@ export const Messages = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-6">
       {/* Header */}
-      <div className="bg-[#14111f] rounded-3xl p-6 border border-[#2a2240] flex items-center justify-between shadow-xl">
+      <div className="bg-[#14111f] rounded-3xl p-6 border border-[#383050] flex items-center justify-between shadow-xl">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#1c1729] border border-[#2a2240] flex items-center justify-center text-purple-400">
+          <div className="w-10 h-10 rounded-xl bg-[#1c1729] border border-[#383050] flex items-center justify-center text-purple-400">
             <MessageSquare className="w-5 h-5" />
           </div>
           <div>
@@ -430,7 +430,7 @@ export const Messages = () => {
             className={`flex items-center gap-1.5 text-[10px] font-mono px-2.5 py-1 rounded-full border transition-colors ${
               isConnected
                 ? 'bg-emerald-950 border-emerald-800 text-emerald-400'
-                : 'bg-[#1c1729] border-[#2a2240] text-slate-500'
+                : 'bg-[#1c1729] border-[#383050] text-slate-500'
             }`}
           >
             {isConnected ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
@@ -455,14 +455,14 @@ export const Messages = () => {
       )}
 
       {/* Main Grid */}
-      <div className="bg-[#14111f] rounded-3xl border border-[#2a2240] overflow-hidden grid grid-cols-1 md:grid-cols-3 min-h-[550px] shadow-2xl">
+      <div className="bg-[#14111f] rounded-3xl border border-[#383050] overflow-hidden grid grid-cols-1 md:grid-cols-3 min-h-[550px] shadow-2xl">
         {/* Sidebar */}
-        <div className="border-b md:border-b-0 md:border-r border-[#2a2240] flex flex-col bg-[#14111f]">
-          <div className="p-4 border-b border-[#2a2240] flex items-center justify-between">
+        <div className="border-b md:border-b-0 md:border-r border-[#383050] flex flex-col bg-[#14111f]">
+          <div className="p-4 border-b border-[#383050] flex items-center justify-between">
             <span className="text-xs font-bold font-mono text-slate-300 uppercase tracking-wider">Conversations</span>
           </div>
 
-          <div className="flex-1 overflow-y-auto divide-y divide-[#2a2240]/40">
+          <div className="flex-1 overflow-y-auto divide-y divide-[#383050]/40">
             {loadingConvs ? (
               <div className="p-8 text-center text-xs font-mono text-slate-400">Loading chats...</div>
             ) : conversations.length === 0 ? (
@@ -492,7 +492,7 @@ export const Messages = () => {
                   >
                     {/* Avatar with online dot */}
                     <div className="relative shrink-0">
-                      <div className="w-10 h-10 rounded-xl overflow-hidden bg-[#1c1729] border border-[#2a2240] flex items-center justify-center text-purple-300 text-sm font-bold">
+                      <div className="w-10 h-10 rounded-xl overflow-hidden bg-[#1c1729] border border-[#383050] flex items-center justify-center text-purple-300 text-sm font-bold">
                         {partner?.avatarUrl ? (
                           <img src={`/${partner.avatarUrl}`} alt={partner.name} className="w-full h-full object-cover" />
                         ) : (
@@ -540,7 +540,7 @@ export const Messages = () => {
           {activeConv ? (
             <>
               {/* Partner Top Bar */}
-              <div className="p-4 border-b border-[#2a2240] flex items-center justify-between bg-[#14111f]">
+              <div className="p-4 border-b border-[#383050] flex items-center justify-between bg-[#14111f]">
                 {(() => {
                   const partner = getPartner(activeConv);
                   const online = isPartnerOnline(activeConv);
@@ -548,7 +548,7 @@ export const Messages = () => {
                     <>
                       <div className="flex items-center gap-3">
                         <div className="relative">
-                          <div className="w-9 h-9 rounded-xl overflow-hidden bg-[#1c1729] border border-[#2a2240] flex items-center justify-center text-purple-300 text-xs font-bold">
+                          <div className="w-9 h-9 rounded-xl overflow-hidden bg-[#1c1729] border border-[#383050] flex items-center justify-center text-purple-300 text-xs font-bold">
                             {partner?.avatarUrl ? (
                               <img src={`/${partner.avatarUrl}`} alt={partner.name} className="w-full h-full object-cover" />
                             ) : (
@@ -575,7 +575,7 @@ export const Messages = () => {
                       <button
                         onClick={() => setActiveConv(null)}
                         title="Close chat"
-                        className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-[#1c1729] border border-transparent hover:border-[#2a2240] transition-all flex items-center gap-1.5 text-xs font-mono"
+                        className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-[#1c1729] border border-transparent hover:border-[#383050] transition-all flex items-center gap-1.5 text-xs font-mono"
                       >
                         <X className="w-4 h-4" />
                         <span className="text-[11px] font-medium hidden sm:inline">Close</span>
@@ -602,7 +602,7 @@ export const Messages = () => {
                           className={`max-w-[75%] p-3.5 rounded-2xl text-xs space-y-1 ${
                             isMe
                               ? 'bg-indigo-600 text-white rounded-br-none shadow-md'
-                              : 'bg-[#1c1729] text-slate-200 border border-[#2a2240] rounded-bl-none'
+                              : 'bg-[#1c1729] text-slate-200 border border-[#383050] rounded-bl-none'
                           }`}
                         >
                           <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
@@ -625,7 +625,7 @@ export const Messages = () => {
                 {/* Typing indicator bubble */}
                 {partnerTyping && (
                   <div className="flex justify-start">
-                    <div className="bg-[#1c1729] border border-[#2a2240] rounded-2xl rounded-bl-none px-4 py-2.5 flex items-center gap-1.5">
+                    <div className="bg-[#1c1729] border border-[#383050] rounded-2xl rounded-bl-none px-4 py-2.5 flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce [animation-delay:0ms]" />
                       <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce [animation-delay:150ms]" />
                       <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce [animation-delay:300ms]" />
@@ -637,14 +637,14 @@ export const Messages = () => {
               </div>
 
               {/* Input Footer */}
-              <form onSubmit={handleSendMessage} className="p-4 border-t border-[#2a2240] flex items-center gap-3 bg-[#14111f]">
+              <form onSubmit={handleSendMessage} className="p-4 border-t border-[#383050] flex items-center gap-3 bg-[#14111f]">
                 <input
                   type="text"
                   value={newMessageText}
                   onChange={handleInputChange}
                   onBlur={stopTyping}
                   placeholder="Type your message..."
-                  className="flex-1 px-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#2a2240] text-white text-xs focus:outline-none focus:border-purple-400"
+                  className="flex-1 px-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#383050] text-white text-xs focus:outline-none focus:border-purple-400"
                 />
                 <button
                   type="submit"
@@ -658,7 +658,7 @@ export const Messages = () => {
             </>
           ) : (
             <div className="p-12 text-center space-y-4 m-auto text-slate-500 max-w-sm">
-              <div className="w-16 h-16 rounded-3xl bg-[#14111f] border border-[#2a2240] flex items-center justify-center mx-auto text-purple-400 shadow-xl">
+              <div className="w-16 h-16 rounded-3xl bg-[#14111f] border border-[#383050] flex items-center justify-center mx-auto text-purple-400 shadow-xl">
                 <MessageSquare className="w-8 h-8" />
               </div>
               <div className="space-y-1.5">

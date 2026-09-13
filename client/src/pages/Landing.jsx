@@ -88,7 +88,7 @@ export const Landing = () => {
 
                 <Link
                   to="/login"
-                  className="w-full sm:w-auto px-8 py-4 rounded-2xl font-semibold bg-[#1c1729] text-[#f0eef5] border border-[#2a2240] hover:bg-[#251e35] transition-colors flex items-center justify-center gap-2 text-base"
+                  className="w-full sm:w-auto px-8 py-4 rounded-2xl font-semibold bg-[#1c1729] text-[#f0eef5] border border-[#383050] hover:bg-[#251e35] transition-colors flex items-center justify-center gap-2 text-base"
                 >
                   <LogIn className="w-5 h-5 text-purple-400" />
                   <span>Sign In to Account</span>
@@ -111,14 +111,14 @@ export const Landing = () => {
             return (
               <div
                 key={i}
-                className="bg-[#14111f] p-6 rounded-2xl border border-[#2a2240] flex flex-col justify-between space-y-4 group"
+                className="bg-[#14111f] p-6 rounded-2xl border border-[#383050] flex flex-col justify-between space-y-4 group"
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <div className="w-10 h-10 rounded-xl bg-[#1c1729] border border-[#2a2240] flex items-center justify-center text-purple-400">
+                    <div className="w-10 h-10 rounded-xl bg-[#1c1729] border border-[#383050] flex items-center justify-center text-purple-400">
                       <Icon className="w-5 h-5" />
                     </div>
-                    <span className="text-[10px] font-mono px-2 py-1 rounded bg-[#1c1729] border border-[#2a2240] text-[#9f99b0]">
+                    <span className="text-[10px] font-mono px-2 py-1 rounded bg-[#1c1729] border border-[#383050] text-[#9f99b0]">
                       {t.badge}
                     </span>
                   </div>
@@ -127,7 +127,7 @@ export const Landing = () => {
                   </h3>
                 </div>
 
-                <div className="pt-3 border-t border-[#2a2240] flex items-center justify-between text-xs font-mono text-[#9f99b0]">
+                <div className="pt-3 border-t border-[#383050] flex items-center justify-between text-xs font-mono text-[#9f99b0]">
                   <span className="flex items-center gap-1">
                     <CheckCircle2 className="w-3.5 h-3.5 text-purple-400" />
                     <span>Mock Tests Available</span>
@@ -171,7 +171,7 @@ export const Landing = () => {
 
       {/* Bottom CTA Banner */}
       <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-[#14111f] rounded-3xl border border-[#2a2240] p-8 sm:p-12 text-center max-w-3xl mx-auto">
+        <div className="bg-[#14111f] rounded-3xl border border-[#383050] p-8 sm:p-12 text-center max-w-3xl mx-auto">
           <div className="space-y-6 max-w-xl mx-auto">
             <div className="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center mx-auto shadow-sm">
               <Terminal className="w-6 h-6 text-white" />
@@ -198,7 +198,7 @@ export const Landing = () => {
                   </Link>
                   <Link
                     to="/login"
-                    className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-semibold bg-[#1c1729] border border-[#2a2240] text-[#f0eef5] hover:bg-[#251e35] transition-colors"
+                    className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-semibold bg-[#1c1729] border border-[#383050] text-[#f0eef5] hover:bg-[#251e35] transition-colors"
                   >
                     Sign In
                   </Link>
@@ -210,7 +210,7 @@ export const Landing = () => {
       </section>
 
       {/* Footer */}
-      <footer className="py-8 border-t border-[#2a2240] text-center text-xs text-[#6b6380] font-mono">
+      <footer className="py-8 border-t border-[#383050] text-center text-xs text-[#6b6380] font-mono">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <Terminal className="w-4 h-4 text-indigo-400" />

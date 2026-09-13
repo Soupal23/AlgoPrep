@@ -47,7 +47,7 @@ export const Login = () => {
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4">
-      <div className="glass-panel max-w-md w-full rounded-3xl p-8 border border-[#2a2240] bg-[#14111f] shadow-xl">
+      <div className="glass-panel max-w-md w-full rounded-3xl p-8 border border-[#383050] bg-[#14111f] shadow-xl">
         <div className="text-center mb-8">
           <div className="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center mx-auto mb-4 shadow-sm">
             <Terminal className="w-6 h-6 text-white" />
@@ -74,7 +74,7 @@ export const Login = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="student@algoprep.com"
-                className="w-full pl-11 pr-4 py-3 rounded-xl bg-[#1c1729] border border-[#2a2240] text-[#f0eef5] text-sm focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400 transition-colors"
+                className="w-full pl-11 pr-4 py-3 rounded-xl bg-[#1c1729] border border-[#383050] text-[#f0eef5] text-sm focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400 transition-colors"
               />
             </div>
           </div>
@@ -91,7 +91,7 @@ export const Login = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full pl-11 pr-4 py-3 rounded-xl bg-[#1c1729] border border-[#2a2240] text-[#f0eef5] text-sm focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400 transition-colors"
+                className="w-full pl-11 pr-4 py-3 rounded-xl bg-[#1c1729] border border-[#383050] text-[#f0eef5] text-sm focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400 transition-colors"
               />
             </div>
           </div>
@@ -106,11 +106,11 @@ export const Login = () => {
           </button>
         </form>
 
-        <div className="mt-6 pt-6 border-t border-[#2a2240] flex flex-col gap-3 text-center">
+        <div className="mt-6 pt-6 border-t border-[#383050] flex flex-col gap-3 text-center">
           <button
             onClick={handleDemoLogin}
             disabled={loading}
-            className="w-full py-2.5 rounded-xl text-xs font-semibold bg-[#1c1729] border border-[#2a2240] text-purple-400 hover:bg-[#251e35] transition-colors"
+            className="w-full py-2.5 rounded-xl text-xs font-semibold bg-[#1c1729] border border-[#383050] text-purple-400 hover:bg-[#251e35] transition-colors"
           >
             Instant Demo Login (Alex Student)
           </button>

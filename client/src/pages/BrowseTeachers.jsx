@@ -60,9 +60,9 @@ export const BrowseTeachers = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
       {/* Header */}
-      <div className="bg-[#14111f] rounded-3xl p-8 border border-[#2a2240] space-y-2 shadow-xl">
+      <div className="bg-[#14111f] rounded-3xl p-8 border border-[#383050] space-y-2 shadow-xl">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#1c1729] border border-[#2a2240] flex items-center justify-center text-purple-400">
+          <div className="w-10 h-10 rounded-xl bg-[#1c1729] border border-[#383050] flex items-center justify-center text-purple-400">
             <Users className="w-5 h-5" />
           </div>
           <div>
@@ -84,7 +84,7 @@ export const BrowseTeachers = () => {
           <p className="text-xs font-mono text-slate-400">Loading teacher directory...</p>
         </div>
       ) : teachers.length === 0 ? (
-        <div className="bg-[#14111f] rounded-3xl p-12 text-center text-slate-400 space-y-2 border border-[#2a2240]">
+        <div className="bg-[#14111f] rounded-3xl p-12 text-center text-slate-400 space-y-2 border border-[#383050]">
           <Users className="w-12 h-12 text-slate-600 mx-auto" />
           <p className="text-base font-bold text-white">No Teachers Available Yet</p>
         </div>
@@ -97,11 +97,11 @@ export const BrowseTeachers = () => {
             return (
               <div
                 key={t._id}
-                className="bg-[#14111f] rounded-2xl p-6 border border-[#2a2240] hover:border-purple-400/50 transition-all flex flex-col justify-between space-y-6 shadow-lg"
+                className="bg-[#14111f] rounded-2xl p-6 border border-[#383050] hover:border-purple-400/50 transition-all flex flex-col justify-between space-y-6 shadow-lg"
               >
                 <div className="space-y-4">
                   <div className="flex items-start gap-4">
-                    <div className="w-14 h-14 rounded-2xl overflow-hidden bg-[#1c1729] border border-[#2a2240] flex items-center justify-center text-purple-300 text-xl font-bold shrink-0">
+                    <div className="w-14 h-14 rounded-2xl overflow-hidden bg-[#1c1729] border border-[#383050] flex items-center justify-center text-purple-300 text-xl font-bold shrink-0">
                       {t.avatarUrl ? (
                         <img src={`/${t.avatarUrl}`} alt={t.name} className="w-full h-full object-cover" />
                       ) : (
@@ -113,14 +113,14 @@ export const BrowseTeachers = () => {
                       <h3 className="text-base font-bold text-white truncate">{t.name}</h3>
                       <p className="text-xs font-mono text-slate-400 truncate">{t.email}</p>
                       {t.subjectFocus && (
-                        <span className="inline-block mt-1 text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#1c1729] text-purple-300 border border-[#2a2240]">
+                        <span className="inline-block mt-1 text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#1c1729] text-purple-300 border border-[#383050]">
                           {t.subjectFocus}
                         </span>
                       )}
                     </div>
                   </div>
 
-                  <p className="text-xs text-slate-300 line-clamp-3 bg-[#1c1729] p-3 rounded-xl border border-[#2a2240]">
+                  <p className="text-xs text-slate-300 line-clamp-3 bg-[#1c1729] p-3 rounded-xl border border-[#383050]">
                     {t.bio || 'No bio provided.'}
                   </p>
                 </div>
@@ -151,7 +151,7 @@ export const BrowseTeachers = () => {
                   {isJoined && (
                     <button
                       onClick={() => navigate(`/messages?teacherId=${t._id}`)}
-                      className="p-2.5 rounded-xl bg-[#1c1729] hover:bg-[#251e35] text-purple-300 border border-[#2a2240] transition-colors"
+                      className="p-2.5 rounded-xl bg-[#1c1729] hover:bg-[#251e35] text-purple-300 border border-[#383050] transition-colors"
                       title="Send Message"
                     >
                       <MessageSquare className="w-4 h-4" />

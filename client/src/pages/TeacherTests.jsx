@@ -80,9 +80,9 @@ export const TeacherTests = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
       {/* Header */}
-      <div className="bg-[#14111f] rounded-3xl p-8 border border-[#2a2240] flex flex-wrap items-center justify-between gap-6 shadow-xl">
+      <div className="bg-[#14111f] rounded-3xl p-8 border border-[#383050] flex flex-wrap items-center justify-between gap-6 shadow-xl">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#1c1729] border border-[#2a2240] flex items-center justify-center text-purple-400">
+          <div className="w-10 h-10 rounded-xl bg-[#1c1729] border border-[#383050] flex items-center justify-center text-purple-400">
             <FileUp className="w-5 h-5" />
           </div>
           <div>
@@ -93,7 +93,7 @@ export const TeacherTests = () => {
         <div className="flex items-center gap-3">
           <Link
             to="/ai-generate"
-            className="px-4 py-2.5 rounded-xl bg-[#1c1729] hover:bg-[#251e35] text-purple-300 font-bold text-xs border border-[#2a2240] flex items-center gap-2 transition-colors"
+            className="px-4 py-2.5 rounded-xl bg-[#1c1729] hover:bg-[#251e35] text-purple-300 font-bold text-xs border border-[#383050] flex items-center gap-2 transition-colors"
           >
             <Sparkles className="w-4 h-4 text-purple-400" />
             <span>AI Syllabus Generator</span>
@@ -129,7 +129,7 @@ export const TeacherTests = () => {
           <p className="text-xs font-mono text-slate-400">Loading custom tests...</p>
         </div>
       ) : tests.length === 0 ? (
-        <div className="bg-[#14111f] rounded-3xl p-12 text-center text-slate-400 space-y-4 shadow-xl border border-[#2a2240]">
+        <div className="bg-[#14111f] rounded-3xl p-12 text-center text-slate-400 space-y-4 shadow-xl border border-[#383050]">
           <FileUp className="w-12 h-12 text-slate-600 mx-auto" />
           <div className="space-y-1">
             <h3 className="text-base font-bold text-white">No Custom Tests Created</h3>
@@ -147,11 +147,11 @@ export const TeacherTests = () => {
           {tests.map((t) => (
             <div
               key={t._id}
-              className="bg-[#14111f] rounded-2xl p-6 border border-[#2a2240] hover:border-purple-400/50 transition-all space-y-4 flex flex-col justify-between shadow-lg"
+              className="bg-[#14111f] rounded-2xl p-6 border border-[#383050] hover:border-purple-400/50 transition-all space-y-4 flex flex-col justify-between shadow-lg"
             >
               <div className="space-y-2">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-[#1c1729] text-purple-300 border border-[#2a2240]">
+                  <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-[#1c1729] text-purple-300 border border-[#383050]">
                     {t.topic || 'General CS'}
                   </span>
                   <span className="text-[10px] font-mono text-slate-400">{t.timeLimitMinutes} Mins</span>
@@ -161,7 +161,7 @@ export const TeacherTests = () => {
                 {t.description && <p className="text-xs text-slate-300">{t.description}</p>}
               </div>
 
-              <div className="p-3 rounded-xl bg-[#1c1729] border border-[#2a2240] space-y-1.5 text-[11px] font-mono text-slate-400">
+              <div className="p-3 rounded-xl bg-[#1c1729] border border-[#383050] space-y-1.5 text-[11px] font-mono text-slate-400">
                 <div className="flex items-center justify-between">
                   <span className="text-slate-500">Valid From:</span>
                   <span className="text-slate-300">
@@ -174,7 +174,7 @@ export const TeacherTests = () => {
                     {t.validUntil ? new Date(t.validUntil).toLocaleString() : 'No expiry'}
                   </span>
                 </div>
-                <div className="flex items-center justify-between pt-1 border-t border-[#2a2240]">
+                <div className="flex items-center justify-between pt-1 border-t border-[#383050]">
                   <span className="text-slate-500">Questions:</span>
                   <span className="text-purple-400 font-bold">{t.totalQuestions || t.questions?.length || 0}</span>
                 </div>
@@ -187,8 +187,8 @@ export const TeacherTests = () => {
       {/* Create Test Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#14111f] max-w-lg w-full rounded-3xl p-6 border border-[#2a2240] space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-[#2a2240] pb-3">
+          <div className="bg-[#14111f] max-w-lg w-full rounded-3xl p-6 border border-[#383050] space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-[#383050] pb-3">
               <h3 className="text-base font-bold text-white flex items-center gap-2">
                 <Plus className="w-4 h-4 text-purple-400" />
                 <span>Create Time-Limited Teacher Test</span>
@@ -206,7 +206,7 @@ export const TeacherTests = () => {
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="e.g. CS101 Quiz 1: Sorting & Searching"
-                  className="w-full px-3 py-2 rounded-xl bg-[#1c1729] border border-[#2a2240] text-white focus:outline-none focus:border-purple-400"
+                  className="w-full px-3 py-2 rounded-xl bg-[#1c1729] border border-[#383050] text-white focus:outline-none focus:border-purple-400"
                   required
                 />
               </div>
@@ -217,7 +217,7 @@ export const TeacherTests = () => {
                   type="text"
                   value={formData.topic}
                   onChange={(e) => setFormData({ ...formData, topic: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-[#1c1729] border border-[#2a2240] text-white focus:outline-none focus:border-purple-400"
+                  className="w-full px-3 py-2 rounded-xl bg-[#1c1729] border border-[#383050] text-white focus:outline-none focus:border-purple-400"
                   required
                 />
               </div>
@@ -229,7 +229,7 @@ export const TeacherTests = () => {
                     type="number"
                     value={formData.timeLimitMinutes}
                     onChange={(e) => setFormData({ ...formData, timeLimitMinutes: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-[#1c1729] border border-[#2a2240] text-white focus:outline-none focus:border-purple-400"
+                    className="w-full px-3 py-2 rounded-xl bg-[#1c1729] border border-[#383050] text-white focus:outline-none focus:border-purple-400"
                     required
                   />
                 </div>
@@ -242,7 +242,7 @@ export const TeacherTests = () => {
                     type="datetime-local"
                     value={formData.validFrom}
                     onChange={(e) => setFormData({ ...formData, validFrom: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-[#1c1729] border border-[#2a2240] text-white focus:outline-none focus:border-purple-400"
+                    className="w-full px-3 py-2 rounded-xl bg-[#1c1729] border border-[#383050] text-white focus:outline-none focus:border-purple-400"
                   />
                 </div>
                 <div>

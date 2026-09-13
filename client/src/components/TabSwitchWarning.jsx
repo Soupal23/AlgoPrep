@@ -19,7 +19,7 @@ export const TabSwitchWarning = ({ isOpen, switchCount, onClose }) => {
           You navigated away from the exam window or switched tabs. This activity has been recorded in your official attempt record.
         </p>
 
-        <div className="bg-[#1c1729] rounded-xl p-3 border border-[#2a2240] text-center mb-6">
+        <div className="bg-[#1c1729] rounded-xl p-3 border border-[#383050] text-center mb-6">
           <span className="text-xs text-[#9f99b0]">Total Tab Switch Warnings: </span>
           <span className="text-sm font-mono font-bold text-rose-400">{switchCount}</span>
         </div>

@@ -107,7 +107,7 @@ export const Leaderboard = () => {
       </Link>
 
       {/* Header Banner */}
-      <div className="rounded-3xl bg-[#14111f] border border-[#2a2240] p-8 shadow-xl">
+      <div className="rounded-3xl bg-[#14111f] border border-[#383050] p-8 shadow-xl">
         <div className="max-w-2xl space-y-2">
           <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
             <span>{activeTest?.title || 'Assessment Leaderboard'}</span>
@@ -126,7 +126,7 @@ export const Leaderboard = () => {
       {/* Filter Bar & My Stats Card */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
         {/* Test Filter Dropdown */}
-        <div className="lg:col-span-5 bg-[#14111f] rounded-2xl p-5 border border-[#2a2240] space-y-2">
+        <div className="lg:col-span-5 bg-[#14111f] rounded-2xl p-5 border border-[#383050] space-y-2">
           <label className="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
             <Filter className="w-3.5 h-3.5 text-purple-400" />
             <span>Select Assessment</span>
@@ -134,7 +134,7 @@ export const Leaderboard = () => {
           <select
             value={selectedTestId}
             onChange={(e) => handleTestChange(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#2a2240] text-slate-100 text-sm focus:outline-none focus:border-purple-400"
+            className="w-full px-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#383050] text-slate-100 text-sm focus:outline-none focus:border-purple-400"
           >
             {tests.map((t) => (
               <option key={t._id} value={t._id}>
@@ -145,7 +145,7 @@ export const Leaderboard = () => {
         </div>
 
         {/* My Performance Card */}
-        <div className="lg:col-span-7 bg-[#14111f] rounded-2xl p-5 border border-[#2a2240] flex flex-wrap items-center justify-between gap-4">
+        <div className="lg:col-span-7 bg-[#14111f] rounded-2xl p-5 border border-[#383050] flex flex-wrap items-center justify-between gap-4">
           <div>
             <span className="text-xs text-slate-400 font-mono uppercase">Your Current Position</span>
             <div className="flex items-center gap-3 mt-1">
@@ -180,8 +180,8 @@ export const Leaderboard = () => {
       </div>
 
       {/* Leaderboard Table */}
-      <div className="bg-[#14111f] rounded-3xl border border-[#2a2240] overflow-hidden shadow-2xl">
-        <div className="p-6 border-b border-[#2a2240] flex items-center justify-between">
+      <div className="bg-[#14111f] rounded-3xl border border-[#383050] overflow-hidden shadow-2xl">
+        <div className="p-6 border-b border-[#383050] flex items-center justify-between">
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
             <Award className="w-5 h-5 text-purple-400" />
             <span>Leaderboard Standings</span>

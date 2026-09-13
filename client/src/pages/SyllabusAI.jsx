@@ -58,7 +58,7 @@ export const SyllabusAI = () => {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
       {/* Header Banner */}
-      <div className="rounded-3xl bg-[#14111f] border border-[#2a2240] p-8 shadow-xl">
+      <div className="rounded-3xl bg-[#14111f] border border-[#383050] p-8 shadow-xl">
         <div className="max-w-2xl space-y-2">
           <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-2">
             <Sparkles className="w-6 h-6 text-purple-400" />
@@ -107,13 +107,13 @@ export const SyllabusAI = () => {
         </div>
       ) : (
         /* Generator Form */
-        <form onSubmit={handleGenerate} className="bg-[#14111f] rounded-3xl p-8 border border-[#2a2240] space-y-6 shadow-xl">
+        <form onSubmit={handleGenerate} className="bg-[#14111f] rounded-3xl p-8 border border-[#383050] space-y-6 shadow-xl">
           {/* File Upload Zone */}
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
               Upload Syllabus Document (PDF or TXT, Max 5MB)
             </label>
-            <div className="relative border-2 border-dashed border-[#2a2240] hover:border-purple-400 rounded-2xl p-6 text-center transition-colors bg-[#1c1729] group">
+            <div className="relative border-2 border-dashed border-[#383050] hover:border-purple-400 rounded-2xl p-6 text-center transition-colors bg-[#1c1729] group">
               <input
                 type="file"
                 accept=".pdf,.txt,application/pdf,text/plain"
@@ -148,7 +148,7 @@ export const SyllabusAI = () => {
               value={syllabusText}
               onChange={(e) => setSyllabusText(e.target.value)}
               placeholder="Paste syllabus topics, course modules, or lecture notes..."
-              className="w-full p-4 rounded-xl bg-[#1c1729] border border-[#2a2240] text-slate-100 text-sm focus:outline-none focus:border-purple-400 transition-colors"
+              className="w-full p-4 rounded-xl bg-[#1c1729] border border-[#383050] text-slate-100 text-sm focus:outline-none focus:border-purple-400 transition-colors"
             />
           </div>
 
@@ -163,7 +163,7 @@ export const SyllabusAI = () => {
                 value={topicName}
                 onChange={(e) => setTopicName(e.target.value)}
                 placeholder="e.g. Distributed Systems & Microservices"
-                className="w-full px-4 py-3 rounded-xl bg-[#1c1729] border border-[#2a2240] text-slate-100 text-sm focus:outline-none focus:border-purple-400"
+                className="w-full px-4 py-3 rounded-xl bg-[#1c1729] border border-[#383050] text-slate-100 text-sm focus:outline-none focus:border-purple-400"
               />
             </div>
 
@@ -174,7 +174,7 @@ export const SyllabusAI = () => {
               <select
                 value={numQuestions}
                 onChange={(e) => setNumQuestions(parseInt(e.target.value, 10))}
-                className="w-full px-4 py-3 rounded-xl bg-[#1c1729] border border-[#2a2240] text-slate-100 text-sm focus:outline-none focus:border-purple-400"
+                className="w-full px-4 py-3 rounded-xl bg-[#1c1729] border border-[#383050] text-slate-100 text-sm focus:outline-none focus:border-purple-400"
               >
                 <option value={10}>10 Questions (Standard)</option>
                 <option value={12}>12 Questions</option>

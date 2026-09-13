@@ -46,15 +46,15 @@ export const TeacherDashboard = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
       {/* Welcome Banner */}
-      <div className="bg-[#14111f] rounded-3xl p-8 border border-[#2a2240] flex flex-wrap items-center justify-between gap-6 shadow-xl">
+      <div className="bg-[#14111f] rounded-3xl p-8 border border-[#383050] flex flex-wrap items-center justify-between gap-6 shadow-xl">
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-2xl bg-[#1c1729] border border-[#2a2240] flex items-center justify-center text-purple-300 text-2xl font-extrabold shadow-lg">
+          <div className="w-16 h-16 rounded-2xl bg-[#1c1729] border border-[#383050] flex items-center justify-center text-purple-300 text-2xl font-extrabold shadow-lg">
             {user?.name ? user.name[0].toUpperCase() : 'T'}
           </div>
           <div>
             <h1 className="text-2xl font-extrabold text-white">Welcome back, {user?.name || 'Instructor'}</h1>
             <p className="text-xs font-mono text-slate-400 mt-0.5">{user?.email}</p>
-            <span className="inline-block mt-2 text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-[#1c1729] text-purple-300 border border-[#2a2240] uppercase">
+            <span className="inline-block mt-2 text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-[#1c1729] text-purple-300 border border-[#383050] uppercase">
               Instructor Dashboard
             </span>
           </div>
@@ -70,7 +70,7 @@ export const TeacherDashboard = () => {
           </Link>
           <Link
             to="/teacher/lectures"
-            className="px-4 py-2.5 rounded-xl bg-[#1c1729] hover:bg-[#251e35] text-purple-300 font-bold text-xs border border-[#2a2240] transition-colors flex items-center gap-2"
+            className="px-4 py-2.5 rounded-xl bg-[#1c1729] hover:bg-[#251e35] text-purple-300 font-bold text-xs border border-[#383050] transition-colors flex items-center gap-2"
           >
             <Video className="w-4 h-4 text-purple-400" />
             <span>Upload Lecture</span>
@@ -80,7 +80,7 @@ export const TeacherDashboard = () => {
 
       {/* Metrics Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-[#14111f] rounded-2xl p-6 border border-[#2a2240] space-y-2">
+        <div className="bg-[#14111f] rounded-2xl p-6 border border-[#383050] space-y-2">
           <div className="flex items-center justify-between text-slate-400">
             <span className="text-xs font-mono font-bold uppercase">Enrolled Students</span>
             <UserCheck className="w-5 h-5 text-purple-400" />
@@ -92,7 +92,7 @@ export const TeacherDashboard = () => {
           </Link>
         </div>
 
-        <div className="bg-[#14111f] rounded-2xl p-6 border border-[#2a2240] space-y-2">
+        <div className="bg-[#14111f] rounded-2xl p-6 border border-[#383050] space-y-2">
           <div className="flex items-center justify-between text-slate-400">
             <span className="text-xs font-mono font-bold uppercase">Announcements</span>
             <Megaphone className="w-5 h-5 text-amber-400" />
@@ -104,7 +104,7 @@ export const TeacherDashboard = () => {
           </Link>
         </div>
 
-        <div className="bg-[#14111f] rounded-2xl p-6 border border-[#2a2240] space-y-2">
+        <div className="bg-[#14111f] rounded-2xl p-6 border border-[#383050] space-y-2">
           <div className="flex items-center justify-between text-slate-400">
             <span className="text-xs font-mono font-bold uppercase">Recorded Lectures</span>
             <Video className="w-5 h-5 text-purple-400" />
@@ -116,7 +116,7 @@ export const TeacherDashboard = () => {
           </Link>
         </div>
 
-        <div className="bg-[#14111f] rounded-2xl p-6 border border-[#2a2240] space-y-2">
+        <div className="bg-[#14111f] rounded-2xl p-6 border border-[#383050] space-y-2">
           <div className="flex items-center justify-between text-slate-400">
             <span className="text-xs font-mono font-bold uppercase">Custom Tests</span>
             <FileUp className="w-5 h-5 text-purple-400" />
@@ -130,15 +130,15 @@ export const TeacherDashboard = () => {
       </div>
 
       {/* Quick Action Navigation Grid */}
-      <div className="bg-[#14111f] rounded-3xl p-8 border border-[#2a2240] space-y-6 shadow-xl">
+      <div className="bg-[#14111f] rounded-3xl p-8 border border-[#383050] space-y-6 shadow-xl">
         <h2 className="text-lg font-bold text-white">Teacher Management</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Link
             to="/teacher/roster"
-            className="p-6 rounded-2xl bg-[#1c1729] border border-[#2a2240] hover:border-purple-400/50 transition-all space-y-3 group"
+            className="p-6 rounded-2xl bg-[#1c1729] border border-[#383050] hover:border-purple-400/50 transition-all space-y-3 group"
           >
-            <div className="w-10 h-10 rounded-xl bg-[#14111f] border border-[#2a2240] flex items-center justify-center text-purple-400 group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 rounded-xl bg-[#14111f] border border-[#383050] flex items-center justify-center text-purple-400 group-hover:scale-105 transition-transform">
               <Users className="w-5 h-5" />
             </div>
             <h3 className="text-base font-bold text-white">Class Roster</h3>
@@ -147,9 +147,9 @@ export const TeacherDashboard = () => {
 
           <Link
             to="/teacher/announcements"
-            className="p-6 rounded-2xl bg-[#1c1729] border border-[#2a2240] hover:border-purple-400/50 transition-all space-y-3 group"
+            className="p-6 rounded-2xl bg-[#1c1729] border border-[#383050] hover:border-purple-400/50 transition-all space-y-3 group"
           >
-            <div className="w-10 h-10 rounded-xl bg-[#14111f] border border-[#2a2240] flex items-center justify-center text-amber-400 group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 rounded-xl bg-[#14111f] border border-[#383050] flex items-center justify-center text-amber-400 group-hover:scale-105 transition-transform">
               <Megaphone className="w-5 h-5" />
             </div>
             <h3 className="text-base font-bold text-white">Announcements</h3>
@@ -158,9 +158,9 @@ export const TeacherDashboard = () => {
 
           <Link
             to="/messages"
-            className="p-6 rounded-2xl bg-[#1c1729] border border-[#2a2240] hover:border-purple-400/50 transition-all space-y-3 group"
+            className="p-6 rounded-2xl bg-[#1c1729] border border-[#383050] hover:border-purple-400/50 transition-all space-y-3 group"
           >
-            <div className="w-10 h-10 rounded-xl bg-[#14111f] border border-[#2a2240] flex items-center justify-center text-purple-400 group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 rounded-xl bg-[#14111f] border border-[#383050] flex items-center justify-center text-purple-400 group-hover:scale-105 transition-transform">
               <MessageSquare className="w-5 h-5" />
             </div>
             <h3 className="text-base font-bold text-white">Student Messaging</h3>

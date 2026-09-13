@@ -107,11 +107,11 @@ export const Profile = () => {
       )}
 
       {/* Profile Header & Edit Form */}
-      <div className="bg-[#14111f] rounded-3xl p-8 border border-[#2a2240] space-y-8 shadow-xl">
-        <div className="flex flex-wrap items-center justify-between gap-6 pb-6 border-b border-[#2a2240]">
+      <div className="bg-[#14111f] rounded-3xl p-8 border border-[#383050] space-y-8 shadow-xl">
+        <div className="flex flex-wrap items-center justify-between gap-6 pb-6 border-b border-[#383050]">
           <div className="flex items-center gap-6">
             <div className="relative group">
-              <div className="w-20 h-20 rounded-2xl overflow-hidden bg-[#1c1729] border border-[#2a2240] flex items-center justify-center text-purple-300 text-3xl font-extrabold shadow-lg">
+              <div className="w-20 h-20 rounded-2xl overflow-hidden bg-[#1c1729] border border-[#383050] flex items-center justify-center text-purple-300 text-3xl font-extrabold shadow-lg">
                 {user?.avatarUrl ? (
                   <img
                     src={`/${user.avatarUrl}`}
@@ -145,7 +145,7 @@ export const Profile = () => {
             <div>
               <h1 className="text-2xl font-extrabold text-white">{user?.name || 'User Profile'}</h1>
               <p className="text-xs font-mono text-slate-400 mt-0.5">{user?.email}</p>
-              <span className="inline-block mt-2 text-[10px] font-mono px-3 py-1 rounded-full bg-[#1c1729] text-purple-300 border border-[#2a2240] uppercase">
+              <span className="inline-block mt-2 text-[10px] font-mono px-3 py-1 rounded-full bg-[#1c1729] text-purple-300 border border-[#383050] uppercase">
                 Role: {user?.role || 'student'}
               </span>
             </div>
@@ -153,11 +153,11 @@ export const Profile = () => {
 
           {user?.role === 'student' && (
             <div className="flex items-center gap-6 text-center text-xs font-mono">
-              <div className="bg-[#1c1729] px-4 py-3 rounded-2xl border border-[#2a2240]">
+              <div className="bg-[#1c1729] px-4 py-3 rounded-2xl border border-[#383050]">
                 <span className="text-slate-500 block">Total Attempted</span>
                 <span className="text-lg font-extrabold text-white">{attempts.length}</span>
               </div>
-              <div className="bg-[#1c1729] px-4 py-3 rounded-2xl border border-[#2a2240]">
+              <div className="bg-[#1c1729] px-4 py-3 rounded-2xl border border-[#383050]">
                 <span className="text-slate-500 block">Average Accuracy</span>
                 <span className="text-lg font-extrabold text-emerald-400">{avgAccuracy}%</span>
               </div>
@@ -179,7 +179,7 @@ export const Profile = () => {
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#2a2240] text-white text-sm focus:outline-none focus:border-purple-400"
+                className="w-full px-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#383050] text-white text-sm focus:outline-none focus:border-purple-400"
                 required
               />
             </div>
@@ -191,7 +191,7 @@ export const Profile = () => {
                 value={formData.subjectFocus}
                 onChange={(e) => setFormData({ ...formData, subjectFocus: e.target.value })}
                 placeholder="e.g. Data Structures, Algorithms, Systems"
-                className="w-full px-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#2a2240] text-white text-sm focus:outline-none focus:border-purple-400"
+                className="w-full px-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#383050] text-white text-sm focus:outline-none focus:border-purple-400"
               />
             </div>
           </div>
@@ -203,7 +203,7 @@ export const Profile = () => {
               value={formData.bio}
               onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
               placeholder="Tell us about your background, interests, or teaching goals..."
-              className="w-full px-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#2a2240] text-white text-sm focus:outline-none focus:border-purple-400"
+              className="w-full px-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#383050] text-white text-sm focus:outline-none focus:border-purple-400"
             />
           </div>
 
@@ -220,8 +220,8 @@ export const Profile = () => {
 
       {/* Attempted Tests Section (Student view) */}
       {user?.role === 'student' && (
-        <div className="bg-[#14111f] rounded-3xl p-8 border border-[#2a2240] space-y-6 shadow-xl">
-          <div className="flex items-center justify-between border-b border-[#2a2240] pb-4">
+        <div className="bg-[#14111f] rounded-3xl p-8 border border-[#383050] space-y-6 shadow-xl">
+          <div className="flex items-center justify-between border-b border-[#383050] pb-4">
             <div>
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
                 <Award className="w-5 h-5 text-purple-400" />
@@ -255,11 +255,11 @@ export const Profile = () => {
                 return (
                   <div
                     key={att._id}
-                    className="bg-[#1c1729] rounded-2xl p-6 border border-[#2a2240] hover:border-purple-400/40 transition-all space-y-4 flex flex-col justify-between"
+                    className="bg-[#1c1729] rounded-2xl p-6 border border-[#383050] hover:border-purple-400/40 transition-all space-y-4 flex flex-col justify-between"
                   >
                     <div>
                       <div className="flex items-start justify-between gap-2">
-                        <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-[#14111f] text-purple-300 border border-[#2a2240]">
+                        <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-[#14111f] text-purple-300 border border-[#383050]">
                           {testTopic}
                         </span>
                         <span className="text-[10px] font-mono text-slate-400">
@@ -270,7 +270,7 @@ export const Profile = () => {
                       <h3 className="text-base font-bold text-white mt-2">{testTitle}</h3>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-2 text-center text-xs font-mono bg-[#14111f] p-3 rounded-xl border border-[#2a2240]">
+                    <div className="grid grid-cols-3 gap-2 text-center text-xs font-mono bg-[#14111f] p-3 rounded-xl border border-[#383050]">
                       <div>
                         <span className="text-slate-500 block text-[10px]">Score</span>
                         <span className="text-emerald-400 font-bold text-sm">
@@ -291,7 +291,7 @@ export const Profile = () => {
 
                     <Link
                       to={`/results/${att._id}`}
-                      className="w-full py-2.5 rounded-xl bg-[#14111f] hover:bg-[#251e35] text-purple-300 text-xs font-bold border border-[#2a2240] transition-colors flex items-center justify-center gap-2"
+                      className="w-full py-2.5 rounded-xl bg-[#14111f] hover:bg-[#251e35] text-purple-300 text-xs font-bold border border-[#383050] transition-colors flex items-center justify-center gap-2"
                     >
                       <span>View Scorecard & Review</span>
                       <ExternalLink className="w-3.5 h-3.5" />

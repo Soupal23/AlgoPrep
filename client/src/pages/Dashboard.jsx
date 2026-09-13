@@ -55,7 +55,7 @@ export const Dashboard = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Hero Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-[#14111f] border border-[#2a2240] p-8 sm:p-10 shadow-xl">
+      <div className="relative overflow-hidden rounded-3xl bg-[#14111f] border border-[#383050] p-8 sm:p-10 shadow-xl">
         <div className="max-w-3xl space-y-4">
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#f0eef5]">
             Computer Science Assessments
@@ -74,7 +74,7 @@ export const Dashboard = () => {
       </div>
 
       {/* Topic Filter Pills */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-[#2a2240] pb-4">
+      <div className="flex flex-wrap items-center gap-2 border-b border-[#383050] pb-4">
         {topics.map(t => (
           <button
             key={t}
@@ -82,7 +82,7 @@ export const Dashboard = () => {
             className={`px-4 py-2 rounded-xl text-xs font-semibold transition-colors ${
               selectedTopic === t
                 ? 'bg-indigo-600 text-white shadow-sm'
-                : 'bg-[#1c1729] border border-[#2a2240] text-[#9f99b0] hover:text-[#f0eef5] hover:bg-[#251e35]'
+                : 'bg-[#1c1729] border border-[#383050] text-[#9f99b0] hover:text-[#f0eef5] hover:bg-[#251e35]'
             }`}
           >
             {t}
@@ -94,7 +94,7 @@ export const Dashboard = () => {
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="h-64 rounded-2xl bg-[#14111f] border border-[#2a2240] animate-pulse" />
+            <div key={i} className="h-64 rounded-2xl bg-[#14111f] border border-[#383050] animate-pulse" />
           ))}
         </div>
       ) : error ? (
@@ -102,7 +102,7 @@ export const Dashboard = () => {
           {error}
         </div>
       ) : filteredTests.length === 0 ? (
-        <div className="p-12 text-center bg-[#14111f] rounded-2xl border border-[#2a2240] text-[#9f99b0]">
+        <div className="p-12 text-center bg-[#14111f] rounded-2xl border border-[#383050] text-[#9f99b0]">
           No tests found for selected topic.
         </div>
       ) : (
@@ -113,11 +113,11 @@ export const Dashboard = () => {
             return (
               <div
                 key={test._id}
-                className="group bg-[#14111f] rounded-2xl p-6 border border-[#2a2240] hover:border-purple-500/30 transition-colors flex flex-col justify-between relative"
+                className="group bg-[#14111f] rounded-2xl p-6 border border-[#383050] hover:border-purple-500/30 transition-colors flex flex-col justify-between relative"
               >
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-4">
-                    <div className="p-2.5 rounded-xl bg-[#1c1729] border border-[#2a2240]">
+                    <div className="p-2.5 rounded-xl bg-[#1c1729] border border-[#383050]">
                       {getTopicIcon(test.topic)}
                     </div>
                     <div className="flex items-center gap-2">
@@ -127,7 +127,7 @@ export const Dashboard = () => {
                           Attempted
                         </span>
                       )}
-                      <span className="px-3 py-1 rounded-full text-xs font-mono bg-[#1c1729] border border-[#2a2240] text-purple-400">
+                      <span className="px-3 py-1 rounded-full text-xs font-mono bg-[#1c1729] border border-[#383050] text-purple-400">
                         {test.topic}
                       </span>
                     </div>
@@ -142,7 +142,7 @@ export const Dashboard = () => {
                 </div>
 
                 <div>
-                  <div className="grid grid-cols-3 gap-2 p-3 rounded-xl bg-[#1c1729] border border-[#2a2240] mb-6 text-center text-xs">
+                  <div className="grid grid-cols-3 gap-2 p-3 rounded-xl bg-[#1c1729] border border-[#383050] mb-6 text-center text-xs">
                     <div>
                       <div className="text-[#6b6380] flex items-center justify-center gap-1">
                         <Clock className="w-3 h-3" /> Time
@@ -176,7 +176,7 @@ export const Dashboard = () => {
                       onClick={() => navigate(`/test/${test._id}${isAttempted ? '?retake=true' : ''}`)}
                       className={`w-full py-3 rounded-xl font-bold border transition-colors flex items-center justify-center gap-2 ${
                         isAttempted
-                          ? 'bg-[#1c1729] border-[#2a2240] text-purple-400 hover:bg-[#251e35]'
+                          ? 'bg-[#1c1729] border-[#383050] text-purple-400 hover:bg-[#251e35]'
                           : 'bg-purple-600 hover:bg-purple-500 border-transparent text-white shadow-sm'
                       }`}
                     >
@@ -198,7 +198,7 @@ export const Dashboard = () => {
                         onClick={() => navigate(`/test/${test._id}${isAttempted ? '?retake=true' : ''}`)}
                         className={`py-3 rounded-xl font-bold border text-xs sm:text-sm transition-colors flex items-center justify-center gap-1.5 ${
                           isAttempted
-                            ? 'bg-[#1c1729] border-[#2a2240] text-purple-400 hover:bg-[#251e35]'
+                            ? 'bg-[#1c1729] border-[#383050] text-purple-400 hover:bg-[#251e35]'
                             : 'bg-indigo-600 hover:bg-indigo-500 border-transparent text-white shadow-sm'
                         }`}
                       >
@@ -217,7 +217,7 @@ export const Dashboard = () => {
 
                       <button
                         onClick={() => navigate(`/leaderboard?testId=${test._id}`)}
-                        className="py-3 rounded-xl font-bold border border-[#2a2240] bg-[#1c1729] text-purple-400 hover:bg-[#251e35] transition-colors flex items-center justify-center gap-1.5 text-xs sm:text-sm"
+                        className="py-3 rounded-xl font-bold border border-[#383050] bg-[#1c1729] text-purple-400 hover:bg-[#251e35] transition-colors flex items-center justify-center gap-1.5 text-xs sm:text-sm"
                       >
                         <Award className="w-4 h-4 text-purple-400" />
                         <span>Leaderboard</span>

@@ -35,7 +35,7 @@ export const Timer = ({ endTimeIso, onTimeUp }) => {
       className={`flex items-center gap-2 px-4 py-2 rounded-xl font-mono text-sm font-bold border transition-colors shadow-inner ${
         isWarning
           ? 'bg-rose-950/80 border-rose-800 text-rose-300 animate-pulse'
-          : 'bg-[#1c1729] border-[#2a2240] text-purple-400'
+          : 'bg-[#1c1729] border-[#383050] text-purple-400'
       }`}
     >
       {isWarning ? (

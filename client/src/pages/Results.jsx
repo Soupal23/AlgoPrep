@@ -187,8 +187,8 @@ export const Results = () => {
       </Link>
 
       {/* Main Scorecard Banner */}
-      <div className="bg-[#14111f] rounded-3xl p-8 border border-[#2a2240] shadow-2xl space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-[#2a2240]">
+      <div className="bg-[#14111f] rounded-3xl p-8 border border-[#383050] shadow-2xl space-y-6">
+        <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-[#383050]">
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1">{test?.title || 'CBT Assessment'}</h1>
             <p className="text-xs text-slate-400 mt-1">
@@ -200,7 +200,7 @@ export const Results = () => {
             {!test?.isAIGenerated && (
               <Link
                 to={`/leaderboard?testId=${test?._id}`}
-                className="px-4 py-2.5 rounded-xl bg-[#1c1729] hover:bg-[#251e35] text-purple-300 text-xs font-semibold border border-[#2a2240] transition-colors flex items-center gap-2"
+                className="px-4 py-2.5 rounded-xl bg-[#1c1729] hover:bg-[#251e35] text-purple-300 text-xs font-semibold border border-[#383050] transition-colors flex items-center gap-2"
               >
                 <Award className="w-4 h-4 text-purple-400" />
                 <span>Test Leaderboard</span>
@@ -209,7 +209,7 @@ export const Results = () => {
 
             <Link
               to={`/test/${test?._id}?retake=true`}
-              className="px-4 py-2.5 rounded-xl bg-[#1c1729] hover:bg-[#251e35] text-purple-300 text-xs font-semibold border border-[#2a2240] transition-colors flex items-center gap-2"
+              className="px-4 py-2.5 rounded-xl bg-[#1c1729] hover:bg-[#251e35] text-purple-300 text-xs font-semibold border border-[#383050] transition-colors flex items-center gap-2"
             >
               <RotateCcw className="w-4 h-4" />
               <span>Retake Exam</span>
@@ -219,35 +219,35 @@ export const Results = () => {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
-          <div className="bg-[#1c1729] rounded-2xl p-4 border border-[#2a2240] text-center">
+          <div className="bg-[#1c1729] rounded-2xl p-4 border border-[#383050] text-center">
             <div className="text-xs text-slate-400 mb-1">Final Score</div>
             <div className="text-2xl font-mono font-extrabold text-purple-400">
               {attempt.score} <span className="text-xs text-slate-500">/ {attempt.maxScore}</span>
             </div>
           </div>
 
-          <div className="bg-[#1c1729] rounded-2xl p-4 border border-[#2a2240] text-center">
+          <div className="bg-[#1c1729] rounded-2xl p-4 border border-[#383050] text-center">
             <div className="text-xs text-slate-400 mb-1">Accuracy</div>
             <div className="text-2xl font-mono font-extrabold text-emerald-400">
               {attempt.accuracy}%
             </div>
           </div>
 
-          <div className="bg-[#1c1729] rounded-2xl p-4 border border-[#2a2240] text-center">
+          <div className="bg-[#1c1729] rounded-2xl p-4 border border-[#383050] text-center">
             <div className="text-xs text-slate-400 mb-1">Percentile</div>
             <div className="text-2xl font-mono font-extrabold text-purple-400">
               {myStats ? `${myStats.percentile}%` : 'N/A'}
             </div>
           </div>
 
-          <div className="bg-[#1c1729] rounded-2xl p-4 border border-[#2a2240] text-center">
+          <div className="bg-[#1c1729] rounded-2xl p-4 border border-[#383050] text-center">
             <div className="text-xs text-slate-400 mb-1">Time Spent</div>
             <div className="text-2xl font-mono font-extrabold text-amber-400">
               {Math.floor(attempt.timeSpentSeconds / 60)}m {attempt.timeSpentSeconds % 60}s
             </div>
           </div>
 
-          <div className="bg-[#1c1729] rounded-2xl p-4 border border-[#2a2240] text-center col-span-2 sm:col-span-1">
+          <div className="bg-[#1c1729] rounded-2xl p-4 border border-[#383050] text-center col-span-2 sm:col-span-1">
             <div className="text-xs text-slate-400 mb-1">Tab Switches</div>
             <div className={`text-2xl font-mono font-extrabold ${attempt.tabSwitches > 0 ? 'text-rose-400' : 'text-slate-300'}`}>
               {attempt.tabSwitches}
@@ -257,7 +257,7 @@ export const Results = () => {
       </div>
 
       {/* Tabs Navigation */}
-      <div className="flex items-center gap-4 border-b border-[#2a2240] pb-2">
+      <div className="flex items-center gap-4 border-b border-[#383050] pb-2">
         <button
           onClick={() => handleTabChange('review')}
           className={`px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 ${
