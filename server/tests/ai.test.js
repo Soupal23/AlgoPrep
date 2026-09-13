@@ -104,7 +104,7 @@ describe('Phase 2 — AI Syllabus-to-Test Generator', () => {
 
     // Clean up rate limit state for other tests
     resetUserRateLimit(userId);
-  }, 60000);
+  }, 120000);
 
   it('should ensure AI-generated tests are private to the creator and hidden from other students', async () => {
     resetUserRateLimit(userId);

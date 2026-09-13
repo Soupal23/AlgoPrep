@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
   Terminal,
@@ -8,210 +8,459 @@ import {
   Clock,
   Award,
   CheckCircle2,
-  BrainCircuit,
-  Cpu,
-  Network,
-  Database,
-  Code,
-  BookOpen,
+  Lock,
+  Mail,
+  User as UserIcon,
+  Users,
+  Video,
+  MessageSquare,
+  Activity,
+  ShieldCheck,
   Play,
   FileUp,
   LogIn,
-  UserPlus,
-  BarChart3
+  UserPlus
 } from 'lucide-react';
 
 export const Landing = () => {
-  const { isAuthenticated } = useAuth();
+  const { user, isAuthenticated, login, signup } = useAuth();
+  const navigate = useNavigate();
 
-  const topics = [
-    {
-      name: 'Operating Systems',
-      icon: Cpu,
-      badge: 'Processes • Memory • Semaphores',
-    },
-    {
-      name: 'Computer Networks',
-      icon: Network,
-      badge: 'OSI • TCP/IP • Routing',
-    },
-    {
-      name: 'Database Management',
-      icon: Database,
-      badge: 'SQL • Normalization • ACID',
-    },
-    {
-      name: 'Data Structures & Algorithms',
-      icon: Code,
-      badge: 'Trees • Graphs • DP',
-    },
-    {
-      name: 'Object-Oriented Programming',
-      icon: BookOpen,
-      badge: 'Encapsulation • Polymorphism',
+  // Auth panel state
+  const [authMode, setAuthMode] = useState('login'); // 'login' | 'register'
+  const [loginRole, setLoginRole] = useState('student'); // 'student' | 'teacher'
+
+  // Form states
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+
+  const [regName, setRegName] = useState('');
+  const [regEmail, setRegEmail] = useState('');
+  const [regPassword, setRegPassword] = useState('');
+
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  // Form submit handlers
+  const handleLoginSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      const loggedUser = await login(loginEmail, loginPassword);
+      if (loggedUser.role === 'teacher') {
+        navigate('/teacher/dashboard');
+      } else if (loggedUser.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
+    } catch (err) {
+      setError(err.message || 'Invalid email or password');
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  const handleRegisterSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      const newUser = await signup(regName, regEmail, regPassword, 'student');
+      if (newUser.role === 'teacher') {
+        navigate('/teacher/dashboard');
+      } else if (newUser.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
+    } catch (err) {
+      setError(err.message || 'Registration failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDemoLogin = async () => {
+    setError('');
+    setLoading(true);
+
+    const demoEmail = loginRole === 'teacher' ? 'teacher@algoprep.com' : 'student@algoprep.com';
+    const demoPass = 'password123';
+
+    try {
+      const u = await login(demoEmail, demoPass);
+      if (u.role === 'teacher') {
+        navigate('/teacher/dashboard');
+      } else if (u.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
+    } catch (err) {
+      if (loginRole === 'student') {
+        try {
+          const u = await signup('Alex Student', 'student@algoprep.com', 'password123', 'student');
+          navigate('/dashboard');
+        } catch (signupErr) {
+          setError('Demo login failed');
+        }
+      } else {
+        setError('Demo teacher login failed');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="relative overflow-hidden bg-[#0a0a0f] text-[#f0eef5] min-h-screen">
-      {/* Hero Section */}
-      <section className="relative pt-16 pb-20 md:pt-24 md:pb-28 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-3xl mx-auto space-y-6">
-          {/* Main Title */}
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#f0eef5] leading-[1.15]">
-            Master Computer Science Exams with{' '}
-            <span className="text-indigo-400">
-              Real CBT Simulation
-            </span>
-          </h1>
+    <div className="min-h-[calc(100vh-4rem)] bg-[#0a0a0f] text-[#f0eef5] flex flex-col justify-between p-4 sm:p-6 lg:p-8">
+      {/* Main Split-Screen Section */}
+      <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center py-6">
+        
+        {/* LEFT COLUMN: Brand, Portal Intro & 3 Feature Cards */}
+        <div className="lg:col-span-7 space-y-8">
+          
+          {/* Brand Mark & Badge */}
+          <div className="space-y-4">
+            <div className="inline-flex items-center gap-3 px-3.5 py-1.5 rounded-full bg-[#1c1729] border border-[#383050]">
+              <div className="w-6 h-6 rounded-lg bg-indigo-600 flex items-center justify-center">
+                <Terminal className="w-3.5 h-3.5 text-white" />
+              </div>
+              <span className="text-xs font-extrabold tracking-wider text-white">AlgoPrep</span>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-indigo-950 text-indigo-400 border border-indigo-800 font-bold">
+                CBT AI PLATFORM
+              </span>
+            </div>
 
-          {/* Call-To-Action Button Group */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6">
+            {/* Portal Main Title */}
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[#f0eef5] leading-[1.15]">
+              COMPUTER SCIENCE CBT{' '}
+              <span className="text-indigo-400 block sm:inline">ASSESSMENT PORTAL</span>
+            </h1>
+
+            {/* Sub-tagline */}
+            <p className="text-sm sm:text-base text-[#9f99b0] leading-relaxed max-w-2xl">
+              REAL-TIME EXAM SIMULATION • AI SYLLABUS GENERATION • LIVE TEACHER CLASSROOMS
+            </p>
+            <p className="text-xs text-slate-400 max-w-xl">
+              Engineered specifically for computer science students, competitive coders, and academic instructors to master technical assessments under real exam conditions.
+            </p>
+          </div>
+
+          {/* 3 Core Feature Cards Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+            
+            {/* Feature Card 1 */}
+            <div className="bg-[#14111f] rounded-2xl p-5 border border-[#383050] space-y-3 shadow-lg flex flex-col justify-between">
+              <div className="w-9 h-9 rounded-xl bg-[#1c1729] border border-[#383050] flex items-center justify-center text-purple-400">
+                <Clock className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="text-xs font-bold text-white uppercase tracking-wider">Deterministic CBT Engine</h3>
+                <p className="text-[11px] text-slate-400 mt-1 leading-normal">
+                  Timed exam simulation with tab-switch proctoring & instant percentile scoring.
+                </p>
+              </div>
+            </div>
+
+            {/* Feature Card 2 */}
+            <div className="bg-[#14111f] rounded-2xl p-5 border border-[#383050] space-y-3 shadow-lg flex flex-col justify-between">
+              <div className="w-9 h-9 rounded-xl bg-[#1c1729] border border-[#383050] flex items-center justify-center text-indigo-400">
+                <Sparkles className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="text-xs font-bold text-white uppercase tracking-wider">AI Syllabus Builder</h3>
+                <p className="text-[11px] text-slate-400 mt-1 leading-normal">
+                  Upload PDF course outlines or text notes to create instant custom mock tests.
+                </p>
+              </div>
+            </div>
+
+            {/* Feature Card 3 */}
+            <div className="bg-[#14111f] rounded-2xl p-5 border border-[#383050] space-y-3 shadow-lg flex flex-col justify-between">
+              <div className="w-9 h-9 rounded-xl bg-[#1c1729] border border-[#383050] flex items-center justify-center text-emerald-400">
+                <Users className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="text-xs font-bold text-white uppercase tracking-wider">Classroom Hub</h3>
+                <p className="text-[11px] text-slate-400 mt-1 leading-normal">
+                  Teacher-student messaging, class rosters, & recorded lecture video access.
+                </p>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Operational Status Ticker */}
+          <div className="pt-2 flex items-center justify-between text-[11px] font-mono text-[#6b6380] border-t border-[#383050]/60">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-slate-300 font-semibold">SYSTEM STATUS: OPERATIONAL</span>
+            </div>
+            <span className="hidden sm:inline">[{new Date().toLocaleDateString('en-US', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })}]</span>
+          </div>
+
+        </div>
+
+
+        {/* RIGHT COLUMN: Combined Auth Panel / Logged-In State Card */}
+        <div className="lg:col-span-5">
+          <div className="glass-panel max-w-md w-full mx-auto rounded-3xl p-6 sm:p-8 border border-[#383050] bg-[#14111f] shadow-2xl space-y-6">
+            
             {isAuthenticated ? (
-              <Link
-                to="/dashboard"
-                className="w-full sm:w-auto px-8 py-4 rounded-2xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm transition-colors flex items-center justify-center gap-3 text-base"
-              >
-                <Play className="w-5 h-5 fill-current" />
-                <span>Go to Tests Dashboard</span>
-              </Link>
-            ) : (
-              <>
-                <Link
-                  to="/register"
-                  className="w-full sm:w-auto px-8 py-4 rounded-2xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm transition-colors flex items-center justify-center gap-3 text-base"
-                >
-                  <UserPlus className="w-5 h-5" />
-                  <span>Get Started Free</span>
-                  <ArrowRight className="w-5 h-5" />
-                </Link>
+              /* Logged In Preview Card */
+              <div className="space-y-6 text-center py-4">
+                <div className="w-16 h-16 rounded-2xl overflow-hidden bg-[#1c1729] border border-[#383050] flex items-center justify-center text-purple-300 text-2xl font-extrabold mx-auto shadow-lg">
+                  {user?.avatarUrl ? (
+                    <img src={`/${user.avatarUrl}`} alt={user.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <span>{user?.name ? user.name[0].toUpperCase() : 'U'}</span>
+                  )}
+                </div>
+
+                <div className="space-y-1">
+                  <h3 className="text-xl font-extrabold text-white">Welcome back, {user?.name || 'User'}!</h3>
+                  <p className="text-xs font-mono text-slate-400">{user?.email}</p>
+                  <span className="inline-block mt-2 text-[10px] font-mono px-3 py-1 rounded-full bg-indigo-950 text-indigo-400 border border-indigo-800 uppercase font-bold">
+                    Role: {user?.role || 'student'}
+                  </span>
+                </div>
 
                 <Link
-                  to="/login"
-                  className="w-full sm:w-auto px-8 py-4 rounded-2xl font-semibold bg-[#1c1729] text-[#f0eef5] border border-[#383050] hover:bg-[#251e35] transition-colors flex items-center justify-center gap-2 text-base"
+                  to={user?.role === 'teacher' ? '/teacher/dashboard' : user?.role === 'admin' ? '/admin' : '/dashboard'}
+                  className="w-full py-3.5 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg transition-colors flex items-center justify-center gap-2"
                 >
-                  <LogIn className="w-5 h-5 text-purple-400" />
-                  <span>Sign In to Account</span>
+                  <Play className="w-4 h-4 fill-current" />
+                  <span>Go to Assessment Dashboard</span>
+                  <ArrowRight className="w-4 h-4" />
                 </Link>
+              </div>
+            ) : (
+              /* Inline Auth Switcher (Sign In / Register) */
+              <>
+                {/* Top Auth Mode Pills */}
+                <div className="grid grid-cols-2 gap-2 p-1.5 rounded-2xl bg-[#1c1729] border border-[#383050]">
+                  <button
+                    type="button"
+                    onClick={() => { setAuthMode('login'); setError(''); }}
+                    className={`py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+                      authMode === 'login'
+                        ? 'bg-indigo-600 text-white shadow-md'
+                        : 'text-[#9f99b0] hover:text-[#f0eef5]'
+                    }`}
+                  >
+                    <LogIn className="w-3.5 h-3.5" />
+                    <span>Sign In</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => { setAuthMode('register'); setError(''); }}
+                    className={`py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+                      authMode === 'register'
+                        ? 'bg-indigo-600 text-white shadow-md'
+                        : 'text-[#9f99b0] hover:text-[#f0eef5]'
+                    }`}
+                  >
+                    <UserPlus className="w-3.5 h-3.5" />
+                    <span>Register</span>
+                  </button>
+                </div>
+
+                {/* Error Banner */}
+                {error && (
+                  <div className="p-3 rounded-xl bg-rose-950/60 border border-rose-800 text-rose-300 text-xs text-center leading-relaxed">
+                    {error}
+                  </div>
+                )}
+
+                {/* SIGN IN FORM VIEW */}
+                {authMode === 'login' && (
+                  <form onSubmit={handleLoginSubmit} className="space-y-4">
+                    {/* Role Selector Pills for Login */}
+                    <div className="space-y-1.5">
+                      <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#9f99b0]">
+                        Sign In Portal:
+                      </label>
+                      <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-[#1c1729] border border-[#383050]">
+                        <button
+                          type="button"
+                          onClick={() => setLoginRole('student')}
+                          className={`py-1.5 rounded-lg text-xs font-bold transition-all ${
+                            loginRole === 'student'
+                              ? 'bg-[#251e35] text-indigo-400 border border-[#383050]'
+                              : 'text-[#9f99b0] hover:text-[#f0eef5]'
+                          }`}
+                        >
+                          Student Login
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setLoginRole('teacher')}
+                          className={`py-1.5 rounded-lg text-xs font-bold transition-all ${
+                            loginRole === 'teacher'
+                              ? 'bg-[#251e35] text-purple-300 border border-[#383050]'
+                              : 'text-[#9f99b0] hover:text-[#f0eef5]'
+                          }`}
+                        >
+                          Teacher Login
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Email Input */}
+                    <div>
+                      <label className="block text-xs font-semibold uppercase tracking-wider text-[#9f99b0] mb-1.5">
+                        {loginRole === 'teacher' ? 'Instructor Email' : 'Student Email'}
+                      </label>
+                      <div className="relative">
+                        <Mail className="w-4 h-4 text-[#6b6380] absolute left-3.5 top-3.5" />
+                        <input
+                          type="email"
+                          required
+                          value={loginEmail}
+                          onChange={(e) => setLoginEmail(e.target.value)}
+                          placeholder={loginRole === 'teacher' ? 'teacher@algoprep.com' : 'student@algoprep.com'}
+                          className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#383050] text-[#f0eef5] text-xs focus:outline-none focus:border-indigo-500 transition-colors"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Password Input */}
+                    <div>
+                      <label className="block text-xs font-semibold uppercase tracking-wider text-[#9f99b0] mb-1.5">
+                        Password
+                      </label>
+                      <div className="relative">
+                        <Lock className="w-4 h-4 text-[#6b6380] absolute left-3.5 top-3.5" />
+                        <input
+                          type="password"
+                          required
+                          value={loginPassword}
+                          onChange={(e) => setLoginPassword(e.target.value)}
+                          placeholder="••••••••"
+                          className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#383050] text-[#f0eef5] text-xs focus:outline-none focus:border-indigo-500 transition-colors"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Submit Button */}
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full py-3 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-md transition-colors flex items-center justify-center gap-2 text-xs"
+                    >
+                      {loading ? 'Signing in...' : `Sign In to ${loginRole === 'teacher' ? 'Teacher Portal' : 'Student Workspace'}`}
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+
+                    {/* Instant Demo Login CTA */}
+                    <div className="pt-3 border-t border-[#383050]">
+                      <button
+                        type="button"
+                        onClick={handleDemoLogin}
+                        disabled={loading}
+                        className="w-full py-2.5 rounded-xl text-xs font-semibold bg-[#1c1729] border border-[#383050] text-purple-400 hover:bg-[#251e35] transition-colors"
+                      >
+                        {loginRole === 'teacher' ? 'Instant Demo Login (Teacher)' : 'Instant Demo Login (Alex Student)'}
+                      </button>
+                    </div>
+                  </form>
+                )}
+
+                {/* REGISTER FORM VIEW */}
+                {authMode === 'register' && (
+                  <form onSubmit={handleRegisterSubmit} className="space-y-4">
+                    {/* Full Name */}
+                    <div>
+                      <label className="block text-xs font-semibold uppercase tracking-wider text-[#9f99b0] mb-1.5">
+                        Full Name
+                      </label>
+                      <div className="relative">
+                        <UserIcon className="w-4 h-4 text-[#6b6380] absolute left-3.5 top-3.5" />
+                        <input
+                          type="text"
+                          required
+                          value={regName}
+                          onChange={(e) => setRegName(e.target.value)}
+                          placeholder="Jane Doe"
+                          className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#383050] text-[#f0eef5] text-xs focus:outline-none focus:border-indigo-500 transition-colors"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Email Input */}
+                    <div>
+                      <label className="block text-xs font-semibold uppercase tracking-wider text-[#9f99b0] mb-1.5">
+                        Email Address
+                      </label>
+                      <div className="relative">
+                        <Mail className="w-4 h-4 text-[#6b6380] absolute left-3.5 top-3.5" />
+                        <input
+                          type="email"
+                          required
+                          value={regEmail}
+                          onChange={(e) => setRegEmail(e.target.value)}
+                          placeholder="jane@example.com"
+                          className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#383050] text-[#f0eef5] text-xs focus:outline-none focus:border-indigo-500 transition-colors"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Password Input */}
+                    <div>
+                      <label className="block text-xs font-semibold uppercase tracking-wider text-[#9f99b0] mb-1.5">
+                        Password
+                      </label>
+                      <div className="relative">
+                        <Lock className="w-4 h-4 text-[#6b6380] absolute left-3.5 top-3.5" />
+                        <input
+                          type="password"
+                          required
+                          value={regPassword}
+                          onChange={(e) => setRegPassword(e.target.value)}
+                          placeholder="At least 6 characters"
+                          className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#383050] text-[#f0eef5] text-xs focus:outline-none focus:border-indigo-500 transition-colors"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Register Submit Button */}
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full py-3 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-md transition-colors flex items-center justify-center gap-2 text-xs"
+                    >
+                      {loading ? 'Creating Account...' : 'Register Student Account'}
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+
+                    {/* Instructor Application Link */}
+                    <div className="pt-3 border-t border-[#383050] text-center">
+                      <p className="text-[11px] text-[#9f99b0]">
+                        Want to teach on AlgoPrep?{' '}
+                        <Link to="/teach-here" className="text-purple-400 font-semibold hover:underline">
+                          Apply for Instructor Account
+                        </Link>
+                      </p>
+                    </div>
+                  </form>
+                )}
               </>
             )}
+
           </div>
         </div>
-      </section>
 
-      {/* Topic Explorer Section */}
-      <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
-          <h2 className="text-2xl font-extrabold text-[#f0eef5]">Computer Science Subjects</h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {topics.map((t, i) => {
-            const Icon = t.icon;
-            return (
-              <div
-                key={i}
-                className="bg-[#14111f] p-6 rounded-2xl border border-[#383050] flex flex-col justify-between space-y-4 group"
-              >
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="w-10 h-10 rounded-xl bg-[#1c1729] border border-[#383050] flex items-center justify-center text-purple-400">
-                      <Icon className="w-5 h-5" />
-                    </div>
-                    <span className="text-[10px] font-mono px-2 py-1 rounded bg-[#1c1729] border border-[#383050] text-[#9f99b0]">
-                      {t.badge}
-                    </span>
-                  </div>
-                  <h3 className="text-lg font-bold text-[#f0eef5]">
-                    {t.name}
-                  </h3>
-                </div>
-
-                <div className="pt-3 border-t border-[#383050] flex items-center justify-between text-xs font-mono text-[#9f99b0]">
-                  <span className="flex items-center gap-1">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-purple-400" />
-                    <span>Mock Tests Available</span>
-                  </span>
-                  <Link
-                    to={isAuthenticated ? '/dashboard' : '/login'}
-                    className="text-indigo-400 font-semibold hover:underline flex items-center gap-1"
-                  >
-                    <span>Practice</span>
-                    <ArrowRight className="w-3 h-3" />
-                  </Link>
-                </div>
-              </div>
-            );
-          })}
-
-          {/* Special AI Generator Card */}
-          <div className="bg-[#14111f] p-6 rounded-2xl border border-purple-800/60 flex flex-col justify-between space-y-4">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-xl bg-purple-950 border border-purple-800 flex items-center justify-center text-purple-400">
-                  <FileUp className="w-5 h-5" />
-                </div>
-                <span className="text-[10px] font-mono px-2 py-1 rounded bg-purple-950 text-purple-300 border border-purple-800">
-                  AI Feature
-                </span>
-              </div>
-              <h3 className="text-lg font-bold text-[#f0eef5]">AI Custom Test Builder</h3>
-            </div>
-
-            <Link
-              to={isAuthenticated ? '/ai-generate' : '/register'}
-              className="w-full py-2.5 rounded-xl font-bold bg-purple-600 hover:bg-purple-500 text-white text-xs text-center flex items-center justify-center gap-2 shadow-sm transition-colors"
-            >
-              <Sparkles className="w-4 h-4" />
-              <span>Try AI Generator</span>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Bottom CTA Banner */}
-      <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-[#14111f] rounded-3xl border border-[#383050] p-8 sm:p-12 text-center max-w-3xl mx-auto">
-          <div className="space-y-6 max-w-xl mx-auto">
-            <div className="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center mx-auto shadow-sm">
-              <Terminal className="w-6 h-6 text-white" />
-            </div>
-
-            <h2 className="text-2xl sm:text-3xl font-black text-[#f0eef5]">Ready to Test Your Computer Science Skills?</h2>
-
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
-              {isAuthenticated ? (
-                <Link
-                  to="/dashboard"
-                  className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm transition-colors"
-                >
-                  Go to Dashboard
-                </Link>
-              ) : (
-                <>
-                  <Link
-                    to="/register"
-                    className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm transition-colors flex items-center justify-center gap-2"
-                  >
-                    <span>Create Free Account</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
-                  <Link
-                    to="/login"
-                    className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-semibold bg-[#1c1729] border border-[#383050] text-[#f0eef5] hover:bg-[#251e35] transition-colors"
-                  >
-                    Sign In
-                  </Link>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
+      </div>
 
       {/* Footer */}
-      <footer className="py-8 border-t border-[#383050] text-center text-xs text-[#6b6380] font-mono">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <footer className="pt-6 border-t border-[#383050] text-center text-xs text-[#6b6380] font-mono">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <Terminal className="w-4 h-4 text-indigo-400" />
             <span className="font-bold text-[#9f99b0]">AlgoPrep CBT Platform</span>
