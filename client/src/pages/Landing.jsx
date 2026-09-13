@@ -28,7 +28,7 @@ export const Landing = () => {
 
   // Auth panel state
   const [authMode, setAuthMode] = useState('login'); // 'login' | 'register'
-  const [loginRole, setLoginRole] = useState('student'); // 'student' | 'teacher'
+  const [loginRole, setLoginRole] = useState('student'); // 'student' | 'teacher' | 'admin'
 
   // Form states
   const [loginEmail, setLoginEmail] = useState('');
@@ -88,7 +88,12 @@ export const Landing = () => {
     setError('');
     setLoading(true);
 
-    const demoEmail = loginRole === 'teacher' ? 'teacher@algoprep.com' : 'student@algoprep.com';
+    const demoEmail =
+      loginRole === 'admin'
+        ? 'admin@algoprep.com'
+        : loginRole === 'teacher'
+        ? 'teacher@algoprep.com'
+        : 'student@algoprep.com';
     const demoPass = 'password123';
 
     try {
@@ -106,8 +111,10 @@ export const Landing = () => {
           const u = await signup('Alex Student', 'student@algoprep.com', 'password123', 'student');
           navigate('/dashboard');
         } catch (signupErr) {
-          setError('Demo login failed');
+          setError('Demo student login failed');
         }
+      } else if (loginRole === 'admin') {
+        setError('Demo admin login failed');
       } else {
         setError('Demo teacher login failed');
       }
@@ -286,28 +293,39 @@ export const Landing = () => {
                       <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#9f99b0]">
                         Sign In Portal:
                       </label>
-                      <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-[#1c1729] border border-[#383050]">
+                      <div className="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-[#1c1729] border border-[#383050]">
                         <button
                           type="button"
                           onClick={() => setLoginRole('student')}
-                          className={`py-1.5 rounded-lg text-xs font-bold transition-all ${
+                          className={`py-1.5 rounded-lg text-[11px] font-bold transition-all ${
                             loginRole === 'student'
                               ? 'bg-[#251e35] text-indigo-400 border border-[#383050]'
                               : 'text-[#9f99b0] hover:text-[#f0eef5]'
                           }`}
                         >
-                          Student Login
+                          Student
                         </button>
                         <button
                           type="button"
                           onClick={() => setLoginRole('teacher')}
-                          className={`py-1.5 rounded-lg text-xs font-bold transition-all ${
+                          className={`py-1.5 rounded-lg text-[11px] font-bold transition-all ${
                             loginRole === 'teacher'
                               ? 'bg-[#251e35] text-purple-300 border border-[#383050]'
                               : 'text-[#9f99b0] hover:text-[#f0eef5]'
                           }`}
                         >
-                          Teacher Login
+                          Teacher
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setLoginRole('admin')}
+                          className={`py-1.5 rounded-lg text-[11px] font-bold transition-all ${
+                            loginRole === 'admin'
+                              ? 'bg-[#251e35] text-rose-400 border border-[#383050]'
+                              : 'text-[#9f99b0] hover:text-[#f0eef5]'
+                          }`}
+                        >
+                          Admin
                         </button>
                       </div>
                     </div>
@@ -315,7 +333,7 @@ export const Landing = () => {
                     {/* Email Input */}
                     <div>
                       <label className="block text-xs font-semibold uppercase tracking-wider text-[#9f99b0] mb-1.5">
-                        {loginRole === 'teacher' ? 'Instructor Email' : 'Student Email'}
+                        {loginRole === 'admin' ? 'Administrator Email' : loginRole === 'teacher' ? 'Instructor Email' : 'Student Email'}
                       </label>
                       <div className="relative">
                         <Mail className="w-4 h-4 text-[#6b6380] absolute left-3.5 top-3.5" />
@@ -324,7 +342,7 @@ export const Landing = () => {
                           required
                           value={loginEmail}
                           onChange={(e) => setLoginEmail(e.target.value)}
-                          placeholder={loginRole === 'teacher' ? 'teacher@algoprep.com' : 'student@algoprep.com'}
+                          placeholder={loginRole === 'admin' ? 'admin@algoprep.com' : loginRole === 'teacher' ? 'teacher@algoprep.com' : 'student@algoprep.com'}
                           className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#383050] text-[#f0eef5] text-xs focus:outline-none focus:border-indigo-500 transition-colors"
                         />
                       </div>
@@ -354,7 +372,7 @@ export const Landing = () => {
                       disabled={loading}
                       className="w-full py-3 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-md transition-colors flex items-center justify-center gap-2 text-xs"
                     >
-                      {loading ? 'Signing in...' : `Sign In to ${loginRole === 'teacher' ? 'Teacher Portal' : 'Student Workspace'}`}
+                      {loading ? 'Signing in...' : `Sign In to ${loginRole === 'admin' ? 'Admin Panel' : loginRole === 'teacher' ? 'Teacher Portal' : 'Student Workspace'}`}
                       <ArrowRight className="w-4 h-4" />
                     </button>
 
@@ -366,7 +384,7 @@ export const Landing = () => {
                         disabled={loading}
                         className="w-full py-2.5 rounded-xl text-xs font-semibold bg-[#1c1729] border border-[#383050] text-purple-400 hover:bg-[#251e35] transition-colors"
                       >
-                        {loginRole === 'teacher' ? 'Instant Demo Login (Teacher)' : 'Instant Demo Login (Alex Student)'}
+                        {loginRole === 'admin' ? 'Instant Demo Login (Admin)' : loginRole === 'teacher' ? 'Instant Demo Login (Teacher)' : 'Instant Demo Login (Alex Student)'}
                       </button>
                     </div>
                   </form>

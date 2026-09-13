@@ -1,5 +1,4 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { SocketProvider } from './context/SocketContext';
 import { Navbar } from './components/Navbar';
@@ -52,10 +51,16 @@ const GuestRoute = ({ children }) => {
 };
 
 export const AppContent = () => {
+  const { user } = useAuth();
+  const location = useLocation();
+
+  const isTestRoute = location.pathname.startsWith('/test/');
+  const isSidebarVisible = !!user && !isTestRoute;
+
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-[#f0eef5] flex flex-col font-sans">
-      <Navbar />
-      <main className="flex-1">
+      {!isTestRoute && <Navbar />}
+      <main className={`flex-1 ${isSidebarVisible ? 'md:ml-64' : ''}`}>
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />

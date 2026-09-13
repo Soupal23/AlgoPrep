@@ -83,15 +83,18 @@ describe('Phase 2 — AI Syllabus-to-Test Generator', () => {
 
     const sampleText = 'Computer Science Algorithms: Dynamic Programming, Graph Traversal, Network Flow.';
 
-    // Send 5 valid requests
-    for (let i = 0; i < 5; i++) {
-      const res = await supertest(app)
+    // Send 5 valid requests concurrently
+    const requests = Array.from({ length: 5 }, (_, i) =>
+      supertest(app)
         .post('/api/ai/generate')
         .set('Authorization', `Bearer ${token}`)
-        .send({ syllabusText: sampleText, topicName: `Topic ${i}` });
+        .send({ syllabusText: sampleText, topicName: `Topic ${i}` })
+    );
 
+    const responses = await Promise.all(requests);
+    responses.forEach(res => {
       expect(res.status).toBe(201);
-    }
+    });
 
     // 6th request should be rate limited (429 Too Many Requests)
     const rateLimitedRes = await supertest(app)
