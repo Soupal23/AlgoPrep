@@ -1,6 +1,5 @@
-import fs from 'fs/promises';
-import path from 'path';
 import { User } from '../models/User.js';
+import { saveUploadedFile, deleteUploadedFile } from '../services/storageService.js';
 
 export const getProfile = async (req, res) => {
   const userId = req.user?.userId;
@@ -59,14 +58,17 @@ export const uploadAvatarController = async (req, res) => {
     return;
   }
 
-  const filename = `${Date.now()}-${req.file.originalname}`;
-  const targetDir = path.resolve('uploads', 'avatars');
-  await fs.mkdir(targetDir, { recursive: true });
+  // Delete previous avatar if it exists
+  if (user.avatarUrl) {
+    await deleteUploadedFile(user.avatarUrl);
+  }
 
-  const targetPath = path.join(targetDir, filename);
-  await fs.writeFile(targetPath, req.file.buffer);
+  const avatarUrl = await saveUploadedFile({
+    buffer: req.file.buffer,
+    originalname: req.file.originalname,
+    subfolder: 'avatars'
+  });
 
-  const avatarUrl = `uploads/avatars/${filename}`;
   user.avatarUrl = avatarUrl;
   await user.save();
 

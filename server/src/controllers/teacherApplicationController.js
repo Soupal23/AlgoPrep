@@ -1,9 +1,8 @@
-import fs from 'fs/promises';
-import path from 'path';
 import bcrypt from 'bcryptjs';
 import { TeacherApplication } from '../models/TeacherApplication.js';
 import { User } from '../models/User.js';
 import { sendTeacherApprovalEmail } from '../services/emailService.js';
+import { saveUploadedFile } from '../services/storageService.js';
 
 export const submitApplication = async (req, res) => {
   const { name, email, subjectFocus, bio } = req.body;
@@ -30,15 +29,11 @@ export const submitApplication = async (req, res) => {
     return;
   }
 
-  // Ensure uploads/resumes directory exists on disk and save the binary buffer
-  const filename = `${Date.now()}-${req.file.originalname}`;
-  const targetDir = path.resolve('uploads', 'resumes');
-  await fs.mkdir(targetDir, { recursive: true });
-
-  const targetPath = path.join(targetDir, filename);
-  await fs.writeFile(targetPath, req.file.buffer);
-
-  const resumeUrl = `uploads/resumes/${filename}`;
+  const resumeUrl = await saveUploadedFile({
+    buffer: req.file.buffer,
+    originalname: req.file.originalname,
+    subfolder: 'resumes'
+  });
 
   const application = await TeacherApplication.create({
     name,
