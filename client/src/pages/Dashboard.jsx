@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { Clock, HelpCircle, Award, Sparkles, Play, Shield, Cpu, Network, Database, Code, BookOpen, CheckCircle2, RotateCcw, Layers, UserCheck } from 'lucide-react';
 
@@ -91,25 +91,6 @@ export const Dashboard = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      {/* Hero Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-[#14111f] border border-[#383050] p-8 sm:p-10 shadow-xl">
-        <div className="max-w-3xl space-y-4">
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#f0eef5]">
-            Computer Science Assessments
-          </h1>
-
-          <div className="flex flex-wrap gap-4 pt-2">
-            <Link
-              to="/ai-generate"
-              className="px-5 py-2.5 rounded-xl font-bold bg-purple-600 hover:bg-purple-500 text-white text-sm shadow-sm transition-colors flex items-center gap-2"
-            >
-              <Sparkles className="w-4 h-4" />
-              <span>Generate Custom AI Test</span>
-            </Link>
-          </div>
-        </div>
-      </div>
-
       {/* Filter Tabs */}
       <div className="flex flex-wrap items-center gap-2 border-b border-[#383050] pb-4">
         {FILTERS.map((f) => {
