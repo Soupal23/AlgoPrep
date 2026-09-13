@@ -107,12 +107,8 @@ export const Leaderboard = () => {
       </Link>
 
       {/* Header Banner */}
-      <div className="relative overflow-hidden rounded-3xl glass-panel border border-slate-800 p-8 bg-gradient-to-r from-amber-950/30 via-slate-900/60 to-indigo-950/40 shadow-2xl">
-        <div className="max-w-2xl space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-mono">
-            <Trophy className="w-3.5 h-3.5" />
-            <span>Test-Specific Candidate Rankings</span>
-          </div>
+      <div className="rounded-3xl bg-[#14111f] border border-[#2a2240] p-8 shadow-xl">
+        <div className="max-w-2xl space-y-2">
           <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
             <span>{activeTest?.title || 'Assessment Leaderboard'}</span>
             {activeTest?.isAIGenerated && (
@@ -121,8 +117,8 @@ export const Leaderboard = () => {
               </span>
             )}
           </h1>
-          <p className="text-slate-300 text-sm leading-relaxed">
-            Ranked candidates for <strong className="text-cyan-400">{activeTest?.topic || 'this test'}</strong>. Equal scores are broken by lower total time spent.
+          <p className="text-slate-400 text-sm">
+            Leaderboard standings for {activeTest?.topic || 'this test'}.
           </p>
         </div>
       </div>
@@ -130,15 +126,15 @@ export const Leaderboard = () => {
       {/* Filter Bar & My Stats Card */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
         {/* Test Filter Dropdown */}
-        <div className="lg:col-span-5 glass-card rounded-2xl p-5 border border-slate-800 space-y-2">
+        <div className="lg:col-span-5 bg-[#14111f] rounded-2xl p-5 border border-[#2a2240] space-y-2">
           <label className="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-            <Filter className="w-3.5 h-3.5 text-cyan-400" />
+            <Filter className="w-3.5 h-3.5 text-purple-400" />
             <span>Select Assessment</span>
           </label>
           <select
             value={selectedTestId}
             onChange={(e) => handleTestChange(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500"
+            className="w-full px-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#2a2240] text-slate-100 text-sm focus:outline-none focus:border-purple-400"
           >
             {tests.map((t) => (
               <option key={t._id} value={t._id}>
@@ -149,11 +145,11 @@ export const Leaderboard = () => {
         </div>
 
         {/* My Performance Card */}
-        <div className="lg:col-span-8 glass-card rounded-2xl p-5 border border-slate-800 flex flex-wrap items-center justify-between gap-4">
+        <div className="lg:col-span-7 bg-[#14111f] rounded-2xl p-5 border border-[#2a2240] flex flex-wrap items-center justify-between gap-4">
           <div>
             <span className="text-xs text-slate-400 font-mono uppercase">Your Current Position</span>
             <div className="flex items-center gap-3 mt-1">
-              <span className="text-2xl font-extrabold font-mono text-cyan-400">
+              <span className="text-2xl font-extrabold font-mono text-purple-400">
                 {myStats ? `#${myStats.rank}` : 'Not Ranked'}
               </span>
               {myStats && (
@@ -172,7 +168,7 @@ export const Leaderboard = () => {
               </div>
               <div>
                 <span className="text-slate-500 block">Accuracy</span>
-                <span className="text-cyan-400 font-bold text-sm">{myStats.accuracy}%</span>
+                <span className="text-purple-400 font-bold text-sm">{myStats.accuracy}%</span>
               </div>
               <div>
                 <span className="text-slate-500 block">Time</span>
@@ -184,21 +180,21 @@ export const Leaderboard = () => {
       </div>
 
       {/* Leaderboard Table */}
-      <div className="glass-panel rounded-3xl border border-slate-800 overflow-hidden shadow-2xl">
-        <div className="p-6 border-b border-slate-800 flex items-center justify-between">
+      <div className="bg-[#14111f] rounded-3xl border border-[#2a2240] overflow-hidden shadow-2xl">
+        <div className="p-6 border-b border-[#2a2240] flex items-center justify-between">
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
-            <Award className="w-5 h-5 text-amber-400" />
+            <Award className="w-5 h-5 text-purple-400" />
             <span>Leaderboard Standings</span>
           </h2>
           <span className="text-xs font-mono text-slate-400">
-            Total Participants: <span className="text-cyan-400 font-bold">{totalParticipants}</span>
+            Total Participants: <span className="text-purple-400 font-bold">{totalParticipants}</span>
           </span>
         </div>
 
         {loading ? (
           <div className="p-12 text-center space-y-3">
-            <div className="w-8 h-8 border-2 border-amber-400 border-t-transparent rounded-full animate-spin mx-auto" />
-            <p className="text-xs font-mono text-slate-400">Calculating rankings via MongoDB aggregation...</p>
+            <div className="w-8 h-8 border-2 border-purple-400 border-t-transparent rounded-full animate-spin mx-auto" />
+            <p className="text-xs font-mono text-slate-400">Loading leaderboard...</p>
           </div>
         ) : error ? (
           <div className="p-8 text-center text-rose-300 text-sm">{error}</div>

@@ -53,7 +53,7 @@ const GuestRoute = ({ children }) => {
 
 export const AppContent = () => {
   return (
-    <div className="min-h-screen bg-[#090d16] text-slate-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#0a0a0f] text-[#f0eef5] flex flex-col font-sans">
       <Navbar />
       <main className="flex-1">
         <Routes>

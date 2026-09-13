@@ -47,13 +47,12 @@ export const Login = () => {
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4">
-      <div className="glass-panel max-w-md w-full rounded-3xl p-8 border border-slate-800 shadow-2xl shadow-cyan-950/20">
+      <div className="glass-panel max-w-md w-full rounded-3xl p-8 border border-[#2a2240] bg-[#14111f] shadow-xl">
         <div className="text-center mb-8">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-600 to-indigo-600 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-cyan-500/30">
+          <div className="w-12 h-12 rounded-2xl bg-orange-500 flex items-center justify-center mx-auto mb-4 shadow-sm">
             <Terminal className="w-6 h-6 text-white" />
           </div>
-          <h2 className="text-2xl font-extrabold text-white">Welcome back to AlgoPrep</h2>
-          <p className="text-sm text-slate-400 mt-1">Computer Based Testing & Assessment System</p>
+          <h2 className="text-2xl font-extrabold text-[#f0eef5]">Welcome back to AlgoPrep</h2>
         </div>
 
         {error && (
@@ -64,35 +63,35 @@ export const Login = () => {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#9f99b0] mb-2">
               Email Address
             </label>
             <div className="relative">
-              <Mail className="w-5 h-5 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Mail className="w-5 h-5 text-[#6b6380] absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="student@algoprep.com"
-                className="w-full pl-11 pr-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
+                className="w-full pl-11 pr-4 py-3 rounded-xl bg-[#1c1729] border border-[#2a2240] text-[#f0eef5] text-sm focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400 transition-colors"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#9f99b0] mb-2">
               Password
             </label>
             <div className="relative">
-              <Lock className="w-5 h-5 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Lock className="w-5 h-5 text-[#6b6380] absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full pl-11 pr-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
+                className="w-full pl-11 pr-4 py-3 rounded-xl bg-[#1c1729] border border-[#2a2240] text-[#f0eef5] text-sm focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400 transition-colors"
               />
             </div>
           </div>
@@ -100,25 +99,25 @@ export const Login = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-xl font-bold bg-gradient-to-r from-cyan-600 to-indigo-600 text-white shadow-lg shadow-cyan-600/30 hover:opacity-95 transition-opacity flex items-center justify-center gap-2"
+            className="w-full py-3 rounded-xl font-bold bg-orange-500 hover:bg-orange-400 text-white shadow-sm transition-colors flex items-center justify-center gap-2"
           >
             {loading ? 'Signing in...' : 'Sign In'}
             <ArrowRight className="w-4 h-4" />
           </button>
         </form>
 
-        <div className="mt-6 pt-6 border-t border-slate-800 flex flex-col gap-3 text-center">
+        <div className="mt-6 pt-6 border-t border-[#2a2240] flex flex-col gap-3 text-center">
           <button
             onClick={handleDemoLogin}
             disabled={loading}
-            className="w-full py-2.5 rounded-xl text-xs font-semibold bg-slate-800/80 border border-slate-700 text-cyan-300 hover:bg-slate-700 transition-colors"
+            className="w-full py-2.5 rounded-xl text-xs font-semibold bg-[#1c1729] border border-[#2a2240] text-purple-400 hover:bg-[#251e35] transition-colors"
           >
             Instant Demo Login (Alex Student)
           </button>
 
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-[#9f99b0]">
             Don't have an account?{' '}
-            <Link to="/register" className="text-cyan-400 font-semibold hover:underline">
+            <Link to="/register" className="text-orange-400 font-semibold hover:underline">
               Create account
             </Link>
           </p>

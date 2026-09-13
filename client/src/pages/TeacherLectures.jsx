@@ -85,14 +85,13 @@ export const TeacherLectures = () => {
   return (
     <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
       {/* Header */}
-      <div className="glass-panel rounded-3xl p-8 border border-slate-800 space-y-2 shadow-xl">
+      <div className="bg-[#14111f] rounded-3xl p-8 border border-[#2a2240] space-y-2 shadow-xl">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-rose-950 border border-rose-700 flex items-center justify-center text-rose-400">
+          <div className="w-10 h-10 rounded-xl bg-[#1c1729] border border-[#2a2240] flex items-center justify-center text-purple-400">
             <Video className="w-5 h-5" />
           </div>
           <div>
             <h1 className="text-2xl font-extrabold text-white">Recorded Video Lectures</h1>
-            <p className="text-xs text-slate-400">Publish YouTube or Google Drive video embeds to your joined student feeds</p>
           </div>
         </div>
       </div>
@@ -111,9 +110,9 @@ export const TeacherLectures = () => {
       )}
 
       {/* Upload Form */}
-      <div className="glass-panel rounded-3xl p-8 border border-slate-800 shadow-xl space-y-6">
+      <div className="bg-[#14111f] rounded-3xl p-8 border border-[#2a2240] shadow-xl space-y-6">
         <h2 className="text-lg font-bold text-white flex items-center gap-2">
-          <Plus className="w-5 h-5 text-rose-400" />
+          <Plus className="w-5 h-5 text-purple-400" />
           <span>Publish New Video Lecture</span>
         </h2>
 
@@ -125,7 +124,7 @@ export const TeacherLectures = () => {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Masterclass: Dynamic Programming & Memoization"
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm focus:outline-none focus:border-rose-500"
+              className="w-full px-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#2a2240] text-white text-sm focus:outline-none focus:border-purple-400"
               required
             />
           </div>
@@ -137,7 +136,7 @@ export const TeacherLectures = () => {
               value={videoUrl}
               onChange={(e) => setVideoUrl(e.target.value)}
               placeholder="https://www.youtube.com/watch?v=... or https://drive.google.com/file/d/.../view"
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm focus:outline-none focus:border-rose-500"
+              className="w-full px-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#2a2240] text-white text-sm focus:outline-none focus:border-purple-400"
               required
             />
             <p className="text-[11px] text-slate-500 mt-1">
@@ -152,14 +151,14 @@ export const TeacherLectures = () => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Brief overview of key concepts covered in this recording..."
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm focus:outline-none focus:border-rose-500"
+              className="w-full px-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#2a2240] text-white text-sm focus:outline-none focus:border-purple-400"
             />
           </div>
 
           <button
             type="submit"
             disabled={submitting}
-            className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-indigo-600 text-white font-bold text-sm shadow-md hover:opacity-95 transition-opacity flex items-center gap-2"
+            className="px-6 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-400 text-white font-bold text-sm shadow-md transition-colors flex items-center gap-2"
           >
             <Video className="w-4 h-4" />
             <span>{submitting ? 'Publishing...' : 'Publish Lecture'}</span>
@@ -176,7 +175,7 @@ export const TeacherLectures = () => {
         {loading ? (
           <div className="p-12 text-center text-xs font-mono text-slate-400">Loading lectures...</div>
         ) : lectures.length === 0 ? (
-          <div className="glass-panel rounded-3xl p-8 text-center text-xs text-slate-500 border border-slate-800">
+          <div className="bg-[#14111f] rounded-3xl p-8 text-center text-xs text-slate-500 border border-[#2a2240]">
             No video lectures published yet. Submit a YouTube or Google Drive link above.
           </div>
         ) : (
@@ -184,10 +183,10 @@ export const TeacherLectures = () => {
             {lectures.map((item) => (
               <div
                 key={item._id}
-                className="glass-card rounded-2xl p-6 border border-slate-800 hover:border-rose-500/40 transition-all space-y-4 flex flex-col justify-between shadow-lg"
+                className="bg-[#14111f] rounded-2xl p-6 border border-[#2a2240] hover:border-purple-400/50 transition-all space-y-4 flex flex-col justify-between shadow-lg"
               >
                 <div className="space-y-3">
-                  <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black border border-slate-800">
+                  <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black border border-[#2a2240]">
                     <iframe
                       src={item.embedUrl}
                       title={item.title}
@@ -208,19 +207,19 @@ export const TeacherLectures = () => {
                   </div>
 
                   {item.description && (
-                    <p className="text-xs text-slate-300 line-clamp-2 bg-slate-950/40 p-3 rounded-xl border border-slate-800">
+                    <p className="text-xs text-slate-300 line-clamp-2 bg-[#1c1729] p-3 rounded-xl border border-[#2a2240]">
                       {item.description}
                     </p>
                   )}
                 </div>
 
-                <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono text-slate-400">
+                <div className="pt-2 border-t border-[#2a2240] flex items-center justify-between text-[11px] font-mono text-slate-400">
                   <span>Uploaded {new Date(item.uploadedAt).toLocaleDateString()}</span>
                   <a
                     href={item.videoUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-rose-400 hover:underline flex items-center gap-1"
+                    className="text-purple-400 hover:underline flex items-center gap-1"
                   >
                     <span>Original Link</span>
                     <ExternalLink className="w-3 h-3" />

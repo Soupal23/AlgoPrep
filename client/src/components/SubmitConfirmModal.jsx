@@ -24,34 +24,34 @@ export const SubmitConfirmModal = ({
   const unattemptedCount = totalQuestions - answeredCount;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fadeIn">
-      <div className="glass-panel max-w-lg w-full rounded-2xl p-6 border border-cyan-500/30 shadow-2xl shadow-cyan-950/40">
-        <div className="flex items-center gap-3 mb-4 pb-3 border-b border-slate-800">
-          <div className="p-2.5 rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0a0a0f]/90 backdrop-blur-md animate-fadeIn">
+      <div className="glass-panel max-w-lg w-full rounded-2xl p-6 border border-[#2a2240] shadow-xl bg-[#14111f]">
+        <div className="flex items-center gap-3 mb-4 pb-3 border-b border-[#2a2240]">
+          <div className="p-2.5 rounded-xl bg-orange-500/20 text-orange-400 border border-orange-500/30">
             <Send className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-white">Confirm Test Submission</h3>
-            <p className="text-xs text-slate-400">Are you sure you want to finish and submit your attempt?</p>
+            <h3 className="text-xl font-bold text-[#f0eef5]">Confirm Test Submission</h3>
+            <p className="text-xs text-[#9f99b0]">Are you sure you want to finish and submit your attempt?</p>
           </div>
         </div>
 
         <div className="grid grid-cols-3 gap-3 mb-6">
-          <div className="bg-slate-900/90 rounded-xl p-3 border border-slate-800 text-center">
+          <div className="bg-[#1c1729] rounded-xl p-3 border border-[#2a2240] text-center">
             <CheckCircle2 className="w-5 h-5 text-emerald-400 mx-auto mb-1" />
-            <div className="text-xs text-slate-400">Answered</div>
+            <div className="text-xs text-[#9f99b0]">Answered</div>
             <div className="text-lg font-mono font-bold text-emerald-400">{answeredCount}</div>
           </div>
 
-          <div className="bg-slate-900/90 rounded-xl p-3 border border-slate-800 text-center">
+          <div className="bg-[#1c1729] rounded-xl p-3 border border-[#2a2240] text-center">
             <Bookmark className="w-5 h-5 text-purple-400 mx-auto mb-1" />
-            <div className="text-xs text-slate-400">Marked</div>
+            <div className="text-xs text-[#9f99b0]">Marked</div>
             <div className="text-lg font-mono font-bold text-purple-400">{markedCount}</div>
           </div>
 
-          <div className="bg-slate-900/90 rounded-xl p-3 border border-slate-800 text-center">
+          <div className="bg-[#1c1729] rounded-xl p-3 border border-[#2a2240] text-center">
             <HelpCircle className="w-5 h-5 text-rose-400 mx-auto mb-1" />
-            <div className="text-xs text-slate-400">Unattempted</div>
+            <div className="text-xs text-[#9f99b0]">Unattempted</div>
             <div className="text-lg font-mono font-bold text-rose-400">{unattemptedCount}</div>
           </div>
         </div>
@@ -67,14 +67,14 @@ export const SubmitConfirmModal = ({
           <button
             onClick={onCancel}
             disabled={isSubmitting}
-            className="px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-800 transition-colors"
+            className="px-5 py-2.5 rounded-xl text-sm font-semibold text-[#9f99b0] hover:bg-[#1c1729] transition-colors"
           >
             Continue Exam
           </button>
           <button
             onClick={onConfirm}
             disabled={isSubmitting}
-            className="px-6 py-2.5 rounded-xl text-sm font-bold bg-gradient-to-r from-cyan-600 to-indigo-600 text-white shadow-lg shadow-cyan-600/30 hover:opacity-90 transition-opacity flex items-center gap-2"
+            className="px-6 py-2.5 rounded-xl text-sm font-bold bg-orange-500 hover:bg-orange-400 text-white shadow-sm transition-colors flex items-center gap-2"
           >
             {isSubmitting ? (
               <span>Submitting...</span>

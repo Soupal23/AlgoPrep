@@ -58,17 +58,14 @@ export const SyllabusAI = () => {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
       {/* Header Banner */}
-      <div className="relative overflow-hidden rounded-3xl glass-panel border border-slate-800 p-8 bg-gradient-to-r from-purple-950/40 via-slate-900/60 to-indigo-950/40 shadow-2xl">
-        <div className="max-w-2xl space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-400 text-xs font-mono">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Gemini AI Test Engine</span>
-          </div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-white">
-            Syllabus-to-Test AI Generator
+      <div className="rounded-3xl bg-[#14111f] border border-[#2a2240] p-8 shadow-xl">
+        <div className="max-w-2xl space-y-2">
+          <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-2">
+            <Sparkles className="w-6 h-6 text-purple-400" />
+            <span>Syllabus-to-Test AI Generator</span>
           </h1>
-          <p className="text-slate-300 text-sm leading-relaxed">
-            Upload your course syllabus PDF or plain text to instantly extract key CS concepts and synthesize a proctored 30-minute exam.
+          <p className="text-slate-400 text-sm">
+            Upload your course syllabus PDF or plain text to synthesize a proctored exam.
           </p>
         </div>
       </div>
@@ -82,8 +79,8 @@ export const SyllabusAI = () => {
 
       {/* Success Card */}
       {generatedTest ? (
-        <div className="glass-panel rounded-3xl p-8 border border-emerald-500/30 text-center space-y-6 animate-fadeIn">
-          <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center mx-auto shadow-lg shadow-emerald-950/40">
+        <div className="bg-[#14111f] rounded-3xl p-8 border border-emerald-500/30 text-center space-y-6">
+          <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center mx-auto shadow-lg">
             <CheckCircle2 className="w-8 h-8" />
           </div>
           <div>
@@ -95,14 +92,14 @@ export const SyllabusAI = () => {
           </div>
 
           <div className="flex items-center justify-center gap-6 text-xs font-mono text-slate-300 pt-2">
-            <div>Questions: <span className="text-cyan-400 font-bold">{generatedTest.totalQuestions}</span></div>
+            <div>Questions: <span className="text-purple-400 font-bold">{generatedTest.totalQuestions}</span></div>
             <div>Time Limit: <span className="text-amber-400 font-bold">{generatedTest.timeLimitMinutes}m</span></div>
             <div>Scheme: <span className="text-emerald-400 font-bold">+{generatedTest.markingScheme?.correct} / {generatedTest.markingScheme?.incorrect}</span></div>
           </div>
 
           <button
             onClick={() => navigate(`/test/${generatedTest._id}`)}
-            className="px-8 py-3.5 rounded-xl font-extrabold bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-600/30 hover:opacity-95 transition-all inline-flex items-center gap-2"
+            className="px-8 py-3.5 rounded-xl font-bold bg-orange-500 hover:bg-orange-400 text-white shadow-lg transition-all inline-flex items-center gap-2"
           >
             <span>Start AI Exam Now</span>
             <Play className="w-4 h-4 fill-current" />
@@ -110,13 +107,13 @@ export const SyllabusAI = () => {
         </div>
       ) : (
         /* Generator Form */
-        <form onSubmit={handleGenerate} className="glass-panel rounded-3xl p-8 border border-slate-800 space-y-6 shadow-xl">
+        <form onSubmit={handleGenerate} className="bg-[#14111f] rounded-3xl p-8 border border-[#2a2240] space-y-6 shadow-xl">
           {/* File Upload Zone */}
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
               Upload Syllabus Document (PDF or TXT, Max 5MB)
             </label>
-            <div className="relative border-2 border-dashed border-slate-700 hover:border-purple-500 rounded-2xl p-6 text-center transition-colors bg-slate-900/50 group">
+            <div className="relative border-2 border-dashed border-[#2a2240] hover:border-purple-400 rounded-2xl p-6 text-center transition-colors bg-[#1c1729] group">
               <input
                 type="file"
                 accept=".pdf,.txt,application/pdf,text/plain"
@@ -134,7 +131,7 @@ export const SyllabusAI = () => {
                     <p className="text-sm font-medium text-slate-300">
                       Drag & drop your syllabus PDF / text file here, or click to browse
                     </p>
-                    <p className="text-xs text-slate-500">Supported formats: PDF, TXT (capped at top 8,000 characters)</p>
+                    <p className="text-xs text-slate-500">Supported formats: PDF, TXT</p>
                   </>
                 )}
               </div>
@@ -151,7 +148,7 @@ export const SyllabusAI = () => {
               value={syllabusText}
               onChange={(e) => setSyllabusText(e.target.value)}
               placeholder="Paste syllabus topics, course modules, or lecture notes..."
-              className="w-full p-4 rounded-xl bg-slate-900 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-purple-500 transition-colors"
+              className="w-full p-4 rounded-xl bg-[#1c1729] border border-[#2a2240] text-slate-100 text-sm focus:outline-none focus:border-purple-400 transition-colors"
             />
           </div>
 
@@ -166,7 +163,7 @@ export const SyllabusAI = () => {
                 value={topicName}
                 onChange={(e) => setTopicName(e.target.value)}
                 placeholder="e.g. Distributed Systems & Microservices"
-                className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-purple-500"
+                className="w-full px-4 py-3 rounded-xl bg-[#1c1729] border border-[#2a2240] text-slate-100 text-sm focus:outline-none focus:border-purple-400"
               />
             </div>
 
@@ -177,7 +174,7 @@ export const SyllabusAI = () => {
               <select
                 value={numQuestions}
                 onChange={(e) => setNumQuestions(parseInt(e.target.value, 10))}
-                className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-purple-500"
+                className="w-full px-4 py-3 rounded-xl bg-[#1c1729] border border-[#2a2240] text-slate-100 text-sm focus:outline-none focus:border-purple-400"
               >
                 <option value={10}>10 Questions (Standard)</option>
                 <option value={12}>12 Questions</option>
@@ -190,16 +187,16 @@ export const SyllabusAI = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-4 rounded-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-600/30 hover:opacity-95 transition-opacity flex items-center justify-center gap-2"
+              className="w-full py-4 rounded-xl font-bold bg-orange-500 hover:bg-orange-400 text-white shadow-lg transition-colors flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  <span>Extracting Syllabus & Prompting Gemini...</span>
+                  <span>Generating test...</span>
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-5 h-5 text-purple-200" />
+                  <Sparkles className="w-5 h-5 text-white" />
                   <span>Synthesize AI Test Now</span>
                 </>
               )}

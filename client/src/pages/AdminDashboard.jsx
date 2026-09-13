@@ -107,24 +107,23 @@ export const AdminDashboard = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
       {/* Header */}
-      <div className="glass-panel rounded-3xl p-8 border border-slate-800 flex flex-wrap items-center justify-between gap-6 shadow-xl">
+      <div className="bg-[#14111f] rounded-3xl p-8 border border-[#2a2240] flex flex-wrap items-center justify-between gap-6 shadow-xl">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-rose-950 border border-rose-700 flex items-center justify-center text-rose-400">
+          <div className="w-10 h-10 rounded-xl bg-[#1c1729] border border-[#2a2240] flex items-center justify-center text-purple-400">
             <ShieldCheck className="w-5 h-5" />
           </div>
           <div>
             <h1 className="text-2xl font-extrabold text-white">Platform Administration Panel</h1>
-            <p className="text-xs text-slate-400">Manage candidate teacher applications and moderate platform user access</p>
           </div>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-slate-900 border border-slate-800">
+        <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-[#1c1729] border border-[#2a2240]">
           <button
             onClick={() => setActiveTab('applications')}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
               activeTab === 'applications'
-                ? 'bg-rose-600 text-white shadow-md'
+                ? 'bg-orange-500 text-white shadow-md'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
@@ -135,7 +134,7 @@ export const AdminDashboard = () => {
           <button
             onClick={() => setActiveTab('users')}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
-              activeTab === 'users' ? 'bg-rose-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
+              activeTab === 'users' ? 'bg-orange-500 text-white shadow-md' : 'text-slate-400 hover:text-white'
             }`}
           >
             <Users className="w-4 h-4" />
@@ -145,7 +144,7 @@ export const AdminDashboard = () => {
       </div>
 
       {approvalNotice && (
-        <div className="p-6 rounded-2xl bg-emerald-950/80 border border-emerald-700 text-emerald-100 shadow-xl space-y-3">
+        <div className="p-6 rounded-2xl bg-[#14111f] border border-emerald-700 text-emerald-100 shadow-xl space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
               <CheckCircle2 className="w-5 h-5" />
@@ -159,9 +158,9 @@ export const AdminDashboard = () => {
             </button>
           </div>
           <p className="text-xs text-slate-300">
-            An instructor account has been created for <strong className="text-white">{approvalNotice.email}</strong>. An approval notification has been logged & sent.
+            An instructor account has been created for <strong className="text-white">{approvalNotice.email}</strong>.
           </p>
-          <div className="p-3 rounded-xl bg-slate-900/90 border border-emerald-900/60 font-mono text-xs space-y-1">
+          <div className="p-3 rounded-xl bg-[#1c1729] border border-[#2a2240] font-mono text-xs space-y-1">
             <div><span className="text-slate-400">Login Email:</span> <span className="text-emerald-300 font-bold">{approvalNotice.email}</span></div>
             <div><span className="text-slate-400">Temporary Password:</span> <span className="text-amber-300 font-bold">{approvalNotice.password}</span></div>
           </div>
@@ -184,13 +183,13 @@ export const AdminDashboard = () => {
               Candidate Applications ({applications.length})
             </h2>
 
-            <div className="flex items-center gap-2 bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs font-mono">
+            <div className="flex items-center gap-2 bg-[#14111f] p-1 rounded-xl border border-[#2a2240] text-xs font-mono">
               {['pending', 'approved', 'rejected', ''].map((st) => (
                 <button
                   key={st}
                   onClick={() => setAppFilter(st)}
                   className={`px-3 py-1.5 rounded-lg capitalize transition-colors ${
-                    appFilter === st ? 'bg-slate-800 text-rose-400 font-bold' : 'text-slate-400 hover:text-white'
+                    appFilter === st ? 'bg-purple-600 text-white font-bold' : 'text-slate-400 hover:text-white'
                   }`}
                 >
                   {st || 'All'}
@@ -202,7 +201,7 @@ export const AdminDashboard = () => {
           {loadingApps ? (
             <div className="p-16 text-center text-xs font-mono text-slate-400">Loading candidate applications...</div>
           ) : applications.length === 0 ? (
-            <div className="glass-panel rounded-3xl p-12 text-center text-slate-400 border border-slate-800">
+            <div className="bg-[#14111f] rounded-3xl p-12 text-center text-slate-400 border border-[#2a2240]">
               No teacher applications found for status "{appFilter || 'all'}".
             </div>
           ) : (
@@ -213,7 +212,7 @@ export const AdminDashboard = () => {
                 return (
                   <div
                     key={app._id}
-                    className="glass-card rounded-2xl p-6 border border-slate-800 hover:border-rose-500/40 transition-all space-y-4 flex flex-col justify-between shadow-lg"
+                    className="bg-[#14111f] rounded-2xl p-6 border border-[#2a2240] hover:border-purple-400/50 transition-all space-y-4 flex flex-col justify-between shadow-lg"
                   >
                     <div className="space-y-3">
                       <div className="flex items-start justify-between gap-2">
@@ -236,27 +235,27 @@ export const AdminDashboard = () => {
 
                       <div className="space-y-1">
                         <span className="text-[10px] font-mono text-slate-500 block">Subject Specialization</span>
-                        <span className="text-xs font-bold text-indigo-300 bg-indigo-950/60 px-2.5 py-1 rounded-lg border border-indigo-900 inline-block">
+                        <span className="text-xs font-bold text-purple-300 bg-[#1c1729] px-2.5 py-1 rounded-lg border border-[#2a2240] inline-block">
                           {app.subjectFocus || 'Computer Science'}
                         </span>
                       </div>
 
                       {app.bio && (
-                        <p className="text-xs text-slate-300 bg-slate-950/40 p-3 rounded-xl border border-slate-800">
+                        <p className="text-xs text-slate-300 bg-[#1c1729] p-3 rounded-xl border border-[#2a2240]">
                           {app.bio}
                         </p>
                       )}
                     </div>
 
-                    <div className="pt-3 border-t border-slate-800 space-y-3">
+                    <div className="pt-3 border-t border-[#2a2240] space-y-3">
                       {app.resumeUrl && (
                         <a
                           href={`/${app.resumeUrl}`}
                           target="_blank"
                           rel="noreferrer"
-                          className="w-full py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-bold border border-slate-800 flex items-center justify-center gap-2 transition-colors"
+                          className="w-full py-2 rounded-xl bg-[#1c1729] hover:bg-[#251e35] text-purple-300 text-xs font-bold border border-[#2a2240] flex items-center justify-center gap-2 transition-colors"
                         >
-                          <Download className="w-3.5 h-3.5 text-rose-400" />
+                          <Download className="w-3.5 h-3.5 text-purple-400" />
                           <span>View / Download Resume</span>
                         </a>
                       )}
@@ -304,7 +303,7 @@ export const AdminDashboard = () => {
               <select
                 value={userRoleFilter}
                 onChange={(e) => setUserRoleFilter(e.target.value)}
-                className="px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white focus:outline-none"
+                className="px-3 py-2 rounded-xl bg-[#1c1729] border border-[#2a2240] text-white focus:outline-none focus:border-purple-400"
               >
                 <option value="">All Roles</option>
                 <option value="student">Student</option>
@@ -315,7 +314,7 @@ export const AdminDashboard = () => {
               <select
                 value={userStatusFilter}
                 onChange={(e) => setUserStatusFilter(e.target.value)}
-                className="px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white focus:outline-none"
+                className="px-3 py-2 rounded-xl bg-[#1c1729] border border-[#2a2240] text-white focus:outline-none focus:border-purple-400"
               >
                 <option value="">All Statuses</option>
                 <option value="active">Active Only</option>
@@ -327,15 +326,15 @@ export const AdminDashboard = () => {
           {loadingUsers ? (
             <div className="p-16 text-center text-xs font-mono text-slate-400">Loading user directory...</div>
           ) : users.length === 0 ? (
-            <div className="glass-panel rounded-3xl p-12 text-center text-slate-400 border border-slate-800">
+            <div className="bg-[#14111f] rounded-3xl p-12 text-center text-slate-400 border border-[#2a2240]">
               No platform users found matching current filters.
             </div>
           ) : (
-            <div className="glass-panel rounded-3xl border border-slate-800 overflow-hidden shadow-2xl">
+            <div className="bg-[#14111f] rounded-3xl border border-[#2a2240] overflow-hidden shadow-2xl">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
-                    <tr className="border-b border-slate-800 bg-slate-950/80 text-slate-400 font-mono">
+                    <tr className="border-b border-[#2a2240] bg-[#1c1729] text-slate-400 font-mono">
                       <th className="p-4">User</th>
                       <th className="p-4">Email</th>
                       <th className="p-4">Role</th>
@@ -344,15 +343,15 @@ export const AdminDashboard = () => {
                       <th className="p-4 text-right">Moderation Action</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-900">
+                  <tbody className="divide-y divide-[#2a2240]/60">
                     {users.map((u) => {
                       const isUpdating = !!actionLoading[u._id];
 
                       return (
-                        <tr key={u._id} className="hover:bg-slate-900/40 transition-colors">
+                        <tr key={u._id} className="hover:bg-[#1c1729]/50 transition-colors">
                           <td className="p-4">
                             <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-xl overflow-hidden bg-slate-800 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                              <div className="w-8 h-8 rounded-xl overflow-hidden bg-[#1c1729] border border-[#2a2240] flex items-center justify-center text-purple-300 text-xs font-bold shrink-0">
                                 {u.avatarUrl ? (
                                   <img src={`/${u.avatarUrl}`} alt={u.name} className="w-full h-full object-cover" />
                                 ) : (
@@ -367,10 +366,10 @@ export const AdminDashboard = () => {
                             <span
                               className={`px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold ${
                                 u.role === 'admin'
-                                  ? 'bg-rose-950 text-rose-400 border border-rose-800'
+                                  ? 'bg-orange-950 text-orange-400 border border-orange-800'
                                   : u.role === 'teacher'
-                                  ? 'bg-indigo-950 text-indigo-400 border border-indigo-800'
-                                  : 'bg-cyan-950 text-cyan-400 border border-cyan-800'
+                                  ? 'bg-purple-950 text-purple-300 border border-purple-800'
+                                  : 'bg-[#1c1729] text-slate-300 border border-[#2a2240]'
                               }`}
                             >
                               {u.role}
@@ -381,7 +380,7 @@ export const AdminDashboard = () => {
                               className={`px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold ${
                                 u.isActive
                                   ? 'bg-emerald-950 text-emerald-400 border border-emerald-800'
-                                  : 'bg-slate-800 text-slate-400 border border-slate-700'
+                                  : 'bg-[#1c1729] text-slate-400 border border-[#2a2240]'
                               }`}
                             >
                               {u.isActive ? 'Active' : 'Deactivated'}

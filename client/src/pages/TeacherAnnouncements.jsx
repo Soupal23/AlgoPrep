@@ -64,14 +64,13 @@ export const TeacherAnnouncements = () => {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
       {/* Header */}
-      <div className="glass-panel rounded-3xl p-8 border border-slate-800 space-y-2 shadow-xl">
+      <div className="bg-[#14111f] rounded-3xl p-8 border border-[#2a2240] space-y-2 shadow-xl">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-amber-950 border border-amber-700 flex items-center justify-center text-amber-400">
+          <div className="w-10 h-10 rounded-xl bg-[#1c1729] border border-[#2a2240] flex items-center justify-center text-purple-400">
             <Megaphone className="w-5 h-5" />
           </div>
           <div>
             <h1 className="text-2xl font-extrabold text-white">Post Class Announcements</h1>
-            <p className="text-xs text-slate-400">Broadcast notifications and updates to all students who joined your class</p>
           </div>
         </div>
       </div>
@@ -90,9 +89,9 @@ export const TeacherAnnouncements = () => {
       )}
 
       {/* Post Form */}
-      <div className="glass-panel rounded-3xl p-8 border border-slate-800 shadow-xl space-y-6">
+      <div className="bg-[#14111f] rounded-3xl p-8 border border-[#2a2240] shadow-xl space-y-6">
         <h2 className="text-lg font-bold text-white flex items-center gap-2">
-          <Plus className="w-5 h-5 text-amber-400" />
+          <Plus className="w-5 h-5 text-purple-400" />
           <span>New Announcement Broadcast</span>
         </h2>
 
@@ -104,7 +103,7 @@ export const TeacherAnnouncements = () => {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Midterm Test Scheduled for Friday"
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm focus:outline-none focus:border-amber-500"
+              className="w-full px-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#2a2240] text-white text-sm focus:outline-none focus:border-purple-400"
               required
             />
           </div>
@@ -116,7 +115,7 @@ export const TeacherAnnouncements = () => {
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="Write your update or instructions for joined students..."
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-sm focus:outline-none focus:border-amber-500"
+              className="w-full px-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#2a2240] text-white text-sm focus:outline-none focus:border-purple-400"
               required
             />
           </div>
@@ -124,7 +123,7 @@ export const TeacherAnnouncements = () => {
           <button
             type="submit"
             disabled={submitting}
-            className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-indigo-600 text-white font-bold text-sm shadow-md hover:opacity-95 transition-opacity flex items-center gap-2"
+            className="px-6 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-400 text-white font-bold text-sm shadow-md transition-colors flex items-center gap-2"
           >
             <Megaphone className="w-4 h-4" />
             <span>{submitting ? 'Publishing...' : 'Publish Announcement'}</span>
@@ -141,18 +140,18 @@ export const TeacherAnnouncements = () => {
         {loading ? (
           <div className="p-12 text-center text-xs font-mono text-slate-400">Loading past announcements...</div>
         ) : announcements.length === 0 ? (
-          <div className="glass-panel rounded-3xl p-8 text-center text-xs text-slate-500 border border-slate-800">
+          <div className="bg-[#14111f] rounded-3xl p-8 text-center text-xs text-slate-500 border border-[#2a2240]">
             No announcements published yet. Fill out the form above to broadcast your first announcement.
           </div>
         ) : (
           announcements.map((item) => (
             <div
               key={item._id}
-              className="glass-card rounded-2xl p-6 border border-slate-800 hover:border-amber-500/40 transition-all space-y-3 flex flex-col justify-between shadow-lg"
+              className="bg-[#14111f] rounded-2xl p-6 border border-[#2a2240] hover:border-purple-400/50 transition-all space-y-3 flex flex-col justify-between shadow-lg"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="space-y-1">
-                  <h3 className="text-base font-bold text-amber-300">{item.title}</h3>
+                  <h3 className="text-base font-bold text-purple-300">{item.title}</h3>
                   <div className="flex items-center gap-1.5 text-[10px] font-mono text-slate-400">
                     <Clock className="w-3 h-3 text-slate-500" />
                     <span>{new Date(item.createdAt).toLocaleString()}</span>
@@ -169,7 +168,7 @@ export const TeacherAnnouncements = () => {
                 </button>
               </div>
 
-              <p className="text-xs text-slate-200 leading-relaxed whitespace-pre-line bg-slate-950/40 p-4 rounded-xl border border-slate-800/80">
+              <p className="text-xs text-slate-200 leading-relaxed whitespace-pre-line bg-[#1c1729] p-4 rounded-xl border border-[#2a2240]">
                 {item.content}
               </p>
             </div>
