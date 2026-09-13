@@ -131,19 +131,8 @@ export const Landing = () => {
         {/* LEFT COLUMN: Brand, Portal Intro & 3 Feature Cards */}
         <div className="lg:col-span-7 space-y-8">
           
-          {/* Brand Mark & Badge */}
+          {/* Portal Main Title */}
           <div className="space-y-4">
-            <div className="inline-flex items-center gap-3 px-3.5 py-1.5 rounded-full bg-[#1c1729] border border-[#383050]">
-              <div className="w-6 h-6 rounded-lg bg-indigo-600 flex items-center justify-center">
-                <Terminal className="w-3.5 h-3.5 text-white" />
-              </div>
-              <span className="text-xs font-extrabold tracking-wider text-white">AlgoPrep</span>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-indigo-950 text-indigo-400 border border-indigo-800 font-bold">
-                ALL-IN-ONE LEARNING PLATFORM
-              </span>
-            </div>
-
-            {/* Portal Main Title */}
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[#f0eef5] leading-[1.15]">
               MASTER YOUR SKILLS.{' '}
               <span className="text-indigo-400 block sm:inline">ACE YOUR EXAMS.</span>
@@ -200,15 +189,6 @@ export const Landing = () => {
               </div>
             </div>
 
-          </div>
-
-          {/* Operational Status Ticker */}
-          <div className="pt-2 flex items-center justify-between text-[11px] font-mono text-[#6b6380] border-t border-[#383050]/60">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-slate-300 font-semibold">SYSTEM STATUS: OPERATIONAL</span>
-            </div>
-            <span className="hidden sm:inline">[{new Date().toLocaleDateString('en-US', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })}]</span>
           </div>
 
         </div>
