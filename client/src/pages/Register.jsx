@@ -39,7 +39,7 @@ export const Register = () => {
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4">
       <div className="glass-panel max-w-md w-full rounded-3xl p-8 border border-[#2a2240] bg-[#14111f] shadow-xl">
         <div className="text-center mb-8">
-          <div className="w-12 h-12 rounded-2xl bg-orange-500 flex items-center justify-center mx-auto mb-4 shadow-sm">
+          <div className="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center mx-auto mb-4 shadow-sm">
             <Terminal className="w-6 h-6 text-white" />
           </div>
           <h2 className="text-2xl font-extrabold text-[#f0eef5]">Create AlgoPrep Account</h2>
@@ -63,7 +63,7 @@ export const Register = () => {
                 onClick={() => setRole('student')}
                 className={`py-2 rounded-lg text-xs font-bold transition-all ${
                   role === 'student'
-                    ? 'bg-orange-500 text-white shadow-sm'
+                    ? 'bg-indigo-600 text-white shadow-sm'
                     : 'text-[#9f99b0] hover:text-[#f0eef5]'
                 }`}
               >
@@ -147,7 +147,7 @@ export const Register = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 mt-2 rounded-xl font-bold bg-orange-500 hover:bg-orange-400 text-white shadow-sm transition-colors flex items-center justify-center gap-2"
+            className="w-full py-3 mt-2 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm transition-colors flex items-center justify-center gap-2"
           >
             {loading ? 'Creating Account...' : 'Register Account'}
             <ArrowRight className="w-4 h-4" />
@@ -157,7 +157,7 @@ export const Register = () => {
         <div className="mt-6 pt-6 border-t border-[#2a2240] text-center space-y-2">
           <p className="text-xs text-[#9f99b0]">
             Already have an account?{' '}
-            <Link to="/login" className="text-orange-400 font-semibold hover:underline">
+            <Link to="/login" className="text-indigo-400 font-semibold hover:underline">
               Log in
             </Link>
           </p>

@@ -262,7 +262,7 @@ export const Results = () => {
           onClick={() => handleTabChange('review')}
           className={`px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 ${
             activeTab === 'review'
-              ? 'bg-orange-500 text-white shadow-md'
+              ? 'bg-indigo-600 text-white shadow-md'
               : 'bg-[#1c1729] text-slate-400 hover:text-white'
           }`}
         >

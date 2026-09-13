@@ -63,7 +63,7 @@ export const TeacherDashboard = () => {
         <div className="flex items-center gap-3">
           <Link
             to="/teacher/announcements"
-            className="px-4 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-400 text-white font-bold text-xs shadow-md transition-colors flex items-center gap-2"
+            className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md transition-colors flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
             <span>Post Announcement</span>

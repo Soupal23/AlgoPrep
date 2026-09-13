@@ -439,7 +439,7 @@ export const Messages = () => {
 
           <button
             onClick={openNewChatModal}
-            className="px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-400 text-white font-bold text-xs shadow-md flex items-center gap-2 transition-colors"
+            className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md flex items-center gap-2 transition-colors"
           >
             <Plus className="w-4 h-4" />
             <span>New Chat</span>
@@ -509,7 +509,7 @@ export const Messages = () => {
                         <h4 className="text-xs font-bold text-white truncate">{partner?.name || 'User'}</h4>
                         <div className="flex items-center gap-1.5">
                           {unread > 0 && (
-                            <span className="text-[9px] font-bold bg-orange-500 text-white rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
+                            <span className="text-[9px] font-bold bg-indigo-600 text-white rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
                               {unread}
                             </span>
                           )}
@@ -601,14 +601,14 @@ export const Messages = () => {
                         <div
                           className={`max-w-[75%] p-3.5 rounded-2xl text-xs space-y-1 ${
                             isMe
-                              ? 'bg-orange-500 text-white rounded-br-none shadow-md'
-                              : 'bg-[#1c1729] text-slate-100 rounded-bl-none border border-[#2a2240]'
+                              ? 'bg-indigo-600 text-white rounded-br-none shadow-md'
+                              : 'bg-[#1c1729] text-slate-200 border border-[#2a2240] rounded-bl-none'
                           }`}
                         >
-                          <p className="leading-relaxed whitespace-pre-line">{msg.content}</p>
+                          <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
                           <div
-                            className={`flex items-center gap-1 text-[9px] font-mono ${
-                              isMe ? 'text-orange-100 justify-end' : 'text-slate-400 justify-start'
+                            className={`flex items-center gap-1.5 mt-1.5 text-[10px] ${
+                              isMe ? 'text-indigo-100 justify-end' : 'text-slate-400 justify-start'
                             }`}
                           >
                             <span>
@@ -649,7 +649,7 @@ export const Messages = () => {
                 <button
                   type="submit"
                   disabled={sending || !newMessageText.trim()}
-                  className="px-4 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-400 text-white text-xs font-bold shadow-md transition-colors disabled:opacity-50 flex items-center gap-1.5"
+                  className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md transition-colors disabled:opacity-50 flex items-center gap-1.5"
                 >
                   <Send className="w-3.5 h-3.5" />
                   <span>Send</span>
@@ -669,7 +669,7 @@ export const Messages = () => {
               </div>
               <button
                 onClick={openNewChatModal}
-                className="mt-2 px-5 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-400 text-white text-xs font-bold shadow-lg transition-colors inline-flex items-center gap-2"
+                className="mt-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-lg transition-colors inline-flex items-center gap-2"
               >
                 <Plus className="w-4 h-4" />
                 <span>Start New Chat</span>

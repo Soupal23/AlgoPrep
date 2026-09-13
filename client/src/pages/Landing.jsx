@@ -60,7 +60,7 @@ export const Landing = () => {
           {/* Main Title */}
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#f0eef5] leading-[1.15]">
             Master Computer Science Exams with{' '}
-            <span className="text-orange-400">
+            <span className="text-indigo-400">
               Real CBT Simulation
             </span>
           </h1>
@@ -70,7 +70,7 @@ export const Landing = () => {
             {isAuthenticated ? (
               <Link
                 to="/dashboard"
-                className="w-full sm:w-auto px-8 py-4 rounded-2xl font-bold bg-orange-500 hover:bg-orange-400 text-white shadow-sm transition-colors flex items-center justify-center gap-3 text-base"
+                className="w-full sm:w-auto px-8 py-4 rounded-2xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm transition-colors flex items-center justify-center gap-3 text-base"
               >
                 <Play className="w-5 h-5 fill-current" />
                 <span>Go to Tests Dashboard</span>
@@ -79,7 +79,7 @@ export const Landing = () => {
               <>
                 <Link
                   to="/register"
-                  className="w-full sm:w-auto px-8 py-4 rounded-2xl font-bold bg-orange-500 hover:bg-orange-400 text-white shadow-sm transition-colors flex items-center justify-center gap-3 text-base"
+                  className="w-full sm:w-auto px-8 py-4 rounded-2xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm transition-colors flex items-center justify-center gap-3 text-base"
                 >
                   <UserPlus className="w-5 h-5" />
                   <span>Get Started Free</span>
@@ -134,7 +134,7 @@ export const Landing = () => {
                   </span>
                   <Link
                     to={isAuthenticated ? '/dashboard' : '/login'}
-                    className="text-orange-400 font-semibold hover:underline flex items-center gap-1"
+                    className="text-indigo-400 font-semibold hover:underline flex items-center gap-1"
                   >
                     <span>Practice</span>
                     <ArrowRight className="w-3 h-3" />
@@ -173,7 +173,7 @@ export const Landing = () => {
       <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-[#14111f] rounded-3xl border border-[#2a2240] p-8 sm:p-12 text-center max-w-3xl mx-auto">
           <div className="space-y-6 max-w-xl mx-auto">
-            <div className="w-12 h-12 rounded-2xl bg-orange-500 flex items-center justify-center mx-auto shadow-sm">
+            <div className="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center mx-auto shadow-sm">
               <Terminal className="w-6 h-6 text-white" />
             </div>
 
@@ -183,7 +183,7 @@ export const Landing = () => {
               {isAuthenticated ? (
                 <Link
                   to="/dashboard"
-                  className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold bg-orange-500 hover:bg-orange-400 text-white shadow-sm transition-colors"
+                  className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm transition-colors"
                 >
                   Go to Dashboard
                 </Link>
@@ -191,7 +191,7 @@ export const Landing = () => {
                 <>
                   <Link
                     to="/register"
-                    className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold bg-orange-500 hover:bg-orange-400 text-white shadow-sm transition-colors flex items-center justify-center gap-2"
+                    className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm transition-colors flex items-center justify-center gap-2"
                   >
                     <span>Create Free Account</span>
                     <ArrowRight className="w-4 h-4" />
@@ -213,7 +213,7 @@ export const Landing = () => {
       <footer className="py-8 border-t border-[#2a2240] text-center text-xs text-[#6b6380] font-mono">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <Terminal className="w-4 h-4 text-orange-400" />
+            <Terminal className="w-4 h-4 text-indigo-400" />
             <span className="font-bold text-[#9f99b0]">AlgoPrep CBT Platform</span>
           </div>
           <div>

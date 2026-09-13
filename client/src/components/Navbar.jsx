@@ -32,7 +32,7 @@ export const Navbar = () => {
   const linkClass = (path) =>
     `flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
       isActive(path)
-        ? 'bg-[#251e35] text-orange-400 font-semibold border border-[#2a2240]'
+        ? 'bg-[#251e35] text-indigo-400 font-semibold border border-[#2a2240]'
         : 'text-[#9f99b0] hover:text-[#f0eef5] hover:bg-[#1c1729]'
     }`;
 
@@ -160,7 +160,7 @@ export const Navbar = () => {
       );
     }
     return (
-      <span className="px-2 py-0.5 rounded-full text-xs font-mono font-semibold bg-orange-950/80 border border-orange-800 text-orange-300">
+      <span className="px-2 py-0.5 rounded-full text-xs font-mono font-semibold bg-indigo-950/80 border border-indigo-800 text-indigo-300">
         STUDENT
       </span>
     );
@@ -170,11 +170,11 @@ export const Navbar = () => {
     <header className="sticky top-0 z-40 w-full border-b border-[#2a2240] bg-[#14111f]/95 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3 shrink-0">
-          <div className="w-10 h-10 rounded-xl bg-orange-500 flex items-center justify-center shadow-sm">
+          <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-sm">
             <Terminal className="w-5 h-5 text-white" />
           </div>
           <div className="flex items-center gap-2">
-            <span className="font-extrabold text-xl tracking-tight text-orange-400">
+            <span className="font-extrabold text-xl tracking-tight text-indigo-400">
               AlgoPrep
             </span>
             {getRoleBadge()}
@@ -217,7 +217,7 @@ export const Navbar = () => {
             </Link>
             <Link
               to="/register"
-              className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold bg-orange-500 hover:bg-orange-400 text-white shadow-sm transition-colors"
+              className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm transition-colors"
             >
               Get Started
             </Link>

@@ -49,7 +49,7 @@ export const Login = () => {
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4">
       <div className="glass-panel max-w-md w-full rounded-3xl p-8 border border-[#2a2240] bg-[#14111f] shadow-xl">
         <div className="text-center mb-8">
-          <div className="w-12 h-12 rounded-2xl bg-orange-500 flex items-center justify-center mx-auto mb-4 shadow-sm">
+          <div className="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center mx-auto mb-4 shadow-sm">
             <Terminal className="w-6 h-6 text-white" />
           </div>
           <h2 className="text-2xl font-extrabold text-[#f0eef5]">Welcome back to AlgoPrep</h2>
@@ -99,7 +99,7 @@ export const Login = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-xl font-bold bg-orange-500 hover:bg-orange-400 text-white shadow-sm transition-colors flex items-center justify-center gap-2"
+            className="w-full py-3 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm transition-colors flex items-center justify-center gap-2"
           >
             {loading ? 'Signing in...' : 'Sign In'}
             <ArrowRight className="w-4 h-4" />
@@ -117,7 +117,7 @@ export const Login = () => {
 
           <p className="text-xs text-[#9f99b0]">
             Don't have an account?{' '}
-            <Link to="/register" className="text-orange-400 font-semibold hover:underline">
+            <Link to="/register" className="text-indigo-400 font-semibold hover:underline">
               Create account
             </Link>
           </p>

@@ -99,7 +99,7 @@ export const SyllabusAI = () => {
 
           <button
             onClick={() => navigate(`/test/${generatedTest._id}`)}
-            className="px-8 py-3.5 rounded-xl font-bold bg-orange-500 hover:bg-orange-400 text-white shadow-lg transition-all inline-flex items-center gap-2"
+            className="px-8 py-3.5 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg transition-all inline-flex items-center gap-2"
           >
             <span>Start AI Exam Now</span>
             <Play className="w-4 h-4 fill-current" />
@@ -187,7 +187,7 @@ export const SyllabusAI = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-4 rounded-xl font-bold bg-orange-500 hover:bg-orange-400 text-white shadow-lg transition-colors flex items-center justify-center gap-2"
+              className="w-full py-4 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg transition-colors flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>

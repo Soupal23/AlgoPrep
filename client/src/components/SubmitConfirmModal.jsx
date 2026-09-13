@@ -27,7 +27,7 @@ export const SubmitConfirmModal = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0a0a0f]/90 backdrop-blur-md animate-fadeIn">
       <div className="glass-panel max-w-lg w-full rounded-2xl p-6 border border-[#2a2240] shadow-xl bg-[#14111f]">
         <div className="flex items-center gap-3 mb-4 pb-3 border-b border-[#2a2240]">
-          <div className="p-2.5 rounded-xl bg-orange-500/20 text-orange-400 border border-orange-500/30">
+          <div className="p-2.5 rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
             <Send className="w-6 h-6" />
           </div>
           <div>
@@ -74,7 +74,7 @@ export const SubmitConfirmModal = ({
           <button
             onClick={onConfirm}
             disabled={isSubmitting}
-            className="px-6 py-2.5 rounded-xl text-sm font-bold bg-orange-500 hover:bg-orange-400 text-white shadow-sm transition-colors flex items-center gap-2"
+            className="px-6 py-2.5 rounded-xl text-sm font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm transition-colors flex items-center gap-2"
           >
             {isSubmitting ? (
               <span>Submitting...</span>

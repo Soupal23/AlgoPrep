@@ -210,7 +210,7 @@ export const Profile = () => {
           <button
             type="submit"
             disabled={saving}
-            className="px-6 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-400 text-white font-bold text-sm shadow-md transition-colors flex items-center gap-2"
+            className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-md transition-colors flex items-center gap-2"
           >
             <Save className="w-4 h-4" />
             <span>{saving ? 'Saving...' : 'Save Profile Changes'}</span>
@@ -240,7 +240,7 @@ export const Profile = () => {
               <p className="text-slate-400 text-sm">You have not completed any test attempts yet.</p>
               <Link
                 to="/dashboard"
-                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-400 text-white font-bold text-sm shadow-md transition-colors"
+                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-md transition-colors"
               >
                 <span>Explore Available Tests</span>
                 <ArrowRight className="w-4 h-4" />

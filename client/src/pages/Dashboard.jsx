@@ -81,7 +81,7 @@ export const Dashboard = () => {
             onClick={() => setSelectedTopic(t)}
             className={`px-4 py-2 rounded-xl text-xs font-semibold transition-colors ${
               selectedTopic === t
-                ? 'bg-orange-500 text-white shadow-sm'
+                ? 'bg-indigo-600 text-white shadow-sm'
                 : 'bg-[#1c1729] border border-[#2a2240] text-[#9f99b0] hover:text-[#f0eef5] hover:bg-[#251e35]'
             }`}
           >
@@ -199,7 +199,7 @@ export const Dashboard = () => {
                         className={`py-3 rounded-xl font-bold border text-xs sm:text-sm transition-colors flex items-center justify-center gap-1.5 ${
                           isAttempted
                             ? 'bg-[#1c1729] border-[#2a2240] text-purple-400 hover:bg-[#251e35]'
-                            : 'bg-orange-500 hover:bg-orange-400 border-transparent text-white shadow-sm'
+                            : 'bg-indigo-600 hover:bg-indigo-500 border-transparent text-white shadow-sm'
                         }`}
                       >
                         {isAttempted ? (

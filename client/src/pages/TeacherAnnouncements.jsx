@@ -123,7 +123,7 @@ export const TeacherAnnouncements = () => {
           <button
             type="submit"
             disabled={submitting}
-            className="px-6 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-400 text-white font-bold text-sm shadow-md transition-colors flex items-center gap-2"
+            className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-md transition-colors flex items-center gap-2"
           >
             <Megaphone className="w-4 h-4" />
             <span>{submitting ? 'Publishing...' : 'Publish Announcement'}</span>

@@ -79,7 +79,7 @@ export const TeachHere = () => {
           <div className="pt-4 border-t border-[#2a2240] flex justify-center gap-4">
             <Link
               to="/login"
-              className="px-6 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-400 text-white font-bold text-xs shadow-md transition-colors"
+              className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md transition-colors"
             >
               Return to Login
             </Link>
@@ -164,7 +164,7 @@ export const TeachHere = () => {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full py-3 rounded-xl bg-orange-500 hover:bg-orange-400 text-white font-bold text-sm shadow-lg transition-colors flex items-center justify-center gap-2"
+              className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-lg transition-colors flex items-center justify-center gap-2"
             >
               <Upload className="w-4 h-4" />
               <span>{submitting ? 'Submitting Application...' : 'Submit Application'}</span>

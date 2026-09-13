@@ -123,7 +123,7 @@ export const AdminDashboard = () => {
             onClick={() => setActiveTab('applications')}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
               activeTab === 'applications'
-                ? 'bg-orange-500 text-white shadow-md'
+                ? 'bg-indigo-600 text-white shadow-md'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
@@ -134,7 +134,7 @@ export const AdminDashboard = () => {
           <button
             onClick={() => setActiveTab('users')}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
-              activeTab === 'users' ? 'bg-orange-500 text-white shadow-md' : 'text-slate-400 hover:text-white'
+              activeTab === 'users' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
             }`}
           >
             <Users className="w-4 h-4" />
@@ -366,7 +366,7 @@ export const AdminDashboard = () => {
                             <span
                               className={`px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold ${
                                 u.role === 'admin'
-                                  ? 'bg-orange-950 text-orange-400 border border-orange-800'
+                                  ? 'bg-indigo-950 text-indigo-400 border border-indigo-800'
                                   : u.role === 'teacher'
                                   ? 'bg-purple-950 text-purple-300 border border-purple-800'
                                   : 'bg-[#1c1729] text-slate-300 border border-[#2a2240]'

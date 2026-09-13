@@ -132,7 +132,7 @@ export const BrowseTeachers = () => {
                     className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-md ${
                       isJoined
                         ? 'bg-emerald-950 text-emerald-300 border border-emerald-800 hover:bg-rose-950 hover:text-rose-300 hover:border-rose-800'
-                        : 'bg-orange-500 hover:bg-orange-400 text-white'
+                        : 'bg-indigo-600 hover:bg-indigo-500 text-white'
                     }`}
                   >
                     {isJoined ? (

@@ -290,7 +290,7 @@ export const TestTaking = () => {
 
           <button
             onClick={() => setShowSubmitModal(true)}
-            className="px-5 py-2 rounded-xl text-xs font-bold bg-orange-500 hover:bg-orange-400 text-white shadow-lg transition-colors flex items-center gap-1.5"
+            className="px-5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg transition-colors flex items-center gap-1.5"
           >
             <span>Submit</span>
             <Send className="w-3.5 h-3.5" />
@@ -383,7 +383,7 @@ export const TestTaking = () => {
                 <button
                   onClick={handleNext}
                   disabled={currentIndex === questions.length - 1}
-                  className="px-5 py-2 rounded-xl text-xs font-semibold bg-orange-500 hover:bg-orange-400 text-white disabled:opacity-40 transition-colors flex items-center gap-1 shadow-md"
+                  className="px-5 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white disabled:opacity-40 transition-colors flex items-center gap-1 shadow-md"
                 >
                   <span>Next</span>
                   <ChevronRight className="w-4 h-4" />
