@@ -139,22 +139,22 @@ export const Landing = () => {
               </div>
               <span className="text-xs font-extrabold tracking-wider text-white">AlgoPrep</span>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-indigo-950 text-indigo-400 border border-indigo-800 font-bold">
-                CBT AI PLATFORM
+                ALL-IN-ONE LEARNING PLATFORM
               </span>
             </div>
 
             {/* Portal Main Title */}
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[#f0eef5] leading-[1.15]">
-              COMPUTER SCIENCE CBT{' '}
-              <span className="text-indigo-400 block sm:inline">ASSESSMENT PORTAL</span>
+              MASTER YOUR SKILLS.{' '}
+              <span className="text-indigo-400 block sm:inline">ACE YOUR EXAMS.</span>
             </h1>
 
             {/* Sub-tagline */}
-            <p className="text-sm sm:text-base text-[#9f99b0] leading-relaxed max-w-2xl">
-              REAL-TIME EXAM SIMULATION • AI SYLLABUS GENERATION • LIVE TEACHER CLASSROOMS
+            <p className="text-sm sm:text-base text-[#9f99b0] leading-relaxed max-w-2xl font-medium tracking-wide">
+              RECORDED LECTURES • AI SYLLABUS • REAL-TIME EXAM SIMULATIONS • PEER MESSAGING
             </p>
             <p className="text-xs text-slate-400 max-w-xl">
-              Engineered specifically for computer science students, competitive coders, and academic instructors to master technical assessments under real exam conditions.
+              Engineered specifically for computer science students, competitive coders, and learners to master technical skills and excel under real exam conditions.
             </p>
           </div>
 
