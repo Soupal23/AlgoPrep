@@ -1,13 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { api } from '../services/api';
-import { Clock, HelpCircle, Award, Sparkles, Play, Shield, Cpu, Network, Database, Code, BookOpen, CheckCircle2, RotateCcw } from 'lucide-react';
+import { Clock, HelpCircle, Award, Sparkles, Play, Shield, Cpu, Network, Database, Code, BookOpen, CheckCircle2, RotateCcw, Layers, UserCheck } from 'lucide-react';
+
+const FILTERS = [
+  { id: 'All', label: 'All Tests', icon: Layers },
+  { id: 'Platform Tests', label: 'Platform Tests', icon: Shield },
+  { id: 'Teacher Tests', label: 'Teacher Tests', icon: UserCheck },
+  { id: 'AI Tests', label: 'AI Tests', icon: Sparkles }
+];
 
 export const Dashboard = () => {
   const [tests, setTests] = useState([]);
   const [attemptedTestIds, setAttemptedTestIds] = useState(new Set());
   const [loading, setLoading] = useState(true);
-  const [selectedTopic, setSelectedTopic] = useState('All');
+  const [selectedFilter, setSelectedFilter] = useState('All');
   const [error, setError] = useState('');
 
   const navigate = useNavigate();
@@ -35,11 +42,19 @@ export const Dashboard = () => {
     }
   };
 
-  const topics = ['All', 'Operating Systems', 'Computer Networks', 'DBMS', 'Data Structures & Algorithms', 'Object-Oriented Programming'];
+  const filteredTests = tests.filter((t) => {
+    if (selectedFilter === 'Platform Tests') return !t.isAIGenerated && !t.teacherId;
+    if (selectedFilter === 'Teacher Tests') return !t.isAIGenerated && Boolean(t.teacherId);
+    if (selectedFilter === 'AI Tests') return Boolean(t.isAIGenerated);
+    return true;
+  });
 
-  const filteredTests = selectedTopic === 'All'
-    ? tests
-    : tests.filter(t => t.topic === selectedTopic);
+  const getFilterCount = (filterId) => {
+    if (filterId === 'Platform Tests') return tests.filter((t) => !t.isAIGenerated && !t.teacherId).length;
+    if (filterId === 'Teacher Tests') return tests.filter((t) => !t.isAIGenerated && Boolean(t.teacherId)).length;
+    if (filterId === 'AI Tests') return tests.filter((t) => Boolean(t.isAIGenerated)).length;
+    return tests.length;
+  };
 
   const getTopicIcon = (topic) => {
     switch (topic) {
@@ -50,6 +65,28 @@ export const Dashboard = () => {
       case 'Object-Oriented Programming': return <BookOpen className="w-5 h-5 text-purple-400" />;
       default: return <Sparkles className="w-5 h-5 text-purple-400" />;
     }
+  };
+
+  const getTestTypeInfo = (test) => {
+    if (test.isAIGenerated) {
+      return {
+        label: 'AI Test',
+        icon: Sparkles,
+        colorClass: 'bg-purple-950/80 border-purple-700 text-purple-300'
+      };
+    }
+    if (test.teacherId) {
+      return {
+        label: 'Teacher Test',
+        icon: UserCheck,
+        colorClass: 'bg-indigo-950/80 border-indigo-700 text-indigo-300'
+      };
+    }
+    return {
+      label: 'Platform Test',
+      icon: Shield,
+      colorClass: 'bg-cyan-950/80 border-cyan-800 text-cyan-300'
+    };
   };
 
   return (
@@ -73,21 +110,35 @@ export const Dashboard = () => {
         </div>
       </div>
 
-      {/* Topic Filter Pills */}
+      {/* Filter Tabs */}
       <div className="flex flex-wrap items-center gap-2 border-b border-[#383050] pb-4">
-        {topics.map(t => (
-          <button
-            key={t}
-            onClick={() => setSelectedTopic(t)}
-            className={`px-4 py-2 rounded-xl text-xs font-semibold transition-colors ${
-              selectedTopic === t
-                ? 'bg-indigo-600 text-white shadow-sm'
-                : 'bg-[#1c1729] border border-[#383050] text-[#9f99b0] hover:text-[#f0eef5] hover:bg-[#251e35]'
-            }`}
-          >
-            {t}
-          </button>
-        ))}
+        {FILTERS.map((f) => {
+          const Icon = f.icon;
+          const count = getFilterCount(f.id);
+          const isActive = selectedFilter === f.id;
+
+          return (
+            <button
+              key={f.id}
+              onClick={() => setSelectedFilter(f.id)}
+              className={`px-4 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${
+                isActive
+                  ? 'bg-indigo-600 text-white shadow-md'
+                  : 'bg-[#1c1729] border border-[#383050] text-[#9f99b0] hover:text-[#f0eef5] hover:bg-[#251e35]'
+              }`}
+            >
+              <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-purple-400'}`} />
+              <span>{f.label}</span>
+              <span
+                className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold ${
+                  isActive ? 'bg-indigo-700 text-white' : 'bg-[#14111f] border border-[#383050] text-slate-300'
+                }`}
+              >
+                {count}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Test Cards Grid */}
@@ -103,12 +154,14 @@ export const Dashboard = () => {
         </div>
       ) : filteredTests.length === 0 ? (
         <div className="p-12 text-center bg-[#14111f] rounded-2xl border border-[#383050] text-[#9f99b0]">
-          No tests found for selected topic.
+          No tests found for {selectedFilter === 'All' ? 'the selected filter' : selectedFilter}.
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredTests.map((test) => {
             const isAttempted = attemptedTestIds.has(test._id);
+            const typeInfo = getTestTypeInfo(test);
+            const TypeIcon = typeInfo.icon;
 
             return (
               <div
@@ -127,8 +180,9 @@ export const Dashboard = () => {
                           Attempted
                         </span>
                       )}
-                      <span className="px-3 py-1 rounded-full text-xs font-mono bg-[#1c1729] border border-[#383050] text-purple-400">
-                        {test.topic}
+                      <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-mono border ${typeInfo.colorClass}`}>
+                        <TypeIcon className="w-3 h-3" />
+                        {typeInfo.label}
                       </span>
                     </div>
                   </div>
@@ -233,3 +287,4 @@ export const Dashboard = () => {
     </div>
   );
 };
+
