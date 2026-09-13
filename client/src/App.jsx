@@ -41,6 +41,16 @@ const ProtectedRoute = ({ children }) => {
   return <>{children}</>;
 };
 
+const GuestRoute = ({ children }) => {
+  const { user, isAuthenticated } = useAuth();
+  if (isAuthenticated && user) {
+    if (user.role === 'teacher') return <Navigate to="/teacher/dashboard" replace />;
+    if (user.role === 'admin') return <Navigate to="/admin" replace />;
+    return <Navigate to="/dashboard" replace />;
+  }
+  return <>{children}</>;
+};
+
 export const AppContent = () => {
   return (
     <div className="min-h-screen bg-[#090d16] text-slate-100 flex flex-col font-sans">
@@ -48,8 +58,8 @@ export const AppContent = () => {
       <main className="flex-1">
         <Routes>
           <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
+          <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
           <Route path="/teach-here" element={<TeachHere />} />
 
           {/* Student Routes */}

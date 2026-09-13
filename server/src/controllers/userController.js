@@ -1,3 +1,5 @@
+import fs from 'fs/promises';
+import path from 'path';
 import { User } from '../models/User.js';
 
 export const getProfile = async (req, res) => {
@@ -57,7 +59,14 @@ export const uploadAvatarController = async (req, res) => {
     return;
   }
 
-  const avatarUrl = `uploads/avatars/${Date.now()}-${req.file.originalname}`;
+  const filename = `${Date.now()}-${req.file.originalname}`;
+  const targetDir = path.resolve('uploads', 'avatars');
+  await fs.mkdir(targetDir, { recursive: true });
+
+  const targetPath = path.join(targetDir, filename);
+  await fs.writeFile(targetPath, req.file.buffer);
+
+  const avatarUrl = `uploads/avatars/${filename}`;
   user.avatarUrl = avatarUrl;
   await user.save();
 

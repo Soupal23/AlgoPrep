@@ -157,7 +157,7 @@ describe('Phase 13 — Admin Moderation & Soft Deactivation', () => {
     expect(dbAttempt.userId.name).toBe('Student ToDeactivate');
 
     const leaderboardRes = await request(app)
-      .get('/api/leaderboard')
+      .get(`/api/leaderboard?testId=${testItem._id}`)
       .set('Authorization', `Bearer ${adminToken}`);
 
     expect(leaderboardRes.status).toBe(200);

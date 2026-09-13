@@ -199,13 +199,25 @@ export const Results = () => {
             </p>
           </div>
 
-          <Link
-            to={`/test/${test?._id}?retake=true`}
-            className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs font-semibold border border-slate-700 transition-colors flex items-center gap-2"
-          >
-            <RotateCcw className="w-4 h-4" />
-            <span>Retake Exam</span>
-          </Link>
+          <div className="flex items-center gap-2">
+            {!test?.isAIGenerated && (
+              <Link
+                to={`/leaderboard?testId=${test?._id}`}
+                className="px-4 py-2.5 rounded-xl bg-slate-900/90 hover:bg-amber-950/40 text-amber-300 text-xs font-semibold border border-slate-700 hover:border-amber-700/60 transition-colors flex items-center gap-2"
+              >
+                <Award className="w-4 h-4 text-amber-400" />
+                <span>Test Leaderboard</span>
+              </Link>
+            )}
+
+            <Link
+              to={`/test/${test?._id}?retake=true`}
+              className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs font-semibold border border-slate-700 transition-colors flex items-center gap-2"
+            >
+              <RotateCcw className="w-4 h-4" />
+              <span>Retake Exam</span>
+            </Link>
+          </div>
         </div>
 
         {/* Stats Grid */}

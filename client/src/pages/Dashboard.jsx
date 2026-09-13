@@ -178,26 +178,59 @@ export const Dashboard = () => {
                     </div>
                   </div>
 
-                  <button
-                    onClick={() => navigate(`/test/${test._id}${isAttempted ? '?retake=true' : ''}`)}
-                    className={`w-full py-3 rounded-xl font-bold border transition-all flex items-center justify-center gap-2 ${
-                      isAttempted
-                        ? 'bg-slate-800/90 border-cyan-800/60 text-cyan-300 hover:bg-cyan-900/40 hover:border-cyan-500'
-                        : 'bg-slate-800 border-slate-700 text-slate-200 hover:bg-gradient-to-r hover:from-cyan-600 hover:to-indigo-600 hover:text-white hover:border-transparent group-hover:shadow-lg group-hover:shadow-cyan-600/20'
-                    }`}
-                  >
-                    {isAttempted ? (
-                      <>
-                        <RotateCcw className="w-4 h-4 text-cyan-400" />
-                        <span>Retake CBT Test</span>
-                      </>
-                    ) : (
-                      <>
-                        <Play className="w-4 h-4 text-cyan-400 group-hover:text-white" />
-                        <span>Start CBT Test</span>
-                      </>
-                    )}
-                  </button>
+                  {test.isAIGenerated ? (
+                    <button
+                      onClick={() => navigate(`/test/${test._id}${isAttempted ? '?retake=true' : ''}`)}
+                      className={`w-full py-3 rounded-xl font-bold border transition-all flex items-center justify-center gap-2 ${
+                        isAttempted
+                          ? 'bg-slate-800/90 border-cyan-800/60 text-cyan-300 hover:bg-cyan-900/40 hover:border-cyan-500'
+                          : 'bg-gradient-to-r from-purple-600 to-indigo-600 border-transparent text-white shadow-lg shadow-purple-600/20 hover:opacity-95'
+                      }`}
+                    >
+                      {isAttempted ? (
+                        <>
+                          <RotateCcw className="w-4 h-4 text-purple-400" />
+                          <span>Retake AI CBT Test</span>
+                        </>
+                      ) : (
+                        <>
+                          <Play className="w-4 h-4 text-white" />
+                          <span>Start AI CBT Test</span>
+                        </>
+                      )}
+                    </button>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        onClick={() => navigate(`/test/${test._id}${isAttempted ? '?retake=true' : ''}`)}
+                        className={`py-3 rounded-xl font-bold border text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 ${
+                          isAttempted
+                            ? 'bg-slate-800/90 border-cyan-800/60 text-cyan-300 hover:bg-cyan-900/40 hover:border-cyan-500'
+                            : 'bg-gradient-to-r from-cyan-600 to-indigo-600 border-transparent text-white shadow-lg shadow-cyan-600/20 hover:opacity-95'
+                        }`}
+                      >
+                        {isAttempted ? (
+                          <>
+                            <RotateCcw className="w-4 h-4 text-cyan-400" />
+                            <span>Retake</span>
+                          </>
+                        ) : (
+                          <>
+                            <Play className="w-4 h-4 text-white" />
+                            <span>Start Test</span>
+                          </>
+                        )}
+                      </button>
+
+                      <button
+                        onClick={() => navigate(`/leaderboard?testId=${test._id}`)}
+                        className="py-3 rounded-xl font-bold border border-slate-800 bg-slate-900/80 text-amber-300 hover:bg-amber-950/30 hover:border-amber-700/60 transition-all flex items-center justify-center gap-1.5 text-xs sm:text-sm"
+                      >
+                        <Award className="w-4 h-4 text-amber-400" />
+                        <span>Leaderboard</span>
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             );

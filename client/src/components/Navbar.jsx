@@ -64,10 +64,6 @@ export const Navbar = () => {
             <MessageSquare className="w-4 h-4 text-emerald-400" />
             <span>Messages</span>
           </Link>
-          <Link to="/leaderboard" className={linkClass('/leaderboard')}>
-            <Award className="w-4 h-4 text-yellow-400" />
-            <span>Leaderboard</span>
-          </Link>
           <Link to="/ai-generate" className={linkClass('/ai-generate')}>
             <FileUp className="w-4 h-4 text-purple-400" />
             <span>AI Generator</span>

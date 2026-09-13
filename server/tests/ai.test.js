@@ -150,5 +150,13 @@ describe('Phase 2 — AI Syllabus-to-Test Generator', () => {
 
     expect(forbiddenStartRes.status).toBe(403);
     expect(forbiddenStartRes.body.error).toMatch(/private/i);
+
+    // 6. Requesting a leaderboard for any AI test should return 400 Bad Request (AI tests do not have leaderboards)
+    const aiLeaderboardRes = await supertest(app)
+      .get(`/api/leaderboard?testId=${aiTestId}`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(aiLeaderboardRes.status).toBe(400);
+    expect(aiLeaderboardRes.body.error).toMatch(/do not have leaderboards/i);
   }, 30000);
 });

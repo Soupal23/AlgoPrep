@@ -1,7 +1,9 @@
+import fs from 'fs/promises';
+import path from 'path';
 import { TeacherApplication } from '../models/TeacherApplication.js';
 
 export const submitApplication = async (req, res) => {
-  const { name, email } = req.body;
+  const { name, email, subjectFocus, bio } = req.body;
 
   if (!name || !email) {
     res.status(400).json({ error: 'Name and email are required' });
@@ -25,12 +27,21 @@ export const submitApplication = async (req, res) => {
     return;
   }
 
-  // Store file metadata/data identifier
-  const resumeUrl = `uploads/resumes/${Date.now()}-${req.file.originalname}`;
+  // Ensure uploads/resumes directory exists on disk and save the binary buffer
+  const filename = `${Date.now()}-${req.file.originalname}`;
+  const targetDir = path.resolve('uploads', 'resumes');
+  await fs.mkdir(targetDir, { recursive: true });
+
+  const targetPath = path.join(targetDir, filename);
+  await fs.writeFile(targetPath, req.file.buffer);
+
+  const resumeUrl = `uploads/resumes/${filename}`;
 
   const application = await TeacherApplication.create({
     name,
     email: normalizedEmail,
+    subjectFocus: subjectFocus || 'Computer Science',
+    bio: bio || '',
     resumeUrl,
     status: 'pending'
   });

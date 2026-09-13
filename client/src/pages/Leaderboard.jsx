@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from 'react';
+import { useSearchParams, Link } from 'react-router-dom';
 import { api } from '../services/api';
-import { Award, Clock, CheckCircle2, User, Trophy, Shield, ChevronLeft, ChevronRight, Filter } from 'lucide-react';
+import { Award, Clock, CheckCircle2, User, Trophy, Shield, ChevronLeft, ChevronRight, Filter, ArrowLeft, Sparkles } from 'lucide-react';
 
 export const Leaderboard = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialTestId = searchParams.get('testId') || '';
+
   const [tests, setTests] = useState([]);
-  const [selectedTestId, setSelectedTestId] = useState('');
+  const [selectedTestId, setSelectedTestId] = useState(initialTestId);
+  const [activeTest, setActiveTest] = useState(null);
   const [leaderboard, setLeaderboard] = useState([]);
   const [myStats, setMyStats] = useState(null);
   const [totalParticipants, setTotalParticipants] = useState(0);
@@ -18,31 +23,52 @@ export const Leaderboard = () => {
   }, []);
 
   useEffect(() => {
-    fetchLeaderboard();
+    if (selectedTestId) {
+      fetchLeaderboard();
+    }
   }, [selectedTestId, page]);
 
   const fetchTests = async () => {
     try {
       const res = await api.getTests();
-      setTests(res.tests || []);
+      const availableTests = (res.tests || []).filter(t => !t.isAIGenerated);
+      setTests(availableTests);
+
+      // Auto-select testId from query param or first test in list
+      const queryTestId = searchParams.get('testId');
+      if (queryTestId && availableTests.some(t => t._id === queryTestId)) {
+        setSelectedTestId(queryTestId);
+      } else if (availableTests.length > 0) {
+        setSelectedTestId(availableTests[0]._id);
+        setSearchParams({ testId: availableTests[0]._id }, { replace: true });
+      }
     } catch (err) {
       // ignore
     }
   };
 
   const fetchLeaderboard = async () => {
+    if (!selectedTestId) return;
     try {
       setLoading(true);
+      setError('');
       const res = await api.getLeaderboard(selectedTestId, page, 10);
+      setActiveTest(res.test || null);
       setLeaderboard(res.leaderboard || []);
       setTotalParticipants(res.totalParticipants || 0);
       setTotalPages(res.totalPages || 1);
       setMyStats(res.myStats || null);
     } catch (err) {
-      setError(err.message || 'Failed to load leaderboard data');
+      setError(err.message || 'Failed to load test leaderboard data');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleTestChange = (testId) => {
+    setSelectedTestId(testId);
+    setSearchParams({ testId });
+    setPage(1);
   };
 
   const getRankBadge = (rank) => {
@@ -76,39 +102,44 @@ export const Leaderboard = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
+      <Link to="/dashboard" className="inline-flex items-center gap-2 text-sm text-cyan-400 hover:underline font-medium">
+        <ArrowLeft className="w-4 h-4" /> Back to Dashboard
+      </Link>
+
       {/* Header Banner */}
       <div className="relative overflow-hidden rounded-3xl glass-panel border border-slate-800 p-8 bg-gradient-to-r from-amber-950/30 via-slate-900/60 to-indigo-950/40 shadow-2xl">
         <div className="max-w-2xl space-y-3">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-mono">
             <Trophy className="w-3.5 h-3.5" />
-            <span>Real-Time CBT Assessment Ranking</span>
+            <span>Test-Specific Candidate Rankings</span>
           </div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-white">
-            Global & Subject Leaderboard
+          <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
+            <span>{activeTest?.title || 'Assessment Leaderboard'}</span>
+            {activeTest?.isAIGenerated && (
+              <span className="px-3 py-1 rounded-full text-xs font-mono bg-purple-950/80 border border-purple-700 text-purple-300 flex items-center gap-1">
+                <Sparkles className="w-3 h-3 text-purple-400" /> Private AI Test
+              </span>
+            )}
           </h1>
           <p className="text-slate-300 text-sm leading-relaxed">
-            Evaluated using MongoDB aggregation pipelines with tie-breaking rules: equal scores are ranked by lower total time spent.
+            Ranked candidates for <strong className="text-cyan-400">{activeTest?.topic || 'this test'}</strong>. Equal scores are broken by lower total time spent.
           </p>
         </div>
       </div>
 
       {/* Filter Bar & My Stats Card */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-        {/* Test Filter */}
-        <div className="lg:col-span-4 glass-card rounded-2xl p-5 border border-slate-800 space-y-2">
+        {/* Test Filter Dropdown */}
+        <div className="lg:col-span-5 glass-card rounded-2xl p-5 border border-slate-800 space-y-2">
           <label className="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
             <Filter className="w-3.5 h-3.5 text-cyan-400" />
-            <span>Select Test Filter</span>
+            <span>Select Assessment</span>
           </label>
           <select
             value={selectedTestId}
-            onChange={(e) => {
-              setSelectedTestId(e.target.value);
-              setPage(1);
-            }}
+            onChange={(e) => handleTestChange(e.target.value)}
             className="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500"
           >
-            <option value="">All Tests (Global Leaderboard)</option>
             {tests.map((t) => (
               <option key={t._id} value={t._id}>
                 {t.title} ({t.topic})

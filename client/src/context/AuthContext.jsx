@@ -9,11 +9,13 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, pass) => {
     const u = await api.login(email, pass);
     setUser(u);
+    return u;
   };
 
-  const signup = async (name, email, pass) => {
-    const u = await api.signup(name, email, pass);
+  const signup = async (name, email, pass, role) => {
+    const u = await api.signup(name, email, pass, role);
     setUser(u);
+    return u;
   };
 
   const logout = async () => {

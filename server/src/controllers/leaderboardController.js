@@ -1,34 +1,37 @@
 import mongoose from 'mongoose';
 import { Attempt } from '../models/Attempt.js';
+import { Test } from '../models/Test.js';
 
 export const getLeaderboard = async (req, res, next) => {
   try {
     const { testId, page = 1, limit = 10 } = req.query;
     const userId = req.user?.userId;
 
+    if (!testId || !mongoose.Types.ObjectId.isValid(testId)) {
+      return res.status(400).json({ error: 'testId query parameter is required to view a test leaderboard' });
+    }
+
+    const targetTest = await Test.findById(testId);
+    if (!targetTest) {
+      return res.status(404).json({ error: 'Test not found' });
+    }
+
+    if (targetTest.isAIGenerated) {
+      return res.status(400).json({ error: 'AI-generated tests are private self-assessments and do not have leaderboards' });
+    }
+
     const pageNum = parseInt(page, 10);
     const limitNum = parseInt(limit, 10);
     const skip = (pageNum - 1) * limitNum;
 
     const baseFilter = {
-      status: 'submitted'
+      status: 'submitted',
+      testId: new mongoose.Types.ObjectId(testId)
     };
-
-    if (testId && mongoose.Types.ObjectId.isValid(testId)) {
-      baseFilter.testId = new mongoose.Types.ObjectId(testId);
-    }
 
     const userObjId = userId && mongoose.Types.ObjectId.isValid(userId) ? new mongoose.Types.ObjectId(userId) : null;
 
-    // ===================================================================
-    // STEP 1: Find the absolute first attempt per (userId, testId).
-    //
-    // Strategy: First get all distinct (userId, testId) pairs. Then for
-    // each pair, run an explicit findOne query sorted by _id ASC.
-    // Explicit find().sort({ _id: 1 }) cannot be reordered by MongoDB's
-    // aggregation query optimizer, ensuring the candidate's earliest created
-    // document (_id ASC) is locked 100% reliably.
-    // ===================================================================
+    // STEP 1: Find the absolute first attempt per candidate for this specific testId
     const distinctPairs = await Attempt.aggregate([
       { $match: baseFilter },
       { $group: { _id: { userId: '$userId', testId: '$testId' } } }
@@ -51,12 +54,24 @@ export const getLeaderboard = async (req, res, next) => {
       .map(doc => doc._id);
 
     if (firstAttemptIds.length === 0) {
-      return res.json({ leaderboard: [], totalParticipants: 0, page: pageNum, limit: limitNum, totalPages: 0, myStats: null });
+      return res.json({
+        test: {
+          _id: targetTest._id,
+          title: targetTest.title,
+          topic: targetTest.topic,
+          isAIGenerated: targetTest.isAIGenerated,
+          totalQuestions: targetTest.totalQuestions
+        },
+        leaderboard: [],
+        totalParticipants: 0,
+        page: pageNum,
+        limit: limitNum,
+        totalPages: 0,
+        myStats: null
+      });
     }
 
-    // ===================================================================
     // STEP 2: Fetch those exact first-attempts, rank, and paginate
-    // ===================================================================
     const pipeline = [
       { $match: { _id: { $in: firstAttemptIds } } },
       {
@@ -134,7 +149,6 @@ export const getLeaderboard = async (req, res, next) => {
     if (result.currentUserRank && result.currentUserRank.length > 0) {
       const myAttempt = result.currentUserRank[0];
       const rank = myAttempt.rank;
-      // Percentile formula: ((N - R) / (N - 1)) * 100
       const percentile = totalParticipants > 1
         ? Math.max(0, Math.min(100, Math.round(((totalParticipants - rank) / (totalParticipants - 1)) * 1000) / 10))
         : 100;
@@ -150,6 +164,13 @@ export const getLeaderboard = async (req, res, next) => {
     }
 
     res.json({
+      test: {
+        _id: targetTest._id,
+        title: targetTest.title,
+        topic: targetTest.topic,
+        isAIGenerated: targetTest.isAIGenerated,
+        totalQuestions: targetTest.totalQuestions
+      },
       leaderboard,
       totalParticipants,
       page: pageNum,
