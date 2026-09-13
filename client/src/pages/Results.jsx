@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { api } from '../services/api';
-import { Award, CheckCircle2, XCircle, Clock, ShieldAlert, ArrowLeft, Sparkles, HelpCircle, Check, X, RotateCcw, BookOpen, Target, Lightbulb, ExternalLink } from 'lucide-react';
+import { Award, CheckCircle2, XCircle, Clock, ShieldAlert, Sparkles, HelpCircle, Check, X, RotateCcw, BookOpen, Target, Lightbulb, ExternalLink } from 'lucide-react';
 
 export const Results = () => {
   const { id } = useParams();
@@ -182,10 +182,6 @@ export const Results = () => {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
-      <Link to="/dashboard" className="inline-flex items-center gap-2 text-sm text-cyan-400 hover:underline font-medium">
-        <ArrowLeft className="w-4 h-4" /> Back to Dashboard
-      </Link>
-
       {/* Main Scorecard Banner */}
       <div className="bg-[#14111f] rounded-3xl p-8 border border-[#383050] shadow-2xl space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-[#383050]">
