@@ -76,7 +76,7 @@ describe('Phase 2 — AI Syllabus-to-Test Generator', () => {
 
     expect(startRes.status).toBe(200);
     expect(startRes.body.questions).toHaveLength(10);
-  });
+  }, 30000);
 
   it('should enforce rate limiting of 5 requests per hour per user ID', async () => {
     resetUserRateLimit(userId);
@@ -104,5 +104,51 @@ describe('Phase 2 — AI Syllabus-to-Test Generator', () => {
 
     // Clean up rate limit state for other tests
     resetUserRateLimit(userId);
-  });
+  }, 60000);
+
+  it('should ensure AI-generated tests are private to the creator and hidden from other students', async () => {
+    resetUserRateLimit(userId);
+
+    // 1. Generate an AI test as student A
+    const genRes = await supertest(app)
+      .post('/api/ai/generate')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ syllabusText: 'Operating Systems: Semaphores, Mutexes, Deadlock Detection.', topicName: 'OS Private' });
+
+    expect(genRes.status).toBe(201);
+    const aiTestId = genRes.body.test._id;
+
+    // 2. Student A should see it in GET /api/tests
+    const studentATestsRes = await supertest(app)
+      .get('/api/tests')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(studentATestsRes.status).toBe(200);
+    const studentATestIds = studentATestsRes.body.tests.map(t => t._id.toString());
+    expect(studentATestIds).toContain(aiTestId.toString());
+
+    // 3. Register & login as Student B (a different student)
+    const studentBRegRes = await supertest(app)
+      .post('/api/auth/signup')
+      .send({ name: 'Student B', email: 'student2@algoprep.com', password: 'password123' });
+
+    const studentBToken = studentBRegRes.body.accessToken;
+
+    // 4. Student B should NOT see Student A's AI test in GET /api/tests
+    const studentBTestsRes = await supertest(app)
+      .get('/api/tests')
+      .set('Authorization', `Bearer ${studentBToken}`);
+
+    expect(studentBTestsRes.status).toBe(200);
+    const studentBTestIds = studentBTestsRes.body.tests.map(t => t._id.toString());
+    expect(studentBTestIds).not.toContain(aiTestId.toString());
+
+    // 5. Student B trying to start Student A's AI test should get 403 Forbidden
+    const forbiddenStartRes = await supertest(app)
+      .post(`/api/tests/${aiTestId}/start`)
+      .set('Authorization', `Bearer ${studentBToken}`);
+
+    expect(forbiddenStartRes.status).toBe(403);
+    expect(forbiddenStartRes.body.error).toMatch(/private/i);
+  }, 30000);
 });

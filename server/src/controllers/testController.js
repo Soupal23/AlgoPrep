@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { Test } from '../models/Test.js';
 import { Question } from '../models/Question.js';
 import { Attempt } from '../models/Attempt.js';
@@ -8,15 +9,29 @@ export const getTests = async (req, res) => {
     const userId = req.user?.userId;
     const userRole = req.user?.role;
 
-    let filter = { teacherId: null };
+    let filter = { teacherId: null, isAIGenerated: { $ne: true } };
 
     if (userId) {
+      const userObjId = mongoose.Types.ObjectId.isValid(userId) ? new mongoose.Types.ObjectId(userId) : userId;
+
       if (userRole === 'teacher') {
-        filter = { $or: [{ teacherId: null }, { teacherId: userId }] };
+        filter = {
+          $or: [
+            { teacherId: null, isAIGenerated: { $ne: true } },
+            { teacherId: userId },
+            { isAIGenerated: true, createdBy: userObjId }
+          ]
+        };
       } else if (userRole === 'student') {
         const memberships = await Membership.find({ studentId: userId, status: 'active' }).select('teacherId');
         const teacherIds = memberships.map((m) => m.teacherId);
-        filter = { $or: [{ teacherId: null }, { teacherId: { $in: teacherIds } }] };
+        filter = {
+          $or: [
+            { teacherId: null, isAIGenerated: { $ne: true } },
+            { teacherId: { $in: teacherIds } },
+            { isAIGenerated: true, createdBy: userObjId }
+          ]
+        };
       } else if (userRole === 'admin') {
         filter = {}; // Admin sees all tests
       }
@@ -32,10 +47,16 @@ export const getTests = async (req, res) => {
 export const getTestById = async (req, res) => {
   try {
     const { id } = req.params;
+    const userId = req.user?.userId;
     const test = await Test.findById(id);
 
     if (!test) {
       res.status(404).json({ error: 'Test not found' });
+      return;
+    }
+
+    if (test.isAIGenerated && (!userId || test.createdBy?.toString() !== userId.toString())) {
+      res.status(403).json({ error: 'Forbidden: This AI-generated test is private to the user who created it' });
       return;
     }
 
@@ -114,6 +135,12 @@ export const startTestAttempt = async (req, res) => {
     const test = await Test.findById(id);
     if (!test) {
       res.status(404).json({ error: 'Test not found' });
+      return;
+    }
+
+    // 0. Check AI test privacy gating
+    if (test.isAIGenerated && test.createdBy?.toString() !== userId.toString()) {
+      res.status(403).json({ error: 'Forbidden: This AI-generated test is private to the user who created it' });
       return;
     }
 
