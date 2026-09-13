@@ -21,8 +21,41 @@ export const signup = async (req, res) => {
   const { name, email, password, role } = req.body;
   const normalizedEmail = email.toLowerCase().trim();
 
-  const existingUser = await User.findOne({ email: normalizedEmail });
+  let existingUser = await User.findOne({ email: normalizedEmail });
   if (existingUser) {
+    if (role === 'teacher') {
+      const approvedApplication = await TeacherApplication.findOne({
+        email: normalizedEmail,
+        status: 'approved'
+      });
+
+      if (approvedApplication && existingUser.role === 'teacher') {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        existingUser.password = hashedPassword;
+        if (name) existingUser.name = name;
+
+        const payload = { userId: existingUser._id.toString(), email: existingUser.email, role: existingUser.role, isActive: existingUser.isActive };
+        const accessToken = generateAccessToken(payload);
+        const refreshToken = generateRefreshToken(payload);
+        existingUser.refreshToken = refreshToken;
+        await existingUser.save();
+
+        res.status(201).json({
+          message: 'Teacher registration completed successfully',
+          accessToken,
+          refreshToken,
+          user: {
+            id: existingUser._id,
+            name: existingUser.name,
+            email: existingUser.email,
+            role: existingUser.role,
+            isActive: existingUser.isActive
+          }
+        });
+        return;
+      }
+    }
+
     res.status(400).json({ error: 'User with this email already exists' });
     return;
   }

@@ -29,6 +29,7 @@ export const AdminDashboard = () => {
 
   const [actionLoading, setActionLoading] = useState({});
   const [error, setError] = useState('');
+  const [approvalNotice, setApprovalNotice] = useState(null);
 
   useEffect(() => {
     if (activeTab === 'applications') {
@@ -71,8 +72,15 @@ export const AdminDashboard = () => {
   const handleApplicationStatus = async (id, status) => {
     setActionLoading((prev) => ({ ...prev, [id]: true }));
     try {
-      await api.updateTeacherApplicationStatus(id, status);
+      const res = await api.updateTeacherApplicationStatus(id, status);
+      if (status === 'approved' && res.tempPassword) {
+        setApprovalNotice({
+          email: res.createdUser?.email || res.application?.email,
+          password: res.tempPassword
+        });
+      }
       fetchApplications();
+      fetchUsers();
     } catch (err) {
       alert(err.message || 'Failed to update application status');
     } finally {
@@ -135,6 +143,30 @@ export const AdminDashboard = () => {
           </button>
         </div>
       </div>
+
+      {approvalNotice && (
+        <div className="p-6 rounded-2xl bg-emerald-950/80 border border-emerald-700 text-emerald-100 shadow-xl space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+              <CheckCircle2 className="w-5 h-5" />
+              <span>Teacher Approved & Instructor Account Created Successfully!</span>
+            </div>
+            <button
+              onClick={() => setApprovalNotice(null)}
+              className="text-xs font-mono text-slate-400 hover:text-white"
+            >
+              Dismiss ✕
+            </button>
+          </div>
+          <p className="text-xs text-slate-300">
+            An instructor account has been created for <strong className="text-white">{approvalNotice.email}</strong>. An approval notification has been logged & sent.
+          </p>
+          <div className="p-3 rounded-xl bg-slate-900/90 border border-emerald-900/60 font-mono text-xs space-y-1">
+            <div><span className="text-slate-400">Login Email:</span> <span className="text-emerald-300 font-bold">{approvalNotice.email}</span></div>
+            <div><span className="text-slate-400">Temporary Password:</span> <span className="text-amber-300 font-bold">{approvalNotice.password}</span></div>
+          </div>
+        </div>
+      )}
 
       {error && (
         <div className="p-4 rounded-xl bg-rose-950/60 border border-rose-800 text-rose-300 text-sm flex items-center gap-2">

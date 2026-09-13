@@ -1,6 +1,9 @@
 import fs from 'fs/promises';
 import path from 'path';
+import bcrypt from 'bcryptjs';
 import { TeacherApplication } from '../models/TeacherApplication.js';
+import { User } from '../models/User.js';
+import { sendTeacherApprovalEmail } from '../services/emailService.js';
 
 export const submitApplication = async (req, res) => {
   const { name, email, subjectFocus, bio } = req.body;
@@ -81,8 +84,56 @@ export const updateApplicationStatus = async (req, res) => {
   application.status = status;
   await application.save();
 
+  let tempPassword = null;
+  let createdUser = null;
+
+  if (status === 'approved') {
+    let existingUser = await User.findOne({ email: application.email });
+
+    if (existingUser) {
+      existingUser.role = 'teacher';
+      existingUser.isActive = true;
+      if (application.subjectFocus) existingUser.subjectFocus = application.subjectFocus;
+      if (application.bio) existingUser.bio = application.bio;
+      await existingUser.save();
+      createdUser = existingUser;
+    } else {
+      // Generate default temporary password for new teacher account
+      tempPassword = 'Teacher@123';
+      const hashedPassword = await bcrypt.hash(tempPassword, 10);
+
+      createdUser = await User.create({
+        name: application.name,
+        email: application.email,
+        password: hashedPassword,
+        role: 'teacher',
+        subjectFocus: application.subjectFocus || 'Computer Science',
+        bio: application.bio || '',
+        isActive: true
+      });
+    }
+
+    // Send/log approval email
+    await sendTeacherApprovalEmail({
+      toName: application.name,
+      toEmail: application.email,
+      tempPassword: tempPassword || '(Existing User Password)'
+    });
+  }
+
   res.json({
-    message: `Application ${status} successfully`,
-    application
+    message: status === 'approved'
+      ? `Application approved successfully. Teacher account created for ${application.email}.`
+      : `Application ${status} successfully`,
+    application,
+    createdUser: createdUser ? {
+      id: createdUser._id,
+      name: createdUser.name,
+      email: createdUser.email,
+      role: createdUser.role,
+      subjectFocus: createdUser.subjectFocus,
+      bio: createdUser.bio
+    } : null,
+    tempPassword
   });
 };
