@@ -355,7 +355,7 @@ Structure required:
 Format cleanly in Markdown with bold key terms and markdown links. Make it encouraging, analytical, and highly educational.`;
 
         const response = await ai.models.generateContent({
-          model: 'gemini-2.5-flash',
+          model: 'gemini-3.6-flash',
           contents: prompt
         });
 

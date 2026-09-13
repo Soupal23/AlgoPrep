@@ -104,7 +104,7 @@ During test-taking (`GET /api/tests/:id` and `POST /api/tests/:id/start`), candi
 - **Implementation ([rateLimiter.js](file:///c:/Users/DELL/Desktop/AlgoPrep/server/src/middleware/rateLimiter.js))**: Keyed by authenticated JWT User ID (`req.user.userId`). Restricts users to **5 test generation calls per hour**. Excess calls return `429 Too Many Requests`.
 
 ### Gemini Prompting & Zod Schema Validation
-1. **Prompt Engineering**: Invokes `@google/genai` (`gemini-2.5-flash`) with structured system prompt requiring strictly valid JSON matching:
+1. **Prompt Engineering**: Invokes `@google/genai` (`gemini-3.6-flash`) with structured system prompt requiring strictly valid JSON matching:
    - `title`, `description`, `topic`, `timeLimitMinutes: 30`, `markingScheme: { correct: 4, incorrect: -1 }`, `questions: [{ order, questionText, options (4 strings), correctOptionIndex (0-3), explanation }]`.
 2. **Zod Validation & 1-Time Retry**:
    - Parses response against `aiGeneratedTestSchema`.
