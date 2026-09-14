@@ -256,3 +256,75 @@ AlgoPrep/
 ├── INTERVIEW_PREP.md           # Extensive System Design & Architectural Guide
 └── README.md                   # Project Documentation
 ```
+
+---
+
+## ⚡ Installation and Setup
+
+Follow these steps to get AlgoPrep running on your local machine for development and testing.
+
+### 1. Prerequisites
+- **Node.js**: v18.x LTS or higher
+- **npm** or **pnpm** package manager
+- **MongoDB**: A running local instance (`mongodb://127.0.0.1:27017`) or a MongoDB Atlas cluster URI.
+
+### 2. Clone the Repository & Install Dependencies
+Clone the project and install the dependencies for the root, server, and client workspaces:
+
+```bash
+# Clone the repository
+git clone https://github.com/your-username/AlgoPrep.git
+cd AlgoPrep
+
+# Install root dependencies (for concurrently)
+npm install
+
+# Install backend dependencies
+cd server
+npm install
+cd ..
+
+# Install frontend dependencies
+cd client
+npm install
+cd ..
+```
+
+### 3. Environment Configuration
+Create a `.env` file in the **root** directory of the project. You can copy the provided `.env.example` template:
+
+```bash
+cp .env.example .env
+```
+
+Ensure the following essential variables are populated:
+```env
+PORT=5000
+MONGODB_URI=mongodb://127.0.0.1:27017/algoprep
+JWT_ACCESS_SECRET=your_super_secure_access_secret
+JWT_REFRESH_SECRET=your_super_secure_refresh_secret
+GEMINI_API_KEY=your_gemini_api_key_here
+NODE_ENV=development
+```
+
+### 4. Database Seeding (First-Time Setup)
+Seed your MongoDB database with the 25 core CS topic tests (375 questions) and generate dummy student and admin accounts:
+
+```bash
+# From the root directory
+npm run seed
+```
+*(Check your console output for the generated admin credentials if you did not specify `ADMIN_SEED_PASSWORD` in your `.env`)*
+
+### 5. Running the Application Locally
+AlgoPrep uses `concurrently` in the root workspace to launch both the frontend and backend simultaneously. 
+
+From the **root directory**, run:
+```bash
+npm run dev
+```
+
+- The **Backend API** will start on `http://localhost:5000`
+- The **Vite Frontend** will start on `http://localhost:5173`
+
+Open your browser and navigate to `http://localhost:5173` to start using AlgoPrep!
