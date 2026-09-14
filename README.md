@@ -74,9 +74,9 @@ graph TD
     subgraph "Backend API Layer (Node.js / Express)"
         API["API Gateway & Auth Router<br/>(JWT Access/Refresh)"]
         
-        SP --- REST Requests ---> API
-        TP --- REST Requests ---> API
-        AP --- REST Requests ---> API
+        SP --->|REST Requests| API
+        TP --->|REST Requests| API
+        AP --->|REST Requests| API
         
         subgraph "Core Micro-Services (Controllers)"
             CBT["CBT Engine<br/>(Server Timer, Grading, Locks)"]
@@ -97,16 +97,16 @@ graph TD
     subgraph "External AI Service"
         GEMINI["Google Gemini API<br/>(@google/genai)"]
     end
-    AI --- Extracted Syllabus Text / Prompt ---> GEMINI
-    GEMINI --- Strict JSON Schema ---> AI
+    AI --->|Extracted Syllabus Text / Prompt| GEMINI
+    GEMINI --->|Strict JSON Schema| AI
 
     %% Database Layer
     subgraph "Database Layer (MongoDB)"
         DB[("MongoDB Database")]
-        CBT --- Monotonic Version Updates ---> DB
-        AI --- Stores Generated Tests ---> DB
-        LBD --- Aggregation Queries ---> DB
-        PROC --- Saves Audit Logs ---> DB
-        HR --- Application Statuses ---> DB
+        CBT --->|Monotonic Version Updates| DB
+        AI --->|Stores Generated Tests| DB
+        LBD --->|Aggregation Queries| DB
+        PROC --->|Saves Audit Logs| DB
+        HR --->|Application Statuses| DB
     end
 ```
