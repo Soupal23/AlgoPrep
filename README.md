@@ -46,3 +46,67 @@ This platform serves as a vital bridge between academic learning and technical i
 | ![Admin Dashboard](./docs/screenshots/admin-dashboard.png) | ![Hiring Pipeline](./docs/screenshots/hiring-pipeline.png) |
 | **User Management** | **System Configuration** |
 | ![User Management](./docs/screenshots/user-management.png) | ![System Logs](./docs/screenshots/system-config.png) |
+
+---
+
+## 🏗️ System Architecture & System Design
+
+AlgoPrep employs a robust, zero-trust Client-Server architecture designed for high availability and strict data integrity during live exams. Below is the visual workflow mapping how our React frontend portals, Node.js backend micro-services, MongoDB aggregation pipelines, and the Gemini AI engine interact in real-time.
+
+```mermaid
+graph TD
+    %% User Roles
+    subgraph "Frontend Layer (React / Vite)"
+        S["🎓 Student"]
+        T["🧑‍🏫 Teacher"]
+        A["🛡️ Admin"]
+        
+        SP["Student Portal<br/>(Test Engine, Analytics)"]
+        TP["Teacher Portal<br/>(Syllabus Upload, Hiring)"]
+        AP["Admin Portal<br/>(User Mgmt, System Config)"]
+        
+        S ---> SP
+        T ---> TP
+        A ---> AP
+    end
+
+    %% Backend API Gateway
+    subgraph "Backend API Layer (Node.js / Express)"
+        API["API Gateway & Auth Router<br/>(JWT Access/Refresh)"]
+        
+        SP --- REST Requests ---> API
+        TP --- REST Requests ---> API
+        AP --- REST Requests ---> API
+        
+        subgraph "Core Micro-Services (Controllers)"
+            CBT["CBT Engine<br/>(Server Timer, Grading, Locks)"]
+            AI["AI Generator<br/>(Multer Parsing, Zod Validation)"]
+            LBD["Leaderboard Engine<br/>($setWindowFields Aggregation)"]
+            PROC["Proctoring Service<br/>(Visibility API, Anti-Cheat)"]
+            HR["Hiring Pipeline<br/>(Teacher Applications)"]
+        end
+        
+        API ---> CBT
+        API ---> AI
+        API ---> LBD
+        API ---> PROC
+        API ---> HR
+    end
+
+    %% External Services
+    subgraph "External AI Service"
+        GEMINI["Google Gemini API<br/>(@google/genai)"]
+    end
+    AI --- Extracted Syllabus Text / Prompt ---> GEMINI
+    GEMINI --- Strict JSON Schema ---> AI
+
+    %% Database Layer
+    subgraph "Database Layer (MongoDB)"
+        DB[("MongoDB Database")]
+        CBT --- Monotonic Version Updates ---> DB
+        AI --- Stores Generated Tests ---> DB
+        LBD --- Aggregation Queries ---> DB
+        PROC --- Saves Audit Logs ---> DB
+        HR --- Application Statuses ---> DB
+    end
+```
