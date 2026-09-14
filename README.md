@@ -328,3 +328,32 @@ npm run dev
 - The **Vite Frontend** will start on `http://localhost:5173`
 
 Open your browser and navigate to `http://localhost:5173` to start using AlgoPrep!
+
+---
+
+## ⚙️ Configuration Variables
+
+AlgoPrep requires a `.env` file at the root of the project to manage environment-specific variables securely. Below is a comprehensive list of all configuration variables used by the application, their purposes, and their defaults.
+
+### Backend (Server) Configuration
+
+| Variable | Description | Default / Example |
+| :--- | :--- | :--- |
+| `PORT` | The port the Node.js API server listens on | `5000` |
+| `MONGODB_URI` | The connection string for the MongoDB instance | `mongodb://127.0.0.1:27017/algoprep` |
+| `NODE_ENV` | Current execution environment (`development`, `production`) | `development` |
+| `JWT_ACCESS_SECRET` | Secret key for signing short-lived access tokens | *(Required string)* |
+| `JWT_REFRESH_SECRET` | Secret key for signing long-lived refresh tokens | *(Required string)* |
+| `GEMINI_API_KEY` | Google API Key required for AI generation features | *(Required for AI)* |
+| `ADMIN_SEED_PASSWORD` | Pre-defined password for the `admin@algoprep.com` account when running the `npm run seed` script | *(Generates random password if empty)* |
+| `CLOUDINARY_CLOUD_NAME` | Cloudinary account name for production media/resume storage | *(Optional in dev)* |
+| `CLOUDINARY_API_KEY` | Cloudinary API Key | *(Optional in dev)* |
+| `CLOUDINARY_API_SECRET` | Cloudinary API Secret | *(Optional in dev)* |
+
+### Frontend (Client) Configuration
+
+Create a `.env` file inside the `client` directory if you need to override frontend-specific Vite variables (by default, Vite proxies `/api` to `http://localhost:5000`):
+
+| Variable | Description | Default / Example |
+| :--- | :--- | :--- |
+| `VITE_API_URL` | The absolute base URL for all API calls made by the React frontend | `/api` |
