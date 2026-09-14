@@ -90,11 +90,11 @@ export const Landing = () => {
 
     const demoEmail =
       loginRole === 'admin'
-        ? 'admin@algoprep.com'
+        ? 'soupalpurkayastha@gmail.com'
         : loginRole === 'teacher'
         ? 'teacher@algoprep.com'
         : 'student@algoprep.com';
-    const demoPass = 'password123';
+    const demoPass = loginRole === 'admin' ? '_algoprep1234' : 'password123';
 
     try {
       const u = await login(demoEmail, demoPass);
@@ -364,7 +364,7 @@ export const Landing = () => {
                         disabled={loading}
                         className="w-full py-2.5 rounded-xl text-xs font-semibold bg-[#1c1729] border border-[#383050] text-purple-400 hover:bg-[#251e35] transition-colors"
                       >
-                        {loginRole === 'admin' ? 'Instant Demo Login (Admin)' : loginRole === 'teacher' ? 'Instant Demo Login (Teacher)' : 'Instant Demo Login (Alex Student)'}
+                        {loginRole === 'admin' ? 'Instant Demo Login (Admin)' : loginRole === 'teacher' ? 'Instant Demo Login (Teacher)' : 'Instant Demo Register (Student)'}
                       </button>
                     </div>
                   </form>

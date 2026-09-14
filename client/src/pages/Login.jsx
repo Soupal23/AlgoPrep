@@ -31,15 +31,10 @@ export const Login = () => {
     setError('');
     setLoading(true);
     try {
-      await login('student@algoprep.com', 'password123');
-      navigate('/');
+      await login('teacher@algoprep.com', 'password123');
+      navigate('/teacher/dashboard');
     } catch (err) {
-      try {
-        await signup('Alex Student', 'student@algoprep.com', 'password123');
-        navigate('/');
-      } catch (signupErr) {
-        setError(err.message || 'Demo login failed');
-      }
+      setError(err.message || 'Demo login failed');
     } finally {
       setLoading(false);
     }
@@ -112,7 +107,7 @@ export const Login = () => {
             disabled={loading}
             className="w-full py-2.5 rounded-xl text-xs font-semibold bg-[#1c1729] border border-[#383050] text-purple-400 hover:bg-[#251e35] transition-colors"
           >
-            Instant Demo Login (Alex Student)
+            Instant Demo Login (Teacher)
           </button>
 
           <p className="text-xs text-[#9f99b0]">
