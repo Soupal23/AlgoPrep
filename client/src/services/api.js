@@ -222,6 +222,12 @@ class ApiService {
     });
   }
 
+  async deleteTest(id) {
+    return this.request(`/tests/${id}`, {
+      method: 'DELETE'
+    });
+  }
+
   async startTest(testId) {
     const query = window.location.search.includes('retake=true') ? '?retake=true' : '';
     return this.request(`/tests/${testId}/start${query}`, {

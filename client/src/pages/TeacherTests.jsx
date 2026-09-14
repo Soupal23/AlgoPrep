@@ -110,6 +110,21 @@ export const TeacherTests = () => {
     }
   };
 
+  const handleDeleteTest = async (testId, testTitle) => {
+    if (!window.confirm(`Are you sure you want to delete the test "${testTitle}"? This cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      setMessage({ type: '', text: '' });
+      await api.deleteTest(testId);
+      setTests(prev => prev.filter(t => t._id !== testId));
+      setMessage({ type: 'success', text: 'Test deleted successfully' });
+    } catch (err) {
+      setMessage({ type: 'error', text: err.message || 'Failed to delete test' });
+    }
+  };
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
       {/* Header */}
@@ -187,7 +202,16 @@ export const TeacherTests = () => {
                   <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-[#1c1729] text-purple-300 border border-[#383050]">
                     {t.topic || 'General CS'}
                   </span>
-                  <span className="text-[10px] font-mono text-slate-400">{t.timeLimitMinutes} Mins</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono text-slate-400">{t.timeLimitMinutes} Mins</span>
+                    <button
+                      onClick={() => handleDeleteTest(t._id, t.title)}
+                      className="p-1 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-950/40 transition-colors"
+                      title="Delete Test"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
 
                 <h3 className="text-lg font-bold text-white">{t.title}</h3>

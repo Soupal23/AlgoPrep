@@ -240,3 +240,32 @@ export const startTestAttempt = async (req, res) => {
     res.status(500).json({ error: 'Failed to start or resume test attempt' });
   }
 };
+
+export const deleteTest = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user?.userId;
+    const userRole = req.user?.role;
+
+    const test = await Test.findById(id);
+    if (!test) {
+      res.status(404).json({ error: 'Test not found' });
+      return;
+    }
+
+    const isOwner = test.teacherId?.toString() === userId?.toString() || test.createdBy?.toString() === userId?.toString();
+    if (userRole !== 'admin' && !isOwner) {
+      res.status(403).json({ error: 'Forbidden: You do not have permission to delete this test' });
+      return;
+    }
+
+    await Question.deleteMany({ testId: id });
+    await Attempt.deleteMany({ testId: id });
+    await Test.findByIdAndDelete(id);
+
+    res.json({ message: 'Test deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete test' });
+  }
+};
+
