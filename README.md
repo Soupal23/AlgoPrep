@@ -93,12 +93,16 @@ graph TD
         API ---> HR
     end
 
-    %% External Services
-    subgraph "External AI Service"
+    %% External Cloud Services
+    subgraph "External Cloud Services"
         GEMINI["Google Gemini API<br/>(@google/genai)"]
+        CLOUDINARY["Cloudinary API<br/>(Media & Resume Storage)"]
     end
     AI --->|Extracted Syllabus Text / Prompt| GEMINI
     GEMINI --->|Strict JSON Schema| AI
+    
+    HR --->|Uploads Teacher Resumes| CLOUDINARY
+    API --->|User Profile Avatars| CLOUDINARY
 
     %% Database Layer
     subgraph "Database Layer (MongoDB)"
