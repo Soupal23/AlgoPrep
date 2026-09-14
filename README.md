@@ -221,3 +221,38 @@ AlgoPrep exposes a comprehensive RESTful API. Below is the complete, exhaustive 
 | Method | Endpoint | Description | Access |
 | :--- | :--- | :--- | :--- |
 | `GET` | `/api/health` | Service health check | Public |
+
+---
+
+## 📁 Project Structure
+
+AlgoPrep uses a modern monorepo structure, cleanly separating the React frontend from the Node.js backend.
+
+```text
+AlgoPrep/
+├── client/                     # Frontend Workspace (Vite + React)
+│   ├── src/
+│   │   ├── components/        # Reusable UI components (Modals, QuestionPalette, Timer)
+│   │   ├── context/           # Global state management (AuthContext)
+│   │   ├── pages/             # Route-level views (Dashboard, TestTaking, Leaderboard, SyllabusAI)
+│   │   ├── services/          # API client wrappers handling token auto-refresh
+│   │   └── types/             # Frontend type definitions/constants
+│   └── package.json           # Client dependencies (Tailwind, Recharts, React Router)
+│
+├── server/                     # Backend Workspace (Node.js + Express)
+│   ├── src/
+│   │   ├── config/            # Environment vars and Database connection
+│   │   ├── controllers/       # Core business logic for APIs
+│   │   ├── middleware/        # JWT auth, Zod validation, Multer file upload, Rate limiting
+│   │   ├── models/            # Mongoose schemas (User, Test, Attempt, Question)
+│   │   ├── routes/            # Express router definitions
+│   │   ├── seeds/             # Seed scripts (CS Topic Tests, dummy users)
+│   │   ├── services/          # External integrations (Cloudinary storage, Gemini AI)
+│   │   ├── socket/            # Real-time WebSocket handlers
+│   │   └── utils/             # Helper functions (Scoring, PDF extraction, formatters)
+│   ├── tests/                 # Vitest & Supertest integration suites
+│   └── package.json           # Server dependencies (Mongoose, GenAI, Zod, JWT)
+│
+├── INTERVIEW_PREP.md           # Extensive System Design & Architectural Guide
+└── README.md                   # Project Documentation
+```
