@@ -19,3 +19,30 @@ This platform serves as a vital bridge between academic learning and technical i
 - 📊 **Advanced Analytics & AI Revision**: Provides detailed scorecards (percentiles, accuracy) and a personalized, AI-generated 3-step study recommendation plan based on the candidate's incorrect answers.
 - 🏆 **High-Performance Leaderboards**: Employs complex MongoDB aggregation pipelines (`$setWindowFields`) to calculate global and per-test rankings, including multi-field tie-breaker rules.
 - 🧑‍🏫 **Educator Hiring Pipeline**: A dedicated, streamlined workflow for recruiting, evaluating, and onboarding teachers applying to join the AlgoPrep platform.
+
+---
+
+## 📸 Application Screenshots
+
+*(Replace the placeholder links with your actual screenshot paths once you take them)*
+
+### 🎓 Student Portal
+| Dashboard | Test Interface |
+| :---: | :---: |
+| ![Student Dashboard](./docs/screenshots/student-dashboard.png) | ![Test Taking](./docs/screenshots/test-taking.png) |
+| **Leaderboard** | **Analytics & AI Revision** |
+| ![Leaderboard](./docs/screenshots/leaderboard.png) | ![Analytics](./docs/screenshots/analytics.png) |
+
+### 🧑‍🏫 Teacher Portal
+| Educator Dashboard | Syllabus Upload (AI Gen) |
+| :---: | :---: |
+| ![Teacher Dashboard](./docs/screenshots/teacher-dashboard.png) | ![Syllabus AI](./docs/screenshots/syllabus-ai.png) |
+| **Test Management** | **Candidate Analytics** |
+| ![Test Management](./docs/screenshots/test-management.png) | ![Candidate Analytics](./docs/screenshots/candidate-analytics.png) |
+
+### 🛡️ Admin Portal & Hiring
+| Admin Dashboard | Hiring Pipeline Workflow |
+| :---: | :---: |
+| ![Admin Dashboard](./docs/screenshots/admin-dashboard.png) | ![Hiring Pipeline](./docs/screenshots/hiring-pipeline.png) |
+| **User Management** | **System Configuration** |
+| ![User Management](./docs/screenshots/user-management.png) | ![System Logs](./docs/screenshots/system-config.png) |
