@@ -49,6 +49,33 @@ This platform serves as a vital bridge between academic learning and technical i
 
 ---
 
+## 🛠️ Comprehensive Tech Stack
+
+### 🖥️ Frontend (Client)
+- **Core Framework**: React 19, React DOM 19
+- **Build Tool**: Vite (Lightning-fast HMR)
+- **Routing**: React Router DOM v7
+- **Styling**: Tailwind CSS v4, PostCSS
+- **Data Visualization**: Recharts (for Analytics & Scorecards)
+- **Icons**: Lucide React
+- **Real-time**: Socket.io Client
+
+### ⚙️ Backend (Server)
+- **Runtime & Framework**: Node.js, Express.js
+- **Database & ODM**: MongoDB, Mongoose
+- **Authentication & Security**: JWT (JSON Web Tokens), bcryptjs, Helmet, Express Rate Limit, CORS
+- **AI Integration**: Google Gemini API (`@google/genai`)
+- **Schema Validation**: Zod (Strict JSON parsing)
+- **File Processing & Storage**: Multer, Cloudinary SDK, Streamifier
+- **Document Parsing**: PDF-Parse (for Syllabus text extraction)
+
+### 🧪 Testing & Quality Assurance
+- **Unit & Integration**: Vitest, Supertest
+- **E2E Testing**: Puppeteer
+- **Mock Database**: MongoDB Memory Server
+
+---
+
 ## 🏗️ System Architecture & System Design
 
 AlgoPrep employs a robust, zero-trust Client-Server architecture designed for high availability and strict data integrity during live exams. Below is the visual workflow mapping how our React frontend portals, Node.js backend micro-services, MongoDB aggregation pipelines, and the Gemini AI engine interact in real-time.
