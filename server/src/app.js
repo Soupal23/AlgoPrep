@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import authRoutes from './routes/authRoutes.js';
 import testRoutes from './routes/testRoutes.js';
 import attemptRoutes from './routes/attemptRoutes.js';
@@ -19,10 +21,20 @@ import path from 'path';
 
 const app = express();
 
-app.use(cors());
+app.use(helmet());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || '*'
+}));
+
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 200, // Limit each IP to 200 requests per window
+  message: { error: 'Too many requests, please try again later.' }
+});
+app.use('/api', apiLimiter);
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-app.use('/uploads', express.static(path.resolve('uploads')));
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', service: 'AlgoPrep Server', timestamp: new Date() });

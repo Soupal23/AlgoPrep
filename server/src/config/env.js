@@ -15,5 +15,8 @@ export const config = {
   jwtRefreshSecret: process.env.JWT_REFRESH_SECRET || 'algoprep_refresh_secret_super_secure_key_2026_jwt',
   geminiApiKey: process.env.GEMINI_API_KEY || '',
   adminSeedPassword: process.env.ADMIN_SEED_PASSWORD || '',
-  nodeEnv: process.env.NODE_ENV || 'development'
+  nodeEnv: process.env.NODE_ENV || 'development',
+  cloudinaryCloudName: process.env.CLOUDINARY_CLOUD_NAME || '',
+  cloudinaryApiKey: process.env.CLOUDINARY_API_KEY || '',
+  cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET || ''
 };

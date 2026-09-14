@@ -11,6 +11,10 @@ export const connectDB = async () => {
     });
     console.log(`Connected to MongoDB at ${config.mongoUri}`);
   } catch (err) {
+    if (config.nodeEnv === 'production') {
+      console.error('Fatal: Failed to connect to MongoDB in production environment:', err);
+      process.exit(1);
+    }
     console.warn(`Local MongoDB connection failed. Falling back to mongodb-memory-server...`);
     try {
       mongoMemoryServer = await MongoMemoryServer.create();

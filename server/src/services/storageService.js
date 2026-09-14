@@ -1,5 +1,14 @@
 import fs from 'fs/promises';
 import path from 'path';
+import { v2 as cloudinary } from 'cloudinary';
+import streamifier from 'streamifier';
+import { config } from '../config/env.js';
+
+cloudinary.config({
+  cloud_name: config.cloudinaryCloudName,
+  api_key: config.cloudinaryApiKey,
+  api_secret: config.cloudinaryApiSecret
+});
 
 /**
  * Storage Service to handle saving and deleting uploaded files.
@@ -8,10 +17,19 @@ import path from 'path';
  */
 
 export const saveUploadedFile = async ({ buffer, originalname, subfolder }) => {
-  // Production Cloud Storage Hook (Uncomment & configure when ready to deploy)
-  // if (process.env.NODE_ENV === 'production') {
-  //   return await uploadToCloudStorage({ buffer, originalname, subfolder });
-  // }
+  // Production Cloud Storage Hook
+  if (config.nodeEnv === 'production') {
+    return new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        { folder: `algoprep/${subfolder}` },
+        (error, result) => {
+          if (error) return reject(error);
+          resolve(result.secure_url);
+        }
+      );
+      streamifier.createReadStream(buffer).pipe(uploadStream);
+    });
+  }
 
   // Local Disk Storage (Development)
   const safeFilename = `${Date.now()}-${originalname.replace(/\s+/g, '_')}`;
@@ -28,7 +46,20 @@ export const saveUploadedFile = async ({ buffer, originalname, subfolder }) => {
 
 export const deleteUploadedFile = async (filePath) => {
   if (!filePath || filePath.startsWith('http://') || filePath.startsWith('https://')) {
-    // Cloud storage deletion hook can be implemented here for production
+    if (config.nodeEnv === 'production' && filePath.includes('cloudinary')) {
+      try {
+        const parts = filePath.split('/');
+        const filename = parts.pop().split('.')[0];
+        const folder1 = parts.pop();
+        const folder2 = parts.pop();
+        if (folder2 === 'algoprep') {
+          const public_id = `${folder2}/${folder1}/${filename}`;
+          await cloudinary.uploader.destroy(public_id);
+        }
+      } catch (err) {
+        console.error('Failed to delete from Cloudinary:', err);
+      }
+    }
     return;
   }
 
