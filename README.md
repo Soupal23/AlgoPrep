@@ -29,23 +29,23 @@ This platform serves as a vital bridge between academic learning and technical i
 ### 🎓 Student Portal
 | Dashboard | Test Interface |
 | :---: | :---: |
-| ![Student Dashboard](./docs/screenshots/student-dashboard.png) | ![Test Taking](./docs/screenshots/test-taking.png) |
+| ![Student Dashboard](utils/student_dashboard.png) | ![Test Taking](utils/test_taking_1.png) |
 | **Leaderboard** | **Analytics & AI Revision** |
-| ![Leaderboard](./docs/screenshots/leaderboard.png) | ![Analytics](./docs/screenshots/analytics.png) |
+| ![Leaderboard](utils/leaderboard.png) | ![Analytics](utils/analytics.png) |
 
 ### 🧑‍🏫 Teacher Portal
 | Educator Dashboard | Syllabus Upload (AI Gen) |
 | :---: | :---: |
-| ![Teacher Dashboard](./docs/screenshots/teacher-dashboard.png) | ![Syllabus AI](./docs/screenshots/syllabus-ai.png) |
+| ![Teacher Dashboard](utils/teacher_dashboard.png) | ![Syllabus AI](utils/ai_test_generator.png) |
 | **Test Management** | **Candidate Analytics** |
-| ![Test Management](./docs/screenshots/test-management.png) | ![Candidate Analytics](./docs/screenshots/candidate-analytics.png) |
+| ![Test Management](utils/test_management.png) | ![Candidate Analytics](utils/class_roster.png) |
 
 ### 🛡️ Admin Portal & Hiring
 | Admin Dashboard | Hiring Pipeline Workflow |
 | :---: | :---: |
-| ![Admin Dashboard](./docs/screenshots/admin-dashboard.png) | ![Hiring Pipeline](./docs/screenshots/hiring-pipeline.png) |
+| ![Admin Dashboard](utils/admin_dashboard.png) | ![Hiring Pipeline](utils/hiring.png) |
 | **User Management** | **System Configuration** |
-| ![User Management](./docs/screenshots/user-management.png) | ![System Logs](./docs/screenshots/system-config.png) |
+| ![User Management](utils/all_user.png) | ![Messaging](utils/messagin_admin.png) |
 
 ---
 
