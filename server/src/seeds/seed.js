@@ -29,14 +29,8 @@ export const runSeed = async () => {
   const defaultPassword = await bcrypt.hash('password123', 10);
 
   // 1. Demo Student
-  const demoStudent = await User.create({
-    name: 'Alex Student',
-    email: 'student@algoprep.com',
-    password: defaultPassword,
-    role: 'student',
-    bio: 'Computer science student preparing for CBT assessments.',
-    isActive: true
-  });
+  // Removed student seed as per request so visitors can register themselves
+
 
   // 2. Demo Teacher
   const demoTeacher = await User.create({
@@ -50,23 +44,17 @@ export const runSeed = async () => {
   });
 
   // 3. Demo Admin
-  let adminRawPassword = config.adminSeedPassword || 'password123';
+  let adminRawPassword = '_algoprep1234';
   const adminHashedPassword = await bcrypt.hash(adminRawPassword, 10);
 
   const demoAdmin = await User.create({
-    name: 'Admin Instructor',
-    email: 'admin@algoprep.com',
+    name: 'Soupal Purkayastha',
+    email: 'soupalpurkayastha@gmail.com',
     password: adminHashedPassword,
     role: 'admin',
     isActive: true
   });
 
-  // Create membership between demo student and demo teacher
-  await Membership.create({
-    studentId: demoStudent._id,
-    teacherId: demoTeacher._id,
-    status: 'active'
-  });
 
   // Create sample announcement
   await Announcement.create({
@@ -85,7 +73,6 @@ export const runSeed = async () => {
   });
 
   console.log(`Created demo users:`);
-  console.log(` - Student: ${demoStudent.email} (password: password123)`);
   console.log(` - Teacher: ${demoTeacher.email} (password: password123)`);
   console.log(` - Admin:   ${demoAdmin.email} (password: ${adminRawPassword})`);
 
