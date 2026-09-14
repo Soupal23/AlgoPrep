@@ -114,3 +114,83 @@ graph TD
         HR --->|Application Statuses| DB
     end
 ```
+
+---
+
+## 📡 API Overview & Documentation
+
+AlgoPrep exposes a comprehensive RESTful API. Below is the complete, exhaustive list of all API routes implemented across the micro-services. All protected routes require a JWT Bearer token in the `Authorization` header.
+
+### 🛡️ Authentication & User Management
+| Method | Endpoint | Description | Access |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/auth/signup` | Register a new user | Public |
+| `POST` | `/api/auth/login` | Authenticate user & receive JWT tokens | Public |
+| `POST` | `/api/auth/refresh` | Refresh access token | Public |
+| `POST` | `/api/auth/logout` | Invalidate token and logout | Authenticated |
+| `GET` | `/api/users/profile` | Get current user's profile | Authenticated |
+| `PATCH` | `/api/users/profile` | Update profile information | Authenticated |
+| `POST` | `/api/users/avatar` | Upload user profile avatar (Cloudinary) | Authenticated |
+
+### 📝 Test Engine & Attempts (CBT)
+| Method | Endpoint | Description | Access |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/tests` | Fetch all available tests | Optional JWT |
+| `POST` | `/api/tests` | Create a new custom test | Teacher |
+| `GET` | `/api/tests/:id` | Fetch specific test details (Masked answers) | Optional JWT |
+| `DELETE`| `/api/tests/:id` | Delete a test | Authenticated |
+| `POST` | `/api/tests/:id/start` | Start a test attempt & server timer | Student |
+| `GET` | `/api/attempts/user/my-attempts`| Fetch candidate's attempt history | Student |
+| `GET` | `/api/attempts/:id` | Get details of an active attempt | Student/Admin |
+| `PATCH` | `/api/attempts/:id/progress` | Auto-save progress with monotonic lock | Student |
+| `POST` | `/api/attempts/:id/submit` | Submit test and calculate final score | Student |
+| `GET` | `/api/attempts/:id/review` | Review submitted test & answer keys | Student |
+
+### 🤖 AI, Analytics & Leaderboard
+| Method | Endpoint | Description | Access |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/ai/generate` | Generate syllabus-to-test via Gemini AI | Rate-Limited |
+| `GET` | `/api/attempts/:id/ai-revision` | Get AI-generated 3-step revision plan | Student |
+| `GET` | `/api/leaderboard` | Get global & per-test rankings via Aggregation| Authenticated |
+
+### 🧑‍🏫 Teacher Portal & LMS Features
+| Method | Endpoint | Description | Access |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/teachers` | Fetch public directory of teachers | Public |
+| `GET` | `/api/teachers/:id` | Fetch specific teacher details | Public |
+| `POST` | `/api/memberships/join/:teacherId`| Join a teacher's classroom | Student |
+| `DELETE`| `/api/memberships/leave/:teacherId`| Leave a teacher's classroom | Student |
+| `GET` | `/api/memberships/my-teachers` | Fetch teachers the student is following | Student |
+| `GET` | `/api/memberships/roster` | Fetch students enrolled in teacher's class | Teacher |
+| `DELETE`| `/api/memberships/roster/:studentId`| Remove student from class roster | Teacher |
+| `POST` | `/api/announcements` | Create a new class announcement | Teacher |
+| `GET` | `/api/announcements/mine` | Fetch teacher's announcements | Teacher |
+| `DELETE`| `/api/announcements/:id`| Delete an announcement | Teacher |
+| `GET` | `/api/announcements/feed` | Fetch announcement feed for student | Student |
+| `POST` | `/api/lectures` | Create and publish a new lecture | Teacher |
+| `GET` | `/api/lectures/mine` | Fetch teacher's lectures | Teacher |
+| `GET` | `/api/lectures/:id` | View specific lecture details | Authenticated |
+| `DELETE`| `/api/lectures/:id` | Delete a lecture | Teacher |
+| `GET` | `/api/lectures/feed` | Fetch lecture feed for enrolled student | Student |
+
+### 💬 Real-time Messaging
+| Method | Endpoint | Description | Access |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/messages` | Send a direct message | Authenticated |
+| `GET` | `/api/messages/contacts` | Fetch list of messaging contacts | Authenticated |
+| `GET` | `/api/messages/conversations` | Fetch recent conversations | Authenticated |
+| `GET` | `/api/messages/conversations/:id`| Fetch messages within a conversation | Authenticated |
+
+### 👑 Admin & Hiring Pipeline
+| Method | Endpoint | Description | Access |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/teacher-applications/apply`| Submit application & resume (Cloudinary) | Public |
+| `GET` | `/api/admin/teacher-applications`| List pending teacher applications | Admin |
+| `PATCH` | `/api/admin/teacher-applications/:id`| Approve/Reject application | Admin |
+| `GET` | `/api/admin/users` | List all registered users in system | Admin |
+| `PATCH` | `/api/admin/users/:id/status` | Suspend/Ban or update user status | Admin |
+
+### ⚙️ System
+| Method | Endpoint | Description | Access |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/health` | Service health check | Public |
