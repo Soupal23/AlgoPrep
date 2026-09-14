@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import { FileUp, Plus, Clock, CheckCircle2, AlertCircle, Sparkles } from 'lucide-react';
+import { FileUp, Plus, Clock, CheckCircle2, AlertCircle, Sparkles, Trash2 } from 'lucide-react';
 
 export const TeacherTests = () => {
   const { user } = useAuth();
@@ -19,15 +19,48 @@ export const TeacherTests = () => {
     timeLimitMinutes: 30,
     validFrom: '',
     validUntil: '',
-    questions: [
-      {
-        questionText: 'What is the time complexity of binary search on a sorted array?',
-        options: ['O(n)', 'O(log n)', 'O(n^2)', 'O(1)'],
-        correctOptionIndex: 1,
-        explanation: 'Binary search divides the search space in half at each step.'
-      }
-    ]
+    questions: []
   });
+
+  const addQuestion = () => {
+    setFormData(prev => ({
+      ...prev,
+      questions: [
+        ...prev.questions,
+        {
+          questionText: '',
+          options: ['', '', '', ''],
+          correctOptionIndex: 0,
+          explanation: ''
+        }
+      ]
+    }));
+  };
+
+  const removeQuestion = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      questions: prev.questions.filter((_, i) => i !== index)
+    }));
+  };
+
+  const updateQuestion = (index, field, value) => {
+    setFormData(prev => {
+      const newQuestions = [...prev.questions];
+      newQuestions[index] = { ...newQuestions[index], [field]: value };
+      return { ...prev, questions: newQuestions };
+    });
+  };
+
+  const updateOption = (qIndex, oIndex, value) => {
+    setFormData(prev => {
+      const newQuestions = [...prev.questions];
+      const newOptions = [...newQuestions[qIndex].options];
+      newOptions[oIndex] = value;
+      newQuestions[qIndex] = { ...newQuestions[qIndex], options: newOptions };
+      return { ...prev, questions: newQuestions };
+    });
+  };
 
   useEffect(() => {
     fetchMyTests();
@@ -212,6 +245,17 @@ export const TeacherTests = () => {
               </div>
 
               <div>
+                <label className="block text-slate-400 font-mono mb-1">Description</label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  placeholder="Provide a brief description for this test..."
+                  className="w-full px-3 py-2 rounded-xl bg-[#1c1729] border border-[#383050] text-white focus:outline-none focus:border-purple-400 min-h-[60px]"
+                  required
+                />
+              </div>
+
+              <div>
                 <label className="block text-slate-400 font-mono mb-1">Topic</label>
                 <input
                   type="text"
@@ -254,6 +298,76 @@ export const TeacherTests = () => {
                     className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white focus:outline-none focus:border-purple-500"
                   />
                 </div>
+              </div>
+
+              {/* Questions Section */}
+              <div className="space-y-4 pt-4 border-t border-[#383050]">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-bold text-white">Questions ({formData.questions.length})</h4>
+                  <button
+                    type="button"
+                    onClick={addQuestion}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1c1729] hover:bg-[#251e35] text-purple-400 font-bold border border-[#383050] transition-colors"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    Add Question
+                  </button>
+                </div>
+
+                {formData.questions.map((q, qIndex) => (
+                  <div key={qIndex} className="bg-[#1c1729] rounded-xl p-4 border border-[#383050] space-y-3 relative">
+                    <button
+                      type="button"
+                      onClick={() => removeQuestion(qIndex)}
+                      className="absolute top-4 right-4 text-slate-500 hover:text-rose-400 transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                    
+                    <div>
+                      <label className="block text-slate-400 font-mono mb-1">Question {qIndex + 1}</label>
+                      <textarea
+                        value={q.questionText}
+                        onChange={(e) => updateQuestion(qIndex, 'questionText', e.target.value)}
+                        className="w-full px-3 py-2 rounded-xl bg-[#14111f] border border-[#383050] text-white focus:outline-none focus:border-purple-400 min-h-[60px]"
+                        required
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <label className="block text-slate-400 font-mono mb-1">Options</label>
+                      {q.options.map((opt, oIndex) => (
+                        <div key={oIndex} className="flex items-center gap-2">
+                          <input
+                            type="radio"
+                            name={`correct-${qIndex}`}
+                            checked={q.correctOptionIndex === oIndex}
+                            onChange={() => updateQuestion(qIndex, 'correctOptionIndex', oIndex)}
+                            required
+                            className="w-4 h-4 accent-purple-500"
+                          />
+                          <input
+                            type="text"
+                            value={opt}
+                            onChange={(e) => updateOption(qIndex, oIndex, e.target.value)}
+                            placeholder={`Option ${oIndex + 1}`}
+                            className="flex-1 px-3 py-1.5 rounded-lg bg-[#14111f] border border-[#383050] text-white focus:outline-none focus:border-purple-400"
+                            required
+                          />
+                        </div>
+                      ))}
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-400 font-mono mb-1">Explanation (Optional)</label>
+                      <textarea
+                        value={q.explanation}
+                        onChange={(e) => updateQuestion(qIndex, 'explanation', e.target.value)}
+                        className="w-full px-3 py-2 rounded-xl bg-[#14111f] border border-[#383050] text-white focus:outline-none focus:border-purple-400 min-h-[50px]"
+                      />
+                    </div>
+                  </div>
+                ))}
               </div>
 
               <button
