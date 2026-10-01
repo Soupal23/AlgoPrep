@@ -24,7 +24,7 @@ This platform serves as a vital bridge between academic learning and technical i
 
 ## 📸 Application Screenshots
 
-*(Replace the placeholder links with your actual screenshot paths once you take them)*
+
 
 ### 🎓 Student Portal
 | Dashboard | Test Interface |
