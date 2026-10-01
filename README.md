@@ -44,7 +44,7 @@ This platform serves as a vital bridge between academic learning and technical i
 | Admin Dashboard | Hiring Pipeline Workflow |
 | :---: | :---: |
 | ![Admin Dashboard](utils/admin_dashboard.png) | ![Hiring Pipeline](utils/hiring.png) |
-| **User Management** | **System Configuration** |
+| **User Management** | **Messaging** |
 | ![User Management](utils/all_user.png) | ![Messaging](utils/messagin_admin.png) |
 
 ---
