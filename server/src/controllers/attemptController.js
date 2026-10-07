@@ -66,7 +66,10 @@ export const saveProgress = async (req, res) => {
 
     if (tabSwitchEvent) {
       attempt.tabSwitches += 1;
-      attempt.tabSwitchEvents.push({ timestamp: new Date(tabSwitchEvent.timestamp || Date.now()) });
+      attempt.tabSwitchEvents.push({
+        timestamp: new Date(tabSwitchEvent.timestamp || Date.now()),
+        reason: tabSwitchEvent.reason || 'tab_switch'
+      });
     }
 
     await attempt.save();

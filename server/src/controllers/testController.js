@@ -177,6 +177,8 @@ export const startTestAttempt = async (req, res) => {
       status: 'in-progress'
     });
 
+    let wasResumed = false;
+
     if (attempt) {
       const startTime = new Date(attempt.startedAt).getTime();
       const maxAllowedTimeMs = (test.timeLimitMinutes * 60 + 60) * 1000;
@@ -187,6 +189,17 @@ export const startTestAttempt = async (req, res) => {
         attempt.status = 'expired';
         await attempt.save();
         attempt = null;
+      } else {
+        // Detect if attempt is resumed after initial creation (> 5s to avoid initial StrictMode double-invocations)
+        if (now.getTime() - startTime > 5000) {
+          wasResumed = true;
+          attempt.tabSwitches += 1;
+          attempt.tabSwitchEvents.push({
+            timestamp: now,
+            reason: 'session_reentry'
+          });
+          await attempt.save();
+        }
       }
     }
 
@@ -234,7 +247,8 @@ export const startTestAttempt = async (req, res) => {
       answers: answersObj,
       questionStates: questionStatesObj,
       lastSavedVersion: attempt.lastSavedVersion,
-      tabSwitches: attempt.tabSwitches
+      tabSwitches: attempt.tabSwitches,
+      wasResumed
     });
   } catch (err) {
     res.status(500).json({ error: 'Failed to start or resume test attempt' });

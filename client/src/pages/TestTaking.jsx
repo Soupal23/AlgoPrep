@@ -5,7 +5,7 @@ import { QuestionPalette } from '../components/QuestionPalette';
 import { Timer } from '../components/Timer';
 import { TabSwitchWarning } from '../components/TabSwitchWarning';
 import { SubmitConfirmModal } from '../components/SubmitConfirmModal';
-import { ChevronLeft, ChevronRight, Bookmark, RotateCcw, Send, ShieldAlert, Save } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Bookmark, RotateCcw, Send, ShieldAlert, Save, Maximize, Minimize } from 'lucide-react';
 
 const SAVE_DEBOUNCE_MS = 1500;
 const SAFETY_AUTOSAVE_MS = 15000;
@@ -32,7 +32,14 @@ export const TestTaking = () => {
   const [savingStatus, setSavingStatus] = useState('idle');
 
   const [tabSwitches, setTabSwitches] = useState(0);
-  const [showTabWarning, setShowTabWarning] = useState(false);
+  const [warningModal, setWarningModal] = useState({
+    isOpen: false,
+    title: '',
+    message: ''
+  });
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const isFullscreenRef = useRef(false);
+  const lastViolationTimeRef = useRef(0);
 
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -94,6 +101,15 @@ export const TestTaking = () => {
       setAnswers(initialAnswers);
       setQuestionStates(initialStates);
       setTabSwitches(res.tabSwitches || 0);
+
+      if (res.wasResumed) {
+        setWarningModal({
+          isOpen: true,
+          title: 'Warning: Session Resumed!',
+          message:
+            'You previously left or reloaded the exam window. This unauthorized departure and re-entry has been recorded in your official attempt record.'
+        });
+      }
     } catch (err) {
       setError(err.message || 'Failed to initialize test session');
     } finally {
@@ -200,21 +216,158 @@ export const TestTaking = () => {
     return () => clearInterval(interval);
   }, [attemptId, flushSave]);
 
+  const triggerViolation = useCallback(
+    (reason, title, message) => {
+      if (submittedRef.current || !attemptIdRef.current) return;
+
+      const now = Date.now();
+      // Throttle rapid consecutive events (e.g. window blur immediately before visibilitychange)
+      if (now - lastViolationTimeRef.current < 1500) {
+        return;
+      }
+      lastViolationTimeRef.current = now;
+
+      setTabSwitches((prev) => prev + 1);
+      setWarningModal({
+        isOpen: true,
+        title: title || 'Warning: Proctoring Alert!',
+        message:
+          message ||
+          'You navigated away from the exam window or switched tabs. This activity has been recorded in your official attempt record.'
+      });
+
+      pendingTabEventsRef.current.push({
+        timestamp: new Date().toISOString(),
+        reason: reason || 'tab_switch'
+      });
+      flushSave();
+    },
+    [flushSave]
+  );
+
+  const toggleFullscreen = async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen();
+        setIsFullscreen(true);
+        isFullscreenRef.current = true;
+      } else {
+        await document.exitFullscreen();
+        setIsFullscreen(false);
+        isFullscreenRef.current = false;
+      }
+    } catch (err) {
+      console.warn('Fullscreen request failed:', err);
+    }
+  };
+
   useEffect(() => {
+    // 1. Trap Browser Back/Forward navigation by pushing a dummy state onto history
+    try {
+      window.history.pushState({ examLocked: true }, '', window.location.href);
+    } catch (_) {}
+
+    const handlePopState = () => {
+      if (submittedRef.current) return;
+      // Re-push state immediately so user stays trapped on the exam page
+      try {
+        window.history.pushState({ examLocked: true }, '', window.location.href);
+      } catch (_) {}
+
+      triggerViolation(
+        'back_navigation',
+        'Warning: Navigation Attempt Detected!',
+        'Browser back/forward navigation is strictly prohibited during an exam. This violation has been recorded in your official attempt record.'
+      );
+    };
+
+    // 2. Tab switch (visibility change)
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'hidden' && attemptIdRef.current && !submittedRef.current) {
-        setTabSwitches((prev) => prev + 1);
-        setShowTabWarning(true);
-        pendingTabEventsRef.current.push({ timestamp: new Date().toISOString() });
-        flushSave();
+        triggerViolation(
+          'tab_switch',
+          'Warning: Tab Switch Detected!',
+          'You navigated away from the exam window or switched tabs. This activity has been recorded in your official attempt record.'
+        );
       }
     };
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    // 3. Window blur (lost focus to another app, devtools, or address bar)
+    const handleWindowBlur = () => {
+      if (attemptIdRef.current && !submittedRef.current && document.visibilityState !== 'hidden') {
+        triggerViolation(
+          'window_blur',
+          'Warning: Window Focus Lost!',
+          'The exam window lost focus. Please keep your cursor and attention inside the exam window.'
+        );
+      }
     };
-  }, [flushSave]);
+
+    // 4. Fullscreen change listener
+    const handleFullscreenChange = () => {
+      const isFs = !!document.fullscreenElement;
+      setIsFullscreen(isFs);
+      if (!isFs && isFullscreenRef.current && !submittedRef.current && attemptIdRef.current) {
+        isFullscreenRef.current = false;
+        triggerViolation(
+          'fullscreen_exit',
+          'Warning: Fullscreen Exited!',
+          'You exited fullscreen mode. Please remain in fullscreen mode throughout the exam.'
+        );
+      }
+    };
+
+    // 5. Tab close / page reload guard
+    const handleBeforeUnload = (e) => {
+      if (!submittedRef.current && attemptIdRef.current) {
+        e.preventDefault();
+        e.returnValue = '';
+        return '';
+      }
+    };
+
+    // 6. Send keepalive departure beacon if page is forcefully unloaded
+    const handlePageHide = () => {
+      if (!submittedRef.current && attemptIdRef.current) {
+        try {
+          const token = localStorage.getItem('algoprep_access_token');
+          const apiBase = import.meta.env.VITE_API_URL || '/api';
+          const payload = JSON.stringify({
+            version: versionRef.current + 1,
+            tabSwitchEvent: {
+              timestamp: new Date().toISOString(),
+              reason: 'page_unload'
+            }
+          });
+          fetch(`${apiBase}/attempts/${attemptIdRef.current}/progress`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(token ? { Authorization: `Bearer ${token}` } : {})
+            },
+            body: payload,
+            keepalive: true
+          });
+        } catch (_) {}
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('blur', handleWindowBlur);
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('pagehide', handlePageHide);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('blur', handleWindowBlur);
+      window.removeEventListener('fullscreenchange', handleFullscreenChange);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('pagehide', handlePageHide);
+    };
+  }, [triggerViolation]);
 
   const handleSelectQuestion = (index, currentStateOverride) => {
     setCurrentIndex(index);
@@ -320,6 +473,12 @@ export const TestTaking = () => {
           timeSpentSeconds: 0
         });
 
+        if (document.fullscreenElement) {
+          try {
+            await document.exitFullscreen();
+          } catch (_) {}
+        }
+
         navigate(`/results/${attemptIdRef.current}`);
         return;
       } catch (err) {
@@ -416,6 +575,19 @@ export const TestTaking = () => {
               <span>Warnings: {tabSwitches}</span>
             </div>
           )}
+
+          <button
+            onClick={toggleFullscreen}
+            title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen (Recommended)'}
+            className="flex items-center gap-1.5 text-xs text-slate-300 font-mono bg-[#1c1729] hover:bg-[#28213b] px-3 py-1.5 rounded-lg border border-[#383050] transition-colors cursor-pointer"
+          >
+            {isFullscreen ? (
+              <Minimize className="w-3.5 h-3.5 text-purple-400" />
+            ) : (
+              <Maximize className="w-3.5 h-3.5 text-purple-400" />
+            )}
+            <span className="hidden md:inline">{isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}</span>
+          </button>
 
           <Timer
             endTimeIso={endTimeIso}
@@ -539,9 +711,11 @@ export const TestTaking = () => {
       </div>
 
       <TabSwitchWarning
-        isOpen={showTabWarning}
+        isOpen={warningModal.isOpen}
+        title={warningModal.title}
+        message={warningModal.message}
         switchCount={tabSwitches}
-        onClose={() => setShowTabWarning(false)}
+        onClose={() => setWarningModal((prev) => ({ ...prev, isOpen: false }))}
       />
 
       <SubmitConfirmModal

@@ -26,7 +26,8 @@ const attemptSchema = new Schema(
     tabSwitches: { type: Number, default: 0 },
     tabSwitchEvents: [
       {
-        timestamp: { type: Date, default: Date.now }
+        timestamp: { type: Date, default: Date.now },
+        reason: { type: String, default: 'tab_switch' }
       }
     ],
     startedAt: { type: Date, default: Date.now },
