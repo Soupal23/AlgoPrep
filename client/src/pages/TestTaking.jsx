@@ -7,6 +7,12 @@ import { TabSwitchWarning } from '../components/TabSwitchWarning';
 import { SubmitConfirmModal } from '../components/SubmitConfirmModal';
 import { ChevronLeft, ChevronRight, Bookmark, RotateCcw, Send, ShieldAlert, Save } from 'lucide-react';
 
+const SAVE_DEBOUNCE_MS = 1500;
+const SAFETY_AUTOSAVE_MS = 15000;
+const MAX_SUBMIT_RETRIES = 3;
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export const TestTaking = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -29,34 +35,61 @@ export const TestTaking = () => {
 
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatusText, setSubmitStatusText] = useState('');
 
+  // ---- Save engine state (refs so timers/handlers always see the latest values) ----
   const versionRef = useRef(0);
-  const autoSaveIntervalRef = useRef(null);
+  const attemptIdRef = useRef(null);
+  const answersRef = useRef({});
+  const statesRef = useRef({});
+  const pendingTabEventsRef = useRef([]);
+  const dirtyRef = useRef(false);
+  const inFlightRef = useRef(null); // Promise of the save currently in flight
+  const debounceTimerRef = useRef(null);
+  const retryTimerRef = useRef(null);
+  const savedIdleTimerRef = useRef(null);
+  const submittedRef = useRef(false);
 
   useEffect(() => {
     if (!id) return;
     initTestAttempt();
   }, [id]);
 
+  useEffect(() => {
+    return () => {
+      clearTimeout(debounceTimerRef.current);
+      clearTimeout(retryTimerRef.current);
+      clearTimeout(savedIdleTimerRef.current);
+    };
+  }, []);
+
   const initTestAttempt = async () => {
     try {
       setLoading(true);
       const res = await api.startTest(id);
+      const initialAnswers = res.answers || {};
+      let initialStates = res.questionStates || {};
+
+      if (res.questions.length > 0) {
+        const firstQId = res.questions[0]._id;
+        if (!initialStates[firstQId] || initialStates[firstQId] === 'unvisited') {
+          initialStates = { ...initialStates, [firstQId]: 'not_answered' };
+          dirtyRef.current = true;
+        }
+      }
+
+      attemptIdRef.current = res.attemptId;
+      answersRef.current = initialAnswers;
+      statesRef.current = initialStates;
+      versionRef.current = res.lastSavedVersion || 0;
+
       setAttemptId(res.attemptId);
       setTest(res.test);
       setQuestions(res.questions);
       setEndTimeIso(res.endTime);
-      setAnswers(res.answers || {});
-      setQuestionStates(res.questionStates || {});
+      setAnswers(initialAnswers);
+      setQuestionStates(initialStates);
       setTabSwitches(res.tabSwitches || 0);
-      versionRef.current = res.lastSavedVersion || 0;
-
-      if (res.questions.length > 0) {
-        const firstQId = res.questions[0]._id;
-        if (!res.questionStates[firstQId] || res.questionStates[firstQId] === 'unvisited') {
-          setQuestionStates(prev => ({ ...prev, [firstQId]: 'not_answered' }));
-        }
-      }
     } catch (err) {
       setError(err.message || 'Failed to initialize test session');
     } finally {
@@ -64,58 +97,112 @@ export const TestTaking = () => {
     }
   };
 
-  const performSaveProgress = useCallback(
-    async (overrideAnswers, overrideStates, tabSwitchPayload) => {
-      if (!attemptId) return;
+  /**
+   * Sends at most one save at a time with a snapshot of the latest state.
+   * If changes happen while a save is in flight, another save follows once it completes.
+   */
+  const flushSave = useCallback(async () => {
+    clearTimeout(debounceTimerRef.current);
+    debounceTimerRef.current = null;
 
+    if (submittedRef.current || !attemptIdRef.current) return;
+
+    if (inFlightRef.current) {
+      // A follow-up save will be triggered when the current one finishes (dirty flag stays set).
+      return inFlightRef.current;
+    }
+
+    const hasTabEvent = pendingTabEventsRef.current.length > 0;
+    if (!dirtyRef.current && !hasTabEvent) return;
+
+    dirtyRef.current = false;
+    const tabEvent = hasTabEvent ? pendingTabEventsRef.current[0] : undefined;
+    const nextVersion = versionRef.current + 1;
+
+    const run = (async () => {
+      let retryDelayMs = 0;
       try {
         setSavingStatus('saving');
-        const nextVersion = versionRef.current + 1;
-
-        const currentAnswers = overrideAnswers || answers;
-        const currentStates = overrideStates || questionStates;
-
-        const res = await api.saveProgress(attemptId, {
-          answers: currentAnswers,
-          questionStates: currentStates,
+        const res = await api.saveProgress(attemptIdRef.current, {
+          answers: answersRef.current,
+          questionStates: statesRef.current,
           version: nextVersion,
-          tabSwitchEvent: tabSwitchPayload
+          tabSwitchEvent: tabEvent
         });
 
         if (res.success) {
           versionRef.current = res.lastSavedVersion;
+          if (tabEvent) pendingTabEventsRef.current.shift();
           setSavingStatus('saved');
-          setTimeout(() => setSavingStatus('idle'), 2000);
+          clearTimeout(savedIdleTimerRef.current);
+          savedIdleTimerRef.current = setTimeout(() => setSavingStatus('idle'), 2000);
         } else if (res.reason === 'stale_version') {
-          versionRef.current = res.currentVersion || versionRef.current;
+          versionRef.current = Math.max(versionRef.current, res.currentVersion || 0);
+          dirtyRef.current = true; // resend latest snapshot with a fresh version
           setSavingStatus('idle');
         }
       } catch (err) {
-        setSavingStatus('error');
+        dirtyRef.current = true;
+        if (err.status === 429) {
+          setSavingStatus('rate_limited');
+          retryDelayMs = Math.max(1, err.retryAfterSeconds || 5) * 1000;
+        } else {
+          setSavingStatus('error');
+          retryDelayMs = 5000;
+        }
+      } finally {
+        inFlightRef.current = null;
       }
-    },
-    [attemptId, answers, questionStates]
-  );
 
+      if (submittedRef.current) return;
+
+      if (retryDelayMs > 0) {
+        clearTimeout(retryTimerRef.current);
+        retryTimerRef.current = setTimeout(() => flushSave(), retryDelayMs);
+      } else if (dirtyRef.current || pendingTabEventsRef.current.length > 0) {
+        await flushSave();
+      }
+    })();
+
+    inFlightRef.current = run;
+    return run;
+  }, []);
+
+  /** Marks state dirty and (re)starts the debounce timer. */
+  const scheduleSave = useCallback(() => {
+    dirtyRef.current = true;
+    clearTimeout(debounceTimerRef.current);
+    debounceTimerRef.current = setTimeout(() => flushSave(), SAVE_DEBOUNCE_MS);
+  }, [flushSave]);
+
+  const commitState = (nextAnswers, nextStates) => {
+    if (nextAnswers) {
+      answersRef.current = nextAnswers;
+      setAnswers(nextAnswers);
+    }
+    if (nextStates) {
+      statesRef.current = nextStates;
+      setQuestionStates(nextStates);
+    }
+    scheduleSave();
+  };
+
+  // Safety-net autosave: only fires when there are unsaved changes.
   useEffect(() => {
     if (!attemptId) return;
-
-    autoSaveIntervalRef.current = setInterval(() => {
-      performSaveProgress();
-    }, 10000);
-
-    return () => {
-      if (autoSaveIntervalRef.current) clearInterval(autoSaveIntervalRef.current);
-    };
-  }, [attemptId, performSaveProgress]);
+    const interval = setInterval(() => {
+      if (dirtyRef.current || pendingTabEventsRef.current.length > 0) flushSave();
+    }, SAFETY_AUTOSAVE_MS);
+    return () => clearInterval(interval);
+  }, [attemptId, flushSave]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'hidden' && attemptId) {
-        const newCount = tabSwitches + 1;
-        setTabSwitches(newCount);
+      if (document.visibilityState === 'hidden' && attemptIdRef.current && !submittedRef.current) {
+        setTabSwitches((prev) => prev + 1);
         setShowTabWarning(true);
-        performSaveProgress(undefined, undefined, { timestamp: new Date().toISOString() });
+        pendingTabEventsRef.current.push({ timestamp: new Date().toISOString() });
+        flushSave();
       }
     };
 
@@ -123,57 +210,50 @@ export const TestTaking = () => {
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [attemptId, tabSwitches, performSaveProgress]);
+  }, [flushSave]);
 
   const handleSelectQuestion = (index, currentStateOverride) => {
     setCurrentIndex(index);
     const targetQId = questions[index]?._id;
-    const baseStates = currentStateOverride || questionStates;
+    const baseStates = currentStateOverride || statesRef.current;
 
     if (targetQId && (!baseStates[targetQId] || baseStates[targetQId] === 'unvisited')) {
-      const newStates = { ...baseStates, [targetQId]: 'not_answered' };
-      setQuestionStates(newStates);
-      performSaveProgress(answers, newStates);
+      commitState(null, { ...baseStates, [targetQId]: 'not_answered' });
     }
   };
 
   const handleSelectOption = (optionIndex) => {
     const currentQId = questions[currentIndex]._id;
-    const newAnswers = { ...answers, [currentQId]: optionIndex };
-    setAnswers(newAnswers);
+    const newAnswers = { ...answersRef.current, [currentQId]: optionIndex };
 
-    const currentSt = questionStates[currentQId];
+    const currentSt = statesRef.current[currentQId];
     let newSt = 'answered';
     if (currentSt === 'marked' || currentSt === 'answered_marked') {
       newSt = 'answered_marked';
     }
 
-    const newStates = { ...questionStates, [currentQId]: newSt };
-    setQuestionStates(newStates);
-    performSaveProgress(newAnswers, newStates);
+    commitState(newAnswers, { ...statesRef.current, [currentQId]: newSt });
   };
 
   const handleClearAnswer = () => {
     const currentQId = questions[currentIndex]._id;
-    const newAnswers = { ...answers };
+    const newAnswers = { ...answersRef.current };
     delete newAnswers[currentQId];
-    setAnswers(newAnswers);
 
-    const currentSt = questionStates[currentQId];
+    const currentSt = statesRef.current[currentQId];
     let newSt = 'not_answered';
     if (currentSt === 'marked' || currentSt === 'answered_marked') {
       newSt = 'marked';
     }
 
-    const newStates = { ...questionStates, [currentQId]: newSt };
-    setQuestionStates(newStates);
-    performSaveProgress(newAnswers, newStates);
+    commitState(newAnswers, { ...statesRef.current, [currentQId]: newSt });
   };
 
   const handleToggleMarkForReview = () => {
     const currentQId = questions[currentIndex]._id;
-    const hasAnswer = answers[currentQId] !== undefined && answers[currentQId] !== null;
-    const currentSt = questionStates[currentQId];
+    const currentAnswers = answersRef.current;
+    const hasAnswer = currentAnswers[currentQId] !== undefined && currentAnswers[currentQId] !== null;
+    const currentSt = statesRef.current[currentQId];
 
     let newSt;
     if (currentSt === 'marked' || currentSt === 'answered_marked') {
@@ -182,13 +262,19 @@ export const TestTaking = () => {
       newSt = hasAnswer ? 'answered_marked' : 'marked';
     }
 
-    const updatedStates = { ...questionStates, [currentQId]: newSt };
-    setQuestionStates(updatedStates);
-    performSaveProgress(answers, updatedStates);
+    let updatedStates = { ...statesRef.current, [currentQId]: newSt };
 
+    // Advance and mark the next question visited in the same (single, debounced) save.
     if (currentIndex < questions.length - 1) {
-      handleSelectQuestion(currentIndex + 1, updatedStates);
+      const nextIndex = currentIndex + 1;
+      const nextQId = questions[nextIndex]?._id;
+      if (nextQId && (!updatedStates[nextQId] || updatedStates[nextQId] === 'unvisited')) {
+        updatedStates = { ...updatedStates, [nextQId]: 'not_answered' };
+      }
+      setCurrentIndex(nextIndex);
     }
+
+    commitState(null, updatedStates);
   };
 
   const handleNext = () => {
@@ -204,24 +290,49 @@ export const TestTaking = () => {
   };
 
   const handleSubmitExam = async () => {
-    if (!attemptId) return;
+    if (!attemptIdRef.current || submittedRef.current) return;
 
-    try {
-      setIsSubmitting(true);
-      const nextVersion = versionRef.current + 1;
+    setIsSubmitting(true);
+    setSubmitStatusText('');
 
-      await api.submitAttempt(attemptId, {
-        answers,
-        questionStates,
-        version: nextVersion,
-        timeSpentSeconds: 0
-      });
+    // Stop further autosaves and wait for any in-flight save to settle.
+    clearTimeout(debounceTimerRef.current);
+    clearTimeout(retryTimerRef.current);
+    submittedRef.current = true;
+    if (inFlightRef.current) {
+      try {
+        await inFlightRef.current;
+      } catch {
+        // ignore - submit carries the full latest snapshot anyway
+      }
+    }
 
-      navigate(`/results/${attemptId}`);
-    } catch (err) {
-      setError(err.message || 'Failed to submit test');
-      setIsSubmitting(false);
-      setShowSubmitModal(false);
+    for (let attempt = 0; attempt <= MAX_SUBMIT_RETRIES; attempt++) {
+      try {
+        await api.submitAttempt(attemptIdRef.current, {
+          answers: answersRef.current,
+          questionStates: statesRef.current,
+          version: versionRef.current + 1,
+          timeSpentSeconds: 0
+        });
+
+        navigate(`/results/${attemptIdRef.current}`);
+        return;
+      } catch (err) {
+        if (err.status === 429 && attempt < MAX_SUBMIT_RETRIES) {
+          const waitSeconds = err.retryAfterSeconds || 2 ** (attempt + 1);
+          setSubmitStatusText(`Server busy - retrying submission in ${waitSeconds}s...`);
+          await sleep(waitSeconds * 1000);
+          continue;
+        }
+
+        submittedRef.current = false;
+        setError(err.message || 'Failed to submit test');
+        setIsSubmitting(false);
+        setSubmitStatusText('');
+        setShowSubmitModal(false);
+        return;
+      }
     }
   };
 
@@ -273,9 +384,25 @@ export const TestTaking = () => {
 
         <div className="flex items-center gap-4">
           <div className="hidden sm:flex items-center gap-1.5 text-xs text-slate-400 font-mono bg-[#1c1729] px-3 py-1.5 rounded-lg border border-[#383050]">
-            <Save className={`w-3.5 h-3.5 ${savingStatus === 'saving' ? 'text-amber-400 animate-spin' : 'text-purple-400'}`} />
+            <Save
+              className={`w-3.5 h-3.5 ${
+                savingStatus === 'saving'
+                  ? 'text-amber-400 animate-spin'
+                  : savingStatus === 'rate_limited' || savingStatus === 'error'
+                    ? 'text-rose-400'
+                    : 'text-purple-400'
+              }`}
+            />
             <span>
-              {savingStatus === 'saving' ? 'Saving...' : savingStatus === 'saved' ? 'Saved' : 'Auto-Sync Active'}
+              {savingStatus === 'saving'
+                ? 'Saving...'
+                : savingStatus === 'saved'
+                  ? 'Saved'
+                  : savingStatus === 'rate_limited'
+                    ? 'Saving paused - retrying shortly'
+                    : savingStatus === 'error'
+                      ? 'Save failed - retrying'
+                      : 'Auto-Sync Active'}
             </span>
           </div>
 
@@ -416,6 +543,7 @@ export const TestTaking = () => {
         onConfirm={handleSubmitExam}
         onCancel={() => setShowSubmitModal(false)}
         isSubmitting={isSubmitting}
+        statusText={submitStatusText}
       />
     </div>
   );

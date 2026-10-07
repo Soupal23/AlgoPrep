@@ -7,7 +7,8 @@ export const SubmitConfirmModal = ({
   questionStates,
   onConfirm,
   onCancel,
-  isSubmitting
+  isSubmitting,
+  statusText
 }) => {
   if (!isOpen) return null;
 
@@ -60,6 +61,13 @@ export const SubmitConfirmModal = ({
           <div className="flex items-center gap-2 p-3 mb-6 rounded-xl bg-amber-950/40 border border-amber-800/50 text-amber-300 text-xs">
             <AlertCircle className="w-4 h-4 shrink-0 text-amber-400" />
             <span>You still have {unattemptedCount} unattempted questions! Unattempted questions yield 0 points.</span>
+          </div>
+        )}
+
+        {statusText && (
+          <div className="flex items-center gap-2 p-3 mb-4 rounded-xl bg-indigo-950/40 border border-indigo-800/50 text-indigo-300 text-xs">
+            <AlertCircle className="w-4 h-4 shrink-0 text-indigo-400" />
+            <span>{statusText}</span>
           </div>
         )}
 

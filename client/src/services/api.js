@@ -89,7 +89,24 @@ class ApiService {
     }
 
     if (!response.ok) {
-      throw new Error(data.error || `Request failed with status ${response.status}`);
+      if (response.status === 429) {
+        const headerRetry = Number.parseInt(response.headers.get('Retry-After') || '', 10);
+        const retryAfterSeconds = Number.isFinite(data.retryAfterSeconds)
+          ? data.retryAfterSeconds
+          : Number.isFinite(headerRetry)
+            ? headerRetry
+            : null;
+        const waitText = retryAfterSeconds ? ` Please wait ${retryAfterSeconds} seconds.` : ' Please wait a moment.';
+        const rateErr = new Error(`You're doing that too fast.${waitText}`);
+        rateErr.status = 429;
+        rateErr.retryAfterSeconds = retryAfterSeconds;
+        rateErr.serverMessage = data.error;
+        throw rateErr;
+      }
+
+      const err = new Error(data.error || `Request failed with status ${response.status}`);
+      err.status = response.status;
+      throw err;
     }
 
     return data;

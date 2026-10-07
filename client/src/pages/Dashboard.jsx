@@ -130,8 +130,14 @@ export const Dashboard = () => {
           ))}
         </div>
       ) : error ? (
-        <div className="p-8 text-center bg-[#14111f] rounded-2xl border border-rose-800/40 text-rose-300">
-          {error}
+        <div className="p-8 text-center bg-[#14111f] rounded-2xl border border-rose-800/40 text-rose-300 space-y-4">
+          <p>{error}</p>
+          <button
+            onClick={fetchDashboardData}
+            className="px-4 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition-colors"
+          >
+            Retry Now
+          </button>
         </div>
       ) : filteredTests.length === 0 ? (
         <div className="p-12 text-center bg-[#14111f] rounded-2xl border border-[#383050] text-[#9f99b0]">
