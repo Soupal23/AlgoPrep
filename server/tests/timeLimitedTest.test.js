@@ -6,6 +6,7 @@ import app from '../src/app.js';
 import { User } from '../src/models/User.js';
 import { Test } from '../src/models/Test.js';
 import { Membership } from '../src/models/Membership.js';
+import { Attempt } from '../src/models/Attempt.js';
 import { generateAccessToken } from '../src/utils/jwt.js';
 
 let mongoServer;
@@ -24,6 +25,7 @@ beforeEach(async () => {
   await User.deleteMany({});
   await Test.deleteMany({});
   await Membership.deleteMany({});
+  await Attempt.deleteMany({});
 });
 
 describe('Phase 10 — Teacher-Owned, Time-Limited Tests', () => {
@@ -190,5 +192,49 @@ describe('Phase 10 — Teacher-Owned, Time-Limited Tests', () => {
 
     expect(res.status).toBe(200);
     expect(res.body.test.title).toBe('Platform Public Test');
+  });
+
+  it('should reject submission and auto-expire attempt when elapsed time exceeds time limit plus grace period', async () => {
+    const student = await User.create({
+      name: 'Late Student',
+      email: 'late@student.com',
+      password: 'password123',
+      role: 'student',
+      isActive: true
+    });
+
+    const test = await Test.create({
+      title: 'Quick Quiz',
+      description: 'Quick 10 minute quiz',
+      topic: 'DSA',
+      timeLimitMinutes: 10,
+      teacherId: null
+    });
+
+    const token = generateAccessToken({
+      userId: student._id.toString(),
+      email: student.email,
+      role: 'student',
+      isActive: true
+    });
+
+    // Simulate an attempt started 15 minutes ago (exceeding 10m + 60s grace buffer)
+    const attempt = await Attempt.create({
+      userId: student._id,
+      testId: test._id,
+      startedAt: new Date(Date.now() - 15 * 60 * 1000),
+      status: 'in-progress'
+    });
+
+    const res = await request(app)
+      .post(`/api/attempts/${attempt._id}/submit`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({});
+
+    expect(res.status).toBe(400);
+    expect(res.body.status).toBe('expired');
+
+    const updated = await Attempt.findById(attempt._id);
+    expect(updated.status).toBe('expired');
   });
 });

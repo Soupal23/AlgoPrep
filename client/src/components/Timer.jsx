@@ -1,14 +1,33 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Clock, AlertTriangle } from 'lucide-react';
 
-export const Timer = ({ endTimeIso, onTimeUp }) => {
-  const calculateRemainingSeconds = () => {
-    const end = new Date(endTimeIso).getTime();
-    const now = Date.now();
-    return Math.max(0, Math.floor((end - now) / 1000));
+export const Timer = ({ endTimeIso, initialRemainingSeconds, onTimeUp }) => {
+  const targetEndTimeRef = useRef(null);
+
+  const getTargetEndTime = () => {
+    if (typeof initialRemainingSeconds === 'number' && initialRemainingSeconds >= 0) {
+      return Date.now() + initialRemainingSeconds * 1000;
+    }
+    if (endTimeIso) {
+      const end = new Date(endTimeIso).getTime();
+      return !isNaN(end) ? end : Date.now();
+    }
+    return Date.now();
   };
 
-  const [secondsLeft, setSecondsLeft] = useState(calculateRemainingSeconds);
+  // Recalibrate target end time whenever initialRemainingSeconds or endTimeIso changes
+  useEffect(() => {
+    targetEndTimeRef.current = getTargetEndTime();
+    const remaining = Math.max(0, Math.floor((targetEndTimeRef.current - Date.now()) / 1000));
+    setSecondsLeft(remaining);
+  }, [endTimeIso, initialRemainingSeconds]);
+
+  const calculateRemainingSeconds = () => {
+    const target = targetEndTimeRef.current || getTargetEndTime();
+    return Math.max(0, Math.floor((target - Date.now()) / 1000));
+  };
+
+  const [secondsLeft, setSecondsLeft] = useState(() => calculateRemainingSeconds());
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -17,18 +36,23 @@ export const Timer = ({ endTimeIso, onTimeUp }) => {
 
       if (remaining <= 0) {
         clearInterval(interval);
-        onTimeUp();
+        if (typeof onTimeUp === 'function') {
+          onTimeUp();
+        }
       }
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [endTimeIso]);
+  }, [onTimeUp]);
 
-  const minutes = Math.floor(secondsLeft / 60);
+  const hours = Math.floor(secondsLeft / 3600);
+  const minutes = Math.floor((secondsLeft % 3600) / 60);
   const secs = secondsLeft % 60;
   const isWarning = secondsLeft < 120;
 
-  const formattedTime = `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  const formattedTime = hours > 0
+    ? `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
+    : `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
 
   return (
     <div

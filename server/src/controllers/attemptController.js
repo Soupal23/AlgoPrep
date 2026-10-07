@@ -139,15 +139,21 @@ export const submitAttempt = async (req, res) => {
     const elapsedSeconds = Math.floor((now.getTime() - startTime) / 1000);
     const maxAllowedSeconds = test.timeLimitMinutes * 60 + 60;
 
+    if (elapsedSeconds > maxAllowedSeconds) {
+      attempt.status = 'expired';
+      await attempt.save();
+      res.status(400).json({
+        error: 'Test session has expired beyond the allowed time limit',
+        status: 'expired'
+      });
+      return;
+    }
+
     const actualTimeSpent = Math.min(elapsedSeconds, test.timeLimitMinutes * 60);
 
     const questions = await Question.find({ testId: test._id });
     const scoringResult = calculateScore(attempt.answers, questions, test.markingScheme);
 
-    attempt.score = scoringResult.score;
-    attempt.maxScore = scoringResult.maxScore;
-    attempt.accuracy = scoringResult.accuracy;
-    attempt.timeSpentSeconds = actualTimeSpent;
     attempt.score = scoringResult.score;
     attempt.maxScore = scoringResult.maxScore;
     attempt.accuracy = scoringResult.accuracy;

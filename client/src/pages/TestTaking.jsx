@@ -22,6 +22,7 @@ export const TestTaking = () => {
   const [attemptId, setAttemptId] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [endTimeIso, setEndTimeIso] = useState('');
+  const [initialRemainingSeconds, setInitialRemainingSeconds] = useState(null);
 
   const [answers, setAnswers] = useState({});
   const [questionStates, setQuestionStates] = useState({});
@@ -87,6 +88,9 @@ export const TestTaking = () => {
       setTest(res.test);
       setQuestions(res.questions);
       setEndTimeIso(res.endTime);
+      setInitialRemainingSeconds(
+        typeof res.timeRemainingSeconds === 'number' ? res.timeRemainingSeconds : null
+      );
       setAnswers(initialAnswers);
       setQuestionStates(initialStates);
       setTabSwitches(res.tabSwitches || 0);
@@ -413,7 +417,11 @@ export const TestTaking = () => {
             </div>
           )}
 
-          <Timer endTimeIso={endTimeIso} onTimeUp={handleSubmitExam} />
+          <Timer
+            endTimeIso={endTimeIso}
+            initialRemainingSeconds={initialRemainingSeconds}
+            onTimeUp={handleSubmitExam}
+          />
 
           <button
             onClick={() => setShowSubmitModal(true)}
