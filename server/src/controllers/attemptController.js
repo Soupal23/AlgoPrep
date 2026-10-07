@@ -158,20 +158,10 @@ export const submitAttempt = async (req, res) => {
 
     const now = new Date();
     const startTime = new Date(attempt.startedAt).getTime();
+    const elapsedSeconds = Math.floor((now.getTime() - startTime) / 1000);
     const penaltySec = attempt.penaltySeconds || 0;
-    const maxAllowedSeconds = (test.timeLimitMinutes * 60) - penaltySec + 60;
-
-    if (elapsedSeconds > maxAllowedSeconds) {
-      attempt.status = 'expired';
-      await attempt.save();
-      res.status(400).json({
-        error: 'Test session has expired beyond the allowed time limit',
-        status: 'expired'
-      });
-      return;
-    }
-
-    const actualTimeSpent = Math.min(elapsedSeconds, test.timeLimitMinutes * 60);
+    const effectiveTimeLimitSec = Math.max(0, (test.timeLimitMinutes * 60) - penaltySec);
+    const actualTimeSpent = Math.min(elapsedSeconds, effectiveTimeLimitSec);
 
     const questions = await Question.find({ testId: test._id });
     const scoringResult = calculateScore(attempt.answers, questions, test.markingScheme);
@@ -205,6 +195,7 @@ export const submitAttempt = async (req, res) => {
       }
     });
   } catch (err) {
+    console.error('Submit attempt error:', err);
     res.status(500).json({ error: 'Failed to submit test attempt' });
   }
 };
