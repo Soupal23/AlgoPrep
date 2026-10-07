@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api';
+import { resolveFileUrl } from '../utils/fileUrl';
 import { Megaphone, Users, ArrowRight, AlertCircle, Clock } from 'lucide-react';
 
 export const AnnouncementFeed = () => {
@@ -82,7 +83,7 @@ export const AnnouncementFeed = () => {
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl overflow-hidden bg-[#1c1729] border border-[#383050] flex items-center justify-center text-purple-300 text-sm font-bold shrink-0">
                       {teacher.avatarUrl ? (
-                        <img src={`/${teacher.avatarUrl}`} alt={teacher.name} className="w-full h-full object-cover" />
+                        <img src={resolveFileUrl(teacher.avatarUrl)} alt={teacher.name} className="w-full h-full object-cover" />
                       ) : (
                         <span>{teacher.name ? teacher.name[0].toUpperCase() : 'T'}</span>
                       )}

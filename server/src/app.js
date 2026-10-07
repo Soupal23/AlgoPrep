@@ -21,10 +21,14 @@ import path from 'path';
 
 const app = express();
 
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' }
+}));
 app.use(cors({
   origin: process.env.FRONTEND_URL || '*'
 }));
+
+app.use('/uploads', express.static(path.resolve('uploads')));
 
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes

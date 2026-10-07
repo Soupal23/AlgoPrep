@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api';
+import { resolveFileUrl } from '../utils/fileUrl';
 import { User, Award, ArrowRight, ExternalLink, Camera, Save, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export const Profile = () => {
@@ -114,7 +115,7 @@ export const Profile = () => {
               <div className="w-20 h-20 rounded-2xl overflow-hidden bg-[#1c1729] border border-[#383050] flex items-center justify-center text-purple-300 text-3xl font-extrabold shadow-lg">
                 {user?.avatarUrl ? (
                   <img
-                    src={`/${user.avatarUrl}`}
+                    src={resolveFileUrl(user.avatarUrl)}
                     alt={user.name}
                     className="w-full h-full object-cover"
                     onError={(e) => {

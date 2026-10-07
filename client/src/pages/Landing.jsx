@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { resolveFileUrl } from '../utils/fileUrl';
 import {
   Terminal,
   ArrowRight,
@@ -203,7 +204,7 @@ export const Landing = () => {
               <div className="space-y-6 text-center py-4">
                 <div className="w-16 h-16 rounded-2xl overflow-hidden bg-[#1c1729] border border-[#383050] flex items-center justify-center text-purple-300 text-2xl font-extrabold mx-auto shadow-lg">
                   {user?.avatarUrl ? (
-                    <img src={`/${user.avatarUrl}`} alt={user.name} className="w-full h-full object-cover" />
+                    <img src={resolveFileUrl(user.avatarUrl)} alt={user.name} className="w-full h-full object-cover" />
                   ) : (
                     <span>{user?.name ? user.name[0].toUpperCase() : 'U'}</span>
                   )}

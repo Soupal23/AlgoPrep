@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
+import { resolveFileUrl } from '../utils/fileUrl';
 import { UserCheck, UserX, MessageSquare, AlertCircle, Clock } from 'lucide-react';
 
 export const TeacherRoster = () => {
@@ -95,7 +96,7 @@ export const TeacherRoster = () => {
                         <div className="flex items-center gap-3">
                           <div className="w-9 h-9 rounded-xl overflow-hidden bg-[#1c1729] border border-[#383050] flex items-center justify-center text-purple-300 text-xs font-bold shrink-0">
                             {student.avatarUrl ? (
-                              <img src={`/${student.avatarUrl}`} alt={student.name} className="w-full h-full object-cover" />
+                              <img src={resolveFileUrl(student.avatarUrl)} alt={student.name} className="w-full h-full object-cover" />
                             ) : (
                               <span>{student.name ? student.name[0].toUpperCase() : 'S'}</span>
                             )}

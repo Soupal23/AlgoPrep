@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../services/api';
+import { resolveFileUrl } from '../utils/fileUrl';
 import {
   ShieldCheck,
   Users,
@@ -250,7 +251,7 @@ export const AdminDashboard = () => {
                     <div className="pt-3 border-t border-[#383050] space-y-3">
                       {app.resumeUrl && (
                         <a
-                          href={`/${app.resumeUrl}`}
+                          href={resolveFileUrl(app.resumeUrl)}
                           target="_blank"
                           rel="noreferrer"
                           className="w-full py-2 rounded-xl bg-[#1c1729] hover:bg-[#251e35] text-purple-300 text-xs font-bold border border-[#383050] flex items-center justify-center gap-2 transition-colors"
@@ -353,7 +354,7 @@ export const AdminDashboard = () => {
                             <div className="flex items-center gap-3">
                               <div className="w-8 h-8 rounded-xl overflow-hidden bg-[#1c1729] border border-[#383050] flex items-center justify-center text-purple-300 text-xs font-bold shrink-0">
                                 {u.avatarUrl ? (
-                                  <img src={`/${u.avatarUrl}`} alt={u.name} className="w-full h-full object-cover" />
+                                  <img src={resolveFileUrl(u.avatarUrl)} alt={u.name} className="w-full h-full object-cover" />
                                 ) : (
                                   <span>{u.name ? u.name[0].toUpperCase() : 'U'}</span>
                                 )}

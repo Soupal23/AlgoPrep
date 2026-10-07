@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { resolveFileUrl } from '../utils/fileUrl';
 import {
   Terminal,
   LogOut,
@@ -277,7 +278,7 @@ export const Navbar = () => {
             >
               <div className="w-9 h-9 rounded-xl overflow-hidden bg-[#14111f] border border-[#383050] flex items-center justify-center text-purple-300 text-xs font-bold shrink-0">
                 {user?.avatarUrl ? (
-                  <img src={`/${user.avatarUrl}`} alt={user.name} className="w-full h-full object-cover" />
+                  <img src={resolveFileUrl(user.avatarUrl)} alt={user.name} className="w-full h-full object-cover" />
                 ) : (
                   <span>{user?.name ? user.name[0].toUpperCase() : 'U'}</span>
                 )}

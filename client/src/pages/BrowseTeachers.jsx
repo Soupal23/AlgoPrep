@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
+import { resolveFileUrl } from '../utils/fileUrl';
 import { Users, UserCheck, Plus, MessageSquare, BookOpen, AlertCircle } from 'lucide-react';
 
 export const BrowseTeachers = () => {
@@ -103,7 +104,7 @@ export const BrowseTeachers = () => {
                   <div className="flex items-start gap-4">
                     <div className="w-14 h-14 rounded-2xl overflow-hidden bg-[#1c1729] border border-[#383050] flex items-center justify-center text-purple-300 text-xl font-bold shrink-0">
                       {t.avatarUrl ? (
-                        <img src={`/${t.avatarUrl}`} alt={t.name} className="w-full h-full object-cover" />
+                        <img src={resolveFileUrl(t.avatarUrl)} alt={t.name} className="w-full h-full object-cover" />
                       ) : (
                         <span>{t.name ? t.name[0].toUpperCase() : 'T'}</span>
                       )}

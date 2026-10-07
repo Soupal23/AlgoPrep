@@ -21,7 +21,12 @@ export const saveUploadedFile = async ({ buffer, originalname, subfolder }) => {
   if (config.nodeEnv === 'production') {
     return new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
-        { folder: `algoprep/${subfolder}` },
+        {
+          folder: `algoprep/${subfolder}`,
+          resource_type: 'auto',
+          use_filename: true,
+          unique_filename: true
+        },
         (error, result) => {
           if (error) return reject(error);
           resolve(result.secure_url);
@@ -49,12 +54,17 @@ export const deleteUploadedFile = async (filePath) => {
     if (config.nodeEnv === 'production' && filePath.includes('cloudinary')) {
       try {
         const parts = filePath.split('/');
-        const filename = parts.pop().split('.')[0];
+        const filenameWithExt = parts.pop();
+        const filename = filenameWithExt.split('.')[0];
         const folder1 = parts.pop();
         const folder2 = parts.pop();
         if (folder2 === 'algoprep') {
-          const public_id = `${folder2}/${folder1}/${filename}`;
-          await cloudinary.uploader.destroy(public_id);
+          const publicId = `${folder2}/${folder1}/${filename}`;
+          // Try destroying as image first, fallback to raw if not found
+          const res = await cloudinary.uploader.destroy(publicId, { resource_type: 'image' });
+          if (res?.result === 'not found') {
+            await cloudinary.uploader.destroy(publicId, { resource_type: 'raw' });
+          }
         }
       } catch (err) {
         console.error('Failed to delete from Cloudinary:', err);

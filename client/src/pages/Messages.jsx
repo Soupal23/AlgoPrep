@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
+import { resolveFileUrl } from '../utils/fileUrl';
 import { MessageSquare, Send, Users, AlertCircle, Plus, CheckCheck, Wifi, WifiOff, X } from 'lucide-react';
 
 // How long after the last keystroke before we emit typing_stop
@@ -494,7 +495,7 @@ export const Messages = () => {
                     <div className="relative shrink-0">
                       <div className="w-10 h-10 rounded-xl overflow-hidden bg-[#1c1729] border border-[#383050] flex items-center justify-center text-purple-300 text-sm font-bold">
                         {partner?.avatarUrl ? (
-                          <img src={`/${partner.avatarUrl}`} alt={partner.name} className="w-full h-full object-cover" />
+                          <img src={resolveFileUrl(partner.avatarUrl)} alt={partner.name} className="w-full h-full object-cover" />
                         ) : (
                           <span>{partner?.name ? partner.name[0].toUpperCase() : 'U'}</span>
                         )}
@@ -550,7 +551,7 @@ export const Messages = () => {
                         <div className="relative">
                           <div className="w-9 h-9 rounded-xl overflow-hidden bg-[#1c1729] border border-[#383050] flex items-center justify-center text-purple-300 text-xs font-bold">
                             {partner?.avatarUrl ? (
-                              <img src={`/${partner.avatarUrl}`} alt={partner.name} className="w-full h-full object-cover" />
+                              <img src={resolveFileUrl(partner.avatarUrl)} alt={partner.name} className="w-full h-full object-cover" />
                             ) : (
                               <span>{partner?.name ? partner.name[0].toUpperCase() : 'U'}</span>
                             )}
