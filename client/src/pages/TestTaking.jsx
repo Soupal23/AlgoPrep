@@ -5,7 +5,7 @@ import { QuestionPalette } from '../components/QuestionPalette';
 import { Timer } from '../components/Timer';
 import { TabSwitchWarning } from '../components/TabSwitchWarning';
 import { SubmitConfirmModal } from '../components/SubmitConfirmModal';
-import { ChevronLeft, ChevronRight, Bookmark, RotateCcw, Send, ShieldAlert, Maximize, Minimize } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Bookmark, RotateCcw, Send, ShieldAlert, Save, Maximize, Minimize } from 'lucide-react';
 
 const SAVE_DEBOUNCE_MS = 1500;
 const SAFETY_AUTOSAVE_MS = 15000;
@@ -531,7 +531,8 @@ export const TestTaking = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-      <div className="bg-[#14111f] rounded-2xl p-4 sm:p-5 border border-[#383050] flex flex-wrap items-center justify-between gap-4 shadow-xl">
+      <div className="bg-[#14111f] rounded-2xl p-4 sm:p-5 border border-[#383050] space-y-4 shadow-xl">
+        {/* Top Header Row: Test Title & Marking Scheme */}
         <div>
           <h1 className="text-xl font-extrabold text-white flex items-center gap-2">
             <span>{test.title}</span>
@@ -545,65 +546,68 @@ export const TestTaking = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-4">
-          <div
-            title={
-              savingStatus === 'saving'
-                ? 'Saving answers to server...'
-                : savingStatus === 'error' || savingStatus === 'rate_limited'
-                  ? 'Sync issue — retrying automatically'
-                  : 'Auto-sync active: All changes saved'
-            }
-            className="w-9 h-9 flex items-center justify-center text-sm bg-[#1c1729] rounded-xl border border-[#383050] shadow-inner select-none transition-all cursor-default"
-          >
-            {savingStatus === 'saving' ? (
-              <span className="inline-block animate-spin text-sm leading-none" role="img" aria-label="Saving">
-                🔄
-              </span>
-            ) : savingStatus === 'error' || savingStatus === 'rate_limited' ? (
-              <span className="text-sm leading-none" role="img" aria-label="Sync Error">
-                ⚠️
-              </span>
-            ) : (
-              <span className="text-sm leading-none" role="img" aria-label="Saved">
-                ✅
-              </span>
-            )}
+        {/* Action Controls Bar: Auto-save on LEFT, Remaining Buttons on RIGHT */}
+        <div className="pt-3 border-t border-[#2d2545] flex flex-wrap items-center justify-between gap-3 sm:gap-4">
+          {/* LEFT: Auto-save Status (Text only, no emojis) */}
+          <div className="flex items-center gap-2 text-xs font-mono text-slate-400 bg-[#1c1729] px-3 py-1.5 rounded-xl border border-[#383050] shadow-inner select-none">
+            <Save
+              className={`w-3.5 h-3.5 ${
+                savingStatus === 'saving'
+                  ? 'text-amber-400 animate-spin'
+                  : savingStatus === 'rate_limited' || savingStatus === 'error'
+                    ? 'text-rose-400'
+                    : 'text-purple-400'
+              }`}
+            />
+            <span>
+              {savingStatus === 'saving'
+                ? 'Saving...'
+                : savingStatus === 'saved'
+                  ? 'Saved'
+                  : savingStatus === 'rate_limited'
+                    ? 'Saving paused - retrying'
+                    : savingStatus === 'error'
+                      ? 'Save failed - retrying'
+                      : 'Auto-Sync Active'}
+            </span>
           </div>
 
-          {tabSwitches > 0 && (
-            <div className="flex items-center gap-1 text-xs text-rose-400 font-mono bg-rose-950/60 px-3 py-1.5 rounded-lg border border-rose-800">
-              <ShieldAlert className="w-3.5 h-3.5" />
-              <span>Warnings: {tabSwitches}</span>
-            </div>
-          )}
-
-          <button
-            onClick={toggleFullscreen}
-            title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen (Recommended)'}
-            className="flex items-center gap-1.5 text-xs text-slate-300 font-mono bg-[#1c1729] hover:bg-[#28213b] px-3 py-1.5 rounded-lg border border-[#383050] transition-colors cursor-pointer"
-          >
-            {isFullscreen ? (
-              <Minimize className="w-3.5 h-3.5 text-purple-400" />
-            ) : (
-              <Maximize className="w-3.5 h-3.5 text-purple-400" />
+          {/* RIGHT: Remaining Controls stuck to the right */}
+          <div className="flex items-center gap-3 sm:gap-4 ml-auto">
+            {tabSwitches > 0 && (
+              <div className="flex items-center gap-1 text-xs text-rose-400 font-mono bg-rose-950/60 px-3 py-1.5 rounded-xl border border-rose-800">
+                <ShieldAlert className="w-3.5 h-3.5" />
+                <span>Warnings: {tabSwitches}</span>
+              </div>
             )}
-            <span className="hidden md:inline">{isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}</span>
-          </button>
 
-          <Timer
-            endTimeIso={endTimeIso}
-            initialRemainingSeconds={initialRemainingSeconds}
-            onTimeUp={handleSubmitExam}
-          />
+            <button
+              onClick={toggleFullscreen}
+              title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen (Recommended)'}
+              className="flex items-center gap-1.5 text-xs text-slate-300 font-mono bg-[#1c1729] hover:bg-[#28213b] px-3 py-1.5 rounded-xl border border-[#383050] transition-colors cursor-pointer"
+            >
+              {isFullscreen ? (
+                <Minimize className="w-3.5 h-3.5 text-purple-400" />
+              ) : (
+                <Maximize className="w-3.5 h-3.5 text-purple-400" />
+              )}
+              <span className="hidden sm:inline">{isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}</span>
+            </button>
 
-          <button
-            onClick={() => setShowSubmitModal(true)}
-            className="px-5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg transition-colors flex items-center gap-1.5"
-          >
-            <span>Submit</span>
-            <Send className="w-3.5 h-3.5" />
-          </button>
+            <Timer
+              endTimeIso={endTimeIso}
+              initialRemainingSeconds={initialRemainingSeconds}
+              onTimeUp={handleSubmitExam}
+            />
+
+            <button
+              onClick={() => setShowSubmitModal(true)}
+              className="px-5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg transition-colors flex items-center gap-1.5 cursor-pointer"
+            >
+              <span>Submit</span>
+              <Send className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
       </div>
 
