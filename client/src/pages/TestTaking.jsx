@@ -5,7 +5,7 @@ import { QuestionPalette } from '../components/QuestionPalette';
 import { Timer } from '../components/Timer';
 import { TabSwitchWarning } from '../components/TabSwitchWarning';
 import { SubmitConfirmModal } from '../components/SubmitConfirmModal';
-import { ChevronLeft, ChevronRight, Bookmark, RotateCcw, Send, ShieldAlert, Save, Maximize, Minimize } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Bookmark, RotateCcw, Send, ShieldAlert, Maximize, Minimize } from 'lucide-react';
 
 const SAVE_DEBOUNCE_MS = 1500;
 const SAFETY_AUTOSAVE_MS = 15000;
@@ -546,27 +546,29 @@ export const TestTaking = () => {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="hidden sm:flex items-center gap-1.5 text-xs text-slate-400 font-mono bg-[#1c1729] px-3 py-1.5 rounded-lg border border-[#383050]">
-            <Save
-              className={`w-3.5 h-3.5 ${
-                savingStatus === 'saving'
-                  ? 'text-amber-400 animate-spin'
-                  : savingStatus === 'rate_limited' || savingStatus === 'error'
-                    ? 'text-rose-400'
-                    : 'text-purple-400'
-              }`}
-            />
-            <span>
-              {savingStatus === 'saving'
-                ? 'Saving...'
-                : savingStatus === 'saved'
-                  ? 'Saved'
-                  : savingStatus === 'rate_limited'
-                    ? 'Saving paused - retrying shortly'
-                    : savingStatus === 'error'
-                      ? 'Save failed - retrying'
-                      : 'Auto-Sync Active'}
-            </span>
+          <div
+            title={
+              savingStatus === 'saving'
+                ? 'Saving answers to server...'
+                : savingStatus === 'error' || savingStatus === 'rate_limited'
+                  ? 'Sync issue — retrying automatically'
+                  : 'Auto-sync active: All changes saved'
+            }
+            className="w-9 h-9 flex items-center justify-center text-sm bg-[#1c1729] rounded-xl border border-[#383050] shadow-inner select-none transition-all cursor-default"
+          >
+            {savingStatus === 'saving' ? (
+              <span className="inline-block animate-spin text-sm leading-none" role="img" aria-label="Saving">
+                🔄
+              </span>
+            ) : savingStatus === 'error' || savingStatus === 'rate_limited' ? (
+              <span className="text-sm leading-none" role="img" aria-label="Sync Error">
+                ⚠️
+              </span>
+            ) : (
+              <span className="text-sm leading-none" role="img" aria-label="Saved">
+                ✅
+              </span>
+            )}
           </div>
 
           {tabSwitches > 0 && (
