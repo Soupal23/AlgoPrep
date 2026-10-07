@@ -64,20 +64,39 @@ export const saveProgress = async (req, res) => {
       attempt.lastSavedVersion = version;
     }
 
+    let timeRemainingSeconds = undefined;
+    let endTimeIso = undefined;
+
     if (tabSwitchEvent) {
       attempt.tabSwitches += 1;
+      const penalty = typeof tabSwitchEvent.penaltySeconds === 'number' ? tabSwitchEvent.penaltySeconds : 600;
+      attempt.penaltySeconds = (attempt.penaltySeconds || 0) + penalty;
       attempt.tabSwitchEvents.push({
         timestamp: new Date(tabSwitchEvent.timestamp || Date.now()),
-        reason: tabSwitchEvent.reason || 'tab_switch'
+        reason: tabSwitchEvent.reason || 'tab_switch',
+        penaltySeconds: penalty
       });
     }
 
     await attempt.save();
 
+    const test = await Test.findById(attempt.testId);
+    if (test) {
+      const startTime = new Date(attempt.startedAt).getTime();
+      const penaltyMs = (attempt.penaltySeconds || 0) * 1000;
+      const effectiveEndMs = startTime + test.timeLimitMinutes * 60 * 1000 - penaltyMs;
+      timeRemainingSeconds = Math.max(0, Math.floor((effectiveEndMs - Date.now()) / 1000));
+      endTimeIso = new Date(effectiveEndMs).toISOString();
+    }
+
     res.json({
       success: true,
       lastSavedVersion: attempt.lastSavedVersion,
-      tabSwitches: attempt.tabSwitches
+      tabSwitches: attempt.tabSwitches,
+      penaltySeconds: attempt.penaltySeconds,
+      endTime: endTimeIso,
+      timeRemainingSeconds,
+      isExpired: typeof timeRemainingSeconds === 'number' && timeRemainingSeconds <= 0
     });
   } catch (err) {
     res.status(500).json({ error: 'Failed to save attempt progress' });
@@ -139,8 +158,8 @@ export const submitAttempt = async (req, res) => {
 
     const now = new Date();
     const startTime = new Date(attempt.startedAt).getTime();
-    const elapsedSeconds = Math.floor((now.getTime() - startTime) / 1000);
-    const maxAllowedSeconds = test.timeLimitMinutes * 60 + 60;
+    const penaltySec = attempt.penaltySeconds || 0;
+    const maxAllowedSeconds = (test.timeLimitMinutes * 60) - penaltySec + 60;
 
     if (elapsedSeconds > maxAllowedSeconds) {
       attempt.status = 'expired';

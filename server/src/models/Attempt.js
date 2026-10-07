@@ -24,10 +24,12 @@ const attemptSchema = new Schema(
     accuracy: { type: Number, default: 0 },
     timeSpentSeconds: { type: Number, default: 0 },
     tabSwitches: { type: Number, default: 0 },
+    penaltySeconds: { type: Number, default: 0 },
     tabSwitchEvents: [
       {
         timestamp: { type: Date, default: Date.now },
-        reason: { type: String, default: 'tab_switch' }
+        reason: { type: String, default: 'tab_switch' },
+        penaltySeconds: { type: Number, default: 600 }
       }
     ],
     startedAt: { type: Date, default: Date.now },

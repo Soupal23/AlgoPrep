@@ -5,12 +5,12 @@ export const Timer = ({ endTimeIso, initialRemainingSeconds, onTimeUp }) => {
   const targetEndTimeRef = useRef(null);
 
   const getTargetEndTime = () => {
-    if (typeof initialRemainingSeconds === 'number' && initialRemainingSeconds >= 0) {
-      return Date.now() + initialRemainingSeconds * 1000;
-    }
     if (endTimeIso) {
       const end = new Date(endTimeIso).getTime();
-      return !isNaN(end) ? end : Date.now();
+      if (!isNaN(end)) return end;
+    }
+    if (typeof initialRemainingSeconds === 'number' && initialRemainingSeconds >= 0) {
+      return Date.now() + initialRemainingSeconds * 1000;
     }
     return Date.now();
   };
@@ -20,7 +20,11 @@ export const Timer = ({ endTimeIso, initialRemainingSeconds, onTimeUp }) => {
     targetEndTimeRef.current = getTargetEndTime();
     const remaining = Math.max(0, Math.floor((targetEndTimeRef.current - Date.now()) / 1000));
     setSecondsLeft(remaining);
-  }, [endTimeIso, initialRemainingSeconds]);
+
+    if (remaining <= 0 && typeof onTimeUp === 'function') {
+      onTimeUp();
+    }
+  }, [endTimeIso, initialRemainingSeconds, onTimeUp]);
 
   const calculateRemainingSeconds = () => {
     const target = targetEndTimeRef.current || getTargetEndTime();

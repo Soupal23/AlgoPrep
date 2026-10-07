@@ -181,7 +181,8 @@ export const startTestAttempt = async (req, res) => {
 
     if (attempt) {
       const startTime = new Date(attempt.startedAt).getTime();
-      const maxAllowedTimeMs = (test.timeLimitMinutes * 60 + 60) * 1000;
+      const penaltyMs = (attempt.penaltySeconds || 0) * 1000;
+      const maxAllowedTimeMs = (test.timeLimitMinutes * 60 + 60) * 1000 - penaltyMs;
 
       const isExplicitFresh = req.query.fresh === 'true' || req.query.retake === 'true';
 
@@ -194,9 +195,11 @@ export const startTestAttempt = async (req, res) => {
         if (now.getTime() - startTime > 5000) {
           wasResumed = true;
           attempt.tabSwitches += 1;
+          attempt.penaltySeconds = (attempt.penaltySeconds || 0) + 600;
           attempt.tabSwitchEvents.push({
             timestamp: now,
-            reason: 'session_reentry'
+            reason: 'session_reentry',
+            penaltySeconds: 600
           });
           await attempt.save();
         }
@@ -211,6 +214,7 @@ export const startTestAttempt = async (req, res) => {
         status: 'in-progress',
         lastSavedVersion: 0,
         tabSwitches: 0,
+        penaltySeconds: 0,
         tabSwitchEvents: []
       });
       await attempt.save();
@@ -221,7 +225,8 @@ export const startTestAttempt = async (req, res) => {
       .select('-correctOptionIndex -explanation');
 
     const startTime = new Date(attempt.startedAt).getTime();
-    const endTime = startTime + test.timeLimitMinutes * 60 * 1000;
+    const currentPenaltyMs = (attempt.penaltySeconds || 0) * 1000;
+    const endTime = startTime + test.timeLimitMinutes * 60 * 1000 - currentPenaltyMs;
 
     const answersObj = {};
     if (attempt.answers) {
@@ -248,6 +253,7 @@ export const startTestAttempt = async (req, res) => {
       questionStates: questionStatesObj,
       lastSavedVersion: attempt.lastSavedVersion,
       tabSwitches: attempt.tabSwitches,
+      penaltySeconds: attempt.penaltySeconds || 0,
       wasResumed
     });
   } catch (err) {

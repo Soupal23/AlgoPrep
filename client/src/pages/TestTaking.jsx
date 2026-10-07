@@ -57,6 +57,8 @@ export const TestTaking = () => {
   const retryTimerRef = useRef(null);
   const savedIdleTimerRef = useRef(null);
   const submittedRef = useRef(false);
+  const endTimeRef = useRef('');
+  const submitRef = useRef(null);
 
   useEffect(() => {
     if (!id) return;
@@ -95,6 +97,7 @@ export const TestTaking = () => {
       setTest(res.test);
       setQuestions(res.questions);
       setEndTimeIso(res.endTime);
+      endTimeRef.current = res.endTime;
       setInitialRemainingSeconds(
         typeof res.timeRemainingSeconds === 'number' ? res.timeRemainingSeconds : null
       );
@@ -107,8 +110,13 @@ export const TestTaking = () => {
           isOpen: true,
           title: 'Warning: Session Resumed!',
           message:
-            'You previously left or reloaded the exam window. This unauthorized departure and re-entry has been recorded in your official attempt record.'
+            'You previously left or reloaded the exam window. An unauthorized re-entry was recorded and a -10 minute time penalty has been deducted.',
+          penaltyMinutes: 10
         });
+      }
+
+      if (typeof res.timeRemainingSeconds === 'number' && res.timeRemainingSeconds <= 0) {
+        submitRef.current?.();
       }
     } catch (err) {
       setError(err.message || 'Failed to initialize test session');
@@ -227,20 +235,45 @@ export const TestTaking = () => {
       }
       lastViolationTimeRef.current = now;
 
+      // 10-minute time penalty (600 seconds)
+      const currentEndMs = endTimeRef.current ? new Date(endTimeRef.current).getTime() : Date.now();
+      const PENALTY_MS = 10 * 60 * 1000;
+      const penalizedEndMs = currentEndMs - PENALTY_MS;
+      const updatedEndTimeIso = new Date(penalizedEndMs).toISOString();
+      const remainingSeconds = Math.floor((penalizedEndMs - Date.now()) / 1000);
+
+      endTimeRef.current = updatedEndTimeIso;
+      setEndTimeIso(updatedEndTimeIso);
       setTabSwitches((prev) => prev + 1);
+
+      pendingTabEventsRef.current.push({
+        timestamp: new Date().toISOString(),
+        reason: reason || 'tab_switch',
+        penaltySeconds: 600
+      });
+      flushSave();
+
+      if (remainingSeconds <= 0) {
+        setWarningModal({
+          isOpen: true,
+          title: 'Time Expired by Penalty!',
+          message:
+            'A -10 minute time penalty has reduced your remaining time to 0. Your test is being automatically submitted.',
+          penaltyMinutes: 10
+        });
+        submitRef.current?.();
+        return;
+      }
+
       setWarningModal({
         isOpen: true,
         title: title || 'Warning: Proctoring Alert!',
         message:
-          message ||
-          'You navigated away from the exam window or switched tabs. This activity has been recorded in your official attempt record.'
+          message
+            ? `${message} A -10 minute penalty has been deducted from your remaining time.`
+            : 'A -10 minute penalty has been deducted from your remaining time.',
+        penaltyMinutes: 10
       });
-
-      pendingTabEventsRef.current.push({
-        timestamp: new Date().toISOString(),
-        reason: reason || 'tab_switch'
-      });
-      flushSave();
     },
     [flushSave]
   );
@@ -336,7 +369,8 @@ export const TestTaking = () => {
             version: versionRef.current + 1,
             tabSwitchEvent: {
               timestamp: new Date().toISOString(),
-              reason: 'page_unload'
+              reason: 'page_unload',
+              penaltySeconds: 600
             }
           });
           fetch(`${apiBase}/attempts/${attemptIdRef.current}/progress`, {
@@ -498,6 +532,7 @@ export const TestTaking = () => {
       }
     }
   };
+  submitRef.current = handleSubmitExam;
 
   if (loading) {
     return (
@@ -720,6 +755,7 @@ export const TestTaking = () => {
         isOpen={warningModal.isOpen}
         title={warningModal.title}
         message={warningModal.message}
+        penaltyMinutes={warningModal.penaltyMinutes || 10}
         switchCount={tabSwitches}
         onClose={() => setWarningModal((prev) => ({ ...prev, isOpen: false }))}
       />

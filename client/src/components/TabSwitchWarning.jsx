@@ -6,7 +6,8 @@ export const TabSwitchWarning = ({
   switchCount,
   onClose,
   title = 'Warning: Tab Switch Detected!',
-  message = 'You navigated away from the exam window or switched tabs. This activity has been recorded in your official attempt record.'
+  message = 'You navigated away from the exam window or switched tabs. This activity has been recorded in your official attempt record.',
+  penaltyMinutes = 10
 }) => {
   if (!isOpen) return null;
 
@@ -25,9 +26,17 @@ export const TabSwitchWarning = ({
           {message}
         </p>
 
-        <div className="bg-[#1c1729] rounded-xl p-3 border border-[#383050] text-center mb-6">
-          <span className="text-xs text-[#9f99b0]">Total Proctoring Warnings: </span>
-          <span className="text-sm font-mono font-bold text-rose-400">{switchCount}</span>
+        <div className="grid grid-cols-2 gap-3 mb-6">
+          <div className="bg-[#1c1729] rounded-xl p-3 border border-rose-900/60 text-center">
+            <span className="block text-[11px] text-[#9f99b0] mb-0.5">Time Penalty</span>
+            <span className="text-sm font-mono font-extrabold text-rose-400">
+              -{penaltyMinutes} Mins
+            </span>
+          </div>
+          <div className="bg-[#1c1729] rounded-xl p-3 border border-[#383050] text-center">
+            <span className="block text-[11px] text-[#9f99b0] mb-0.5">Total Warnings</span>
+            <span className="text-sm font-mono font-bold text-amber-400">{switchCount}</span>
+          </div>
         </div>
 
         <button
