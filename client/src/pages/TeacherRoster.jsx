@@ -91,7 +91,7 @@ export const TeacherRoster = () => {
                   const isRemoving = !!actionLoading[student._id];
 
                   return (
-                    <tr key={item._id} className="hover:bg-[#1c1729]/50 transition-colors">
+                    <tr key={item.membershipId || item._id || student._id} className="hover:bg-[#1c1729]/50 transition-colors">
                       <td className="p-4">
                         <div className="flex items-center gap-3">
                           <div className="w-9 h-9 rounded-xl overflow-hidden bg-[#1c1729] border border-[#383050] flex items-center justify-center text-purple-300 text-xs font-bold shrink-0">
@@ -111,7 +111,11 @@ export const TeacherRoster = () => {
                       <td className="p-4 font-mono text-slate-400">
                         <div className="flex items-center gap-1.5">
                           <Clock className="w-3.5 h-3.5 text-slate-500" />
-                          <span>{new Date(item.createdAt || Date.now()).toLocaleDateString()}</span>
+                          <span>
+                            {item.joinedAt || item.createdAt
+                              ? new Date(item.joinedAt || item.createdAt).toLocaleDateString()
+                              : '—'}
+                          </span>
                         </div>
                       </td>
                       <td className="p-4 text-right">

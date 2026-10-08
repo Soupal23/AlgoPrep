@@ -42,8 +42,10 @@ export const getMyTeachers = async (req, res) => {
   const teachers = memberships
     .filter((m) => m.teacherId)
     .map((m) => ({
+      _id: m._id,
       membershipId: m._id,
       joinedAt: m.joinedAt,
+      createdAt: m.createdAt || m.joinedAt,
       teacher: m.teacherId
     }));
 
@@ -60,8 +62,10 @@ export const getRoster = async (req, res) => {
   const roster = memberships
     .filter((m) => m.studentId)
     .map((m) => ({
+      _id: m._id,
       membershipId: m._id,
       joinedAt: m.joinedAt,
+      createdAt: m.createdAt || m.joinedAt,
       student: m.studentId
     }));
 
