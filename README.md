@@ -273,7 +273,7 @@ Clone the project and install the dependencies for the root, server, and client 
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/AlgoPrep.git
+git clone https://github.com/Soupal23/AlgoPrep.git
 cd AlgoPrep
 
 # Install root dependencies (for concurrently)
