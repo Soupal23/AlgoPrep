@@ -227,7 +227,7 @@ export const RevisionPlanPanel = ({ attemptId, onJumpToQuestion }) => {
       </div>
 
       {/* Section 4: Demonstrated Strengths */}
-      {plan?.strengths?.length > 0 && <StrengthsList strengths={plan.strengths} />}
+      <StrengthsList strengths={plan?.strengths} />
 
       {/* Section 5: All Curated Resources */}
       {plan?.resources?.length > 0 && (

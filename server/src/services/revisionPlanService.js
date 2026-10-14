@@ -124,9 +124,9 @@ export async function buildSignals(attempt, test, questions, history = {}) {
     unattempted: c.unattempted
   }));
 
-  // Identify strengths: Concepts with 100% accuracy and at least 1 question
+  // Identify strengths: Concepts where candidate answered at least 1 question correctly and had 0 incorrect answers
   const strengths = Array.from(conceptMap.values())
-    .filter((c) => c.total > 0 && c.correct === c.total)
+    .filter((c) => c.correct > 0 && c.incorrect === 0)
     .map((c) => c.concept);
 
   const correctCount = questions.filter((q) => {
