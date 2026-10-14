@@ -157,6 +157,29 @@ export const RevisionPlanPanel = ({ attemptId, onJumpToQuestion }) => {
         </div>
       )}
 
+      {/* Regeneration Notice / Error Alert */}
+      {error && data?.plan && (
+        <div className="p-4 rounded-2xl bg-rose-950/40 border border-rose-800/70 flex items-start justify-between gap-3 text-xs text-rose-200">
+          <div className="flex items-start gap-2.5">
+            <AlertCircle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+            <div className="space-y-0.5">
+              <span className="font-bold text-rose-300">Regeneration Notice</span>
+              <p className="text-rose-200/90 leading-relaxed">
+                {error.includes('Preserving')
+                  ? error
+                  : `${error} Your existing plan has been preserved and your regeneration quota was not deducted.`}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setError('')}
+            className="text-rose-400 hover:text-white px-2 py-1 text-xs rounded-lg hover:bg-rose-900/50 transition-colors shrink-0"
+          >
+            ✕ Dismiss
+          </button>
+        </div>
+      )}
+
       {/* Section 1: Summary Card */}
       <PlanSummaryCard summary={plan?.summary} stats={plan?.stats} />
 

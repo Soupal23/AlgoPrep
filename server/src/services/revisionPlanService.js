@@ -4,7 +4,7 @@ import { RevisionPlan } from '../models/RevisionPlan.js';
 import { revisionPlanSchema } from '../schemas/revisionPlanSchema.js';
 import { selectCandidates, RESOURCE_CATALOG } from '../data/resourceCatalog.js';
 import { isApprovedDomain } from '../data/approvedDomains.js';
-import { GoogleGenAI } from '@google/genai';
+import { generateGeminiContent } from '../utils/geminiClient.js';
 import { config } from '../config/env.js';
 
 export function normalizeConceptKey(name = '') {
@@ -146,9 +146,9 @@ export async function buildSignals(attempt, test, questions, history = {}) {
   return {
     testTitle: test.title,
     topic: test.topic,
-    accuracy: attempt.accuracy || Math.round((correctCount / totalQuestions) * 100),
-    score: attempt.score,
-    maxScore: attempt.maxScore,
+    accuracy: typeof attempt.accuracy === 'number' ? attempt.accuracy : Math.round((correctCount / totalQuestions) * 100),
+    score: typeof attempt.score === 'number' ? attempt.score : (correctCount * 4),
+    maxScore: typeof attempt.maxScore === 'number' ? attempt.maxScore : (totalQuestions * 4),
     correctCount,
     incorrectCount,
     unattemptedCount,
@@ -202,8 +202,6 @@ export async function generateAIPlan(signals, history, catalogCandidates) {
     throw new Error('GEMINI_API_KEY is not configured');
   }
 
-  const ai = new GoogleGenAI({ apiKey: config.geminiApiKey });
-
   const weakGroups = [];
   signals.conceptMap.forEach((c) => {
     const missed = c.questions.filter((q) => !q.isCorrect);
@@ -234,7 +232,48 @@ export async function generateAIPlan(signals, history, catalogCandidates) {
     minutes: c.minutes
   }));
 
-  const prompt = `You are a Principal Computer Science Educator and Diagnostics Mentor analyzing a candidate's exam performance.
+  const isMastery = weakGroups.length === 0;
+
+  const prompt = isMastery
+    ? `You are a Principal Computer Science Educator and Diagnostics Mentor analyzing a candidate's exam performance.
+The candidate achieved 100% accuracy or made ZERO mistakes on this exam!
+Test: "${signals.testTitle}" (Topic: ${signals.topic})
+Score: ${signals.score} / ${signals.maxScore} (${signals.accuracy}% Accuracy)
+Correct: ${signals.correctCount} | Incorrect: ${signals.incorrectCount} | Unattempted: ${signals.unattemptedCount}
+
+Available Verified Resource Catalog (Advanced & Enrichment Topics):
+${JSON.stringify(catalogSummary, null, 2)}
+
+Instructions:
+1. Synthesize concise mastery diagnostics:
+   - "verdict": 1 clear analytical sentence commending flawless accuracy and strong retention of core domain principles.
+   - "performanceLevel": "mastery"
+   - "estimatedStudyMinutes": realistic estimate to explore advanced / production-grade topics (e.g. 45-90).
+   - "encouragement": 1 uplifting, specific motivational sentence challenging them to tackle complex architectural scenarios or next-level modules.
+2. "weakConcepts": Return an empty array [] because no conceptual errors were exhibited.
+3. "resources": Pick 2-3 enrichment resources from the catalog (or propose authoritative links ONLY from approved domains: developer.mozilla.org, geeksforgeeks.org, ocw.mit.edu, en.wikipedia.org, visualgo.net, refactoring.guru, postgresql.org) to broaden their knowledge into advanced real-world applications.
+
+Return ONLY valid JSON with this exact schema:
+{
+  "summary": {
+    "verdict": "string",
+    "performanceLevel": "mastery",
+    "estimatedStudyMinutes": number,
+    "encouragement": "string"
+  },
+  "weakConcepts": [],
+  "resources": [
+    {
+      "id": "string",
+      "title": "string",
+      "url": "string",
+      "type": "article" | "video" | "book" | "practice" | "course" | "documentation",
+      "minutes": number,
+      "aiSuggested": boolean
+    }
+  ]
+}`
+    : `You are a Principal Computer Science Educator and Diagnostics Mentor analyzing a candidate's exam performance.
 Test: "${signals.testTitle}" (Topic: ${signals.topic})
 Score: ${signals.score} / ${signals.maxScore} (${signals.accuracy}% Accuracy)
 Correct: ${signals.correctCount} | Incorrect: ${signals.incorrectCount} | Unattempted: ${signals.unattemptedCount}
@@ -298,9 +337,8 @@ Return ONLY valid JSON with this exact schema:
   ]
 }`;
 
-  const response = await ai.models.generateContent({
-    model: 'gemini-3.6-flash',
-    contents: prompt,
+  const response = await generateGeminiContent({
+    prompt,
     config: {
       responseMimeType: 'application/json'
     }
@@ -442,6 +480,20 @@ export function buildFallbackPlan(signals, history, catalogCandidates) {
     }
   });
 
+  // If no resources were assigned from missed concepts (e.g. 100% mastery), assign 2-3 enrichment resources
+  if (resources.length === 0 && catalogCandidates.length > 0) {
+    catalogCandidates.slice(0, 3).forEach((cat) => {
+      resources.push({
+        id: cat.id,
+        title: cat.title,
+        url: cat.url,
+        type: cat.type,
+        minutes: cat.minutes,
+        aiSuggested: false
+      });
+    });
+  }
+
   return {
     version: 1,
     source: 'fallback',
@@ -451,7 +503,9 @@ export function buildFallbackPlan(signals, history, catalogCandidates) {
       performanceLevel: perfLevel,
       estimatedStudyMinutes: Math.min(180, Math.max(30, weakConcepts.length * 35)),
       encouragement:
-        signals.accuracy >= 75
+        signals.accuracy === 100
+          ? 'Flawless performance! Keep up the outstanding momentum and explore advanced engineering patterns.'
+          : signals.accuracy >= 75
           ? 'Great progress! Review your weak concepts to hit 100% accuracy.'
           : 'Every error is a roadmap to mastery. Focus on your high-priority concepts first!'
     },

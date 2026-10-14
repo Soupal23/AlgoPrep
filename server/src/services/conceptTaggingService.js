@@ -1,6 +1,6 @@
 import { Test } from '../models/Test.js';
 import { Question } from '../models/Question.js';
-import { GoogleGenAI } from '@google/genai';
+import { generateGeminiContent } from '../utils/geminiClient.js';
 import { config } from '../config/env.js';
 import { z } from 'zod';
 
@@ -136,8 +136,6 @@ export async function ensureTestTagged(testId) {
  * Calls Gemini to infer concepts and difficulties across questions in one batch.
  */
 async function tagQuestionsWithAI(test, questions, existingConcepts = []) {
-  const ai = new GoogleGenAI({ apiKey: config.geminiApiKey });
-
   const questionPayload = questions.map((q) => ({
     questionId: q._id.toString(),
     order: q.order,
@@ -164,9 +162,8 @@ Respond ONLY with a JSON array conforming to this schema:
   }
 ]`;
 
-  const response = await ai.models.generateContent({
-    model: 'gemini-3.6-flash',
-    contents: prompt,
+  const response = await generateGeminiContent({
+    prompt,
     config: {
       responseMimeType: 'application/json'
     }

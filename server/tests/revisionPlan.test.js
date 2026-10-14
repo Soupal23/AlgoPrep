@@ -150,5 +150,41 @@ describe('Revision Plan Subsystem Unit Tests', () => {
       expect(normalizeConceptKey('   Deadlocks  ')).toBe('deadlocks');
       expect(normalizeConceptKey('')).toBe('general_concept');
     });
+
+    it('should generate valid plan for 100% accuracy with zero mistakes', async () => {
+      const perfectAnswers = new Map();
+      perfectAnswers.set(q1Id.toString(), 0);
+      perfectAnswers.set(q2Id.toString(), 2);
+      perfectAnswers.set(q3Id.toString(), 0);
+
+      const perfectAttempt = {
+        _id: new mongoose.Types.ObjectId(),
+        userId: new mongoose.Types.ObjectId(),
+        testId: dummyTest._id,
+        answers: perfectAnswers,
+        questionStates: new Map(),
+        questionTimeSpent: new Map(),
+        timeSpentSeconds: 120,
+        score: 12,
+        accuracy: 100,
+        status: 'submitted'
+      };
+
+      const signals = await buildSignals(perfectAttempt, dummyTest, dummyQuestions, {});
+      expect(signals.accuracy).toBe(100);
+      expect(signals.incorrectCount).toBe(0);
+      expect(signals.unattemptedCount).toBe(0);
+      expect(signals.strengths.length).toBe(3);
+
+      const candidates = selectCandidates('Operating Systems', ['deadlocks', 'virtual_memory']);
+      const plan = buildFallbackPlan(signals, {}, candidates);
+
+      const validated = revisionPlanSchema.safeParse(plan);
+      expect(validated.success).toBe(true);
+      expect(plan.summary.performanceLevel).toBe('mastery');
+      expect(plan.weakConcepts.length).toBe(0);
+      expect(plan.resources.length).toBeGreaterThan(0);
+      expect(plan.summary.encouragement).toContain('Flawless performance');
+    });
   });
 });

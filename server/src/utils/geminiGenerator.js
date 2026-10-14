@@ -1,4 +1,4 @@
-import { GoogleGenAI } from '@google/genai';
+import { generateGeminiContent } from './geminiClient.js';
 import { z } from 'zod';
 import { config } from '../config/env.js';
 
@@ -30,8 +30,6 @@ export const generateTestFromSyllabus = async (syllabusText, numQuestions = 10, 
   // If Gemini API key is configured, call Gemini API using @google/genai SDK
   if (config.geminiApiKey) {
     try {
-      const ai = new GoogleGenAI({ apiKey: config.geminiApiKey });
-
       const prompt = `You are a Principal Computer Science Professor creating a high-quality online exam.
 Analyze the following Computer Science syllabus / text excerpt and generate a balanced ${targetCount}-question multiple choice test.
 
@@ -70,13 +68,13 @@ Respond ONLY with valid JSON conforming to this schema:
 }`;
 
       // First attempt
-      let rawJson = await callGeminiApi(ai, prompt);
+      let rawJson = await callGeminiApi(prompt);
       let parsed = tryParseAndValidate(rawJson);
 
       if (!parsed.success) {
         console.warn('First Gemini response failed Zod schema validation. Retrying once with schema repair prompt...');
         const repairPrompt = `${prompt}\n\nYour previous JSON response failed validation with errors: ${parsed.error}. Please return strictly valid JSON conforming to the schema.`;
-        rawJson = await callGeminiApi(ai, repairPrompt);
+        rawJson = await callGeminiApi(repairPrompt);
         parsed = tryParseAndValidate(rawJson);
       }
 
@@ -94,10 +92,9 @@ Respond ONLY with valid JSON conforming to this schema:
   return fallbackSyllabusGenerator(syllabusText, targetCount, topicName);
 };
 
-const callGeminiApi = async (ai, prompt) => {
-  const response = await ai.models.generateContent({
-    model: 'gemini-3.6-flash',
-    contents: prompt,
+const callGeminiApi = async (prompt) => {
+  const response = await generateGeminiContent({
+    prompt,
     config: {
       responseMimeType: 'application/json'
     }
