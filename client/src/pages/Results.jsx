@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { api } from '../services/api';
 import { Award, Clock, Sparkles, HelpCircle, Check, X, RotateCcw } from 'lucide-react';
 import { RevisionPlanPanel } from '../components/revision/RevisionPlanPanel';
 
 export const Results = () => {
   const { id } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [attempt, setAttempt] = useState(null);
   const [test, setTest] = useState(null);
   const [questions, setQuestions] = useState([]);
@@ -13,8 +14,17 @@ export const Results = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const [activeTab, setActiveTab] = useState('review'); // 'review' | 'ai-plan'
+  const [activeTab, setActiveTab] = useState(
+    searchParams.get('tab') === 'ai-plan' ? 'ai-plan' : 'review'
+  ); // 'review' | 'ai-plan'
   const [questionFilter, setQuestionFilter] = useState('all'); // 'all' | 'correct' | 'incorrect' | 'unattempted'
+
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam === 'ai-plan' || tabParam === 'review') {
+      setActiveTab(tabParam);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (!id) return;
@@ -44,6 +54,7 @@ export const Results = () => {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
+    setSearchParams({ tab });
   };
 
   const handleJumpToQuestion = (order) => {

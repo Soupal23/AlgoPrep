@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api';
 import { resolveFileUrl } from '../utils/fileUrl';
-import { User, Award, ArrowRight, ExternalLink, Camera, Save, CheckCircle2, AlertCircle } from 'lucide-react';
+import { User, Award, ArrowRight, ExternalLink, Camera, Save, CheckCircle2, AlertCircle, Sparkles } from 'lucide-react';
 
 export const Profile = () => {
   const [user, setUser] = useState(api.getStoredUser());
@@ -229,6 +229,13 @@ export const Profile = () => {
                 <span>Attempted Tests History</span>
               </h2>
             </div>
+            <Link
+              to="/dashboard"
+              className="text-xs font-mono text-purple-400 hover:text-purple-300 transition-colors flex items-center gap-1"
+            >
+              <span>View in Test Dashboard</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
 
           {loading ? (
@@ -285,18 +292,27 @@ export const Profile = () => {
                       <div>
                         <span className="text-slate-500 block text-[10px]">Time</span>
                         <span className="text-amber-400 font-bold text-sm">
-                          {Math.floor((att.totalTimeSpentSeconds || 0) / 60)}m
+                          {Math.floor((att.totalTimeSpentSeconds || att.timeSpentSeconds || 0) / 60)}m
                         </span>
                       </div>
                     </div>
 
-                    <Link
-                      to={`/results/${att._id}`}
-                      className="w-full py-2.5 rounded-xl bg-[#14111f] hover:bg-[#251e35] text-purple-300 text-xs font-bold border border-[#383050] transition-colors flex items-center justify-center gap-2"
-                    >
-                      <span>View Scorecard & Review</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </Link>
+                    <div className="space-y-2">
+                      <Link
+                        to={`/results/${att._id}`}
+                        className="w-full py-2.5 rounded-xl bg-[#14111f] hover:bg-[#251e35] text-purple-300 text-xs font-bold border border-[#383050] transition-colors flex items-center justify-center gap-2"
+                      >
+                        <span>View Scorecard & Review</span>
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </Link>
+                      <Link
+                        to={`/results/${att._id}?tab=ai-plan`}
+                        className="w-full py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-colors flex items-center justify-center gap-2 shadow-md shadow-purple-600/20"
+                      >
+                        <Sparkles className="w-3.5 h-3.5 text-purple-200" />
+                        <span>View AI Revision Plan</span>
+                      </Link>
+                    </div>
                   </div>
                 );
               })}

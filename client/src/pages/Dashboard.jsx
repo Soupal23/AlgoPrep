@@ -7,11 +7,13 @@ const FILTERS = [
   { id: 'All', label: 'All Tests', icon: Layers },
   { id: 'Platform Tests', label: 'Platform Tests', icon: Shield },
   { id: 'Teacher Tests', label: 'Teacher Tests', icon: UserCheck },
-  { id: 'AI Tests', label: 'AI Tests', icon: Sparkles }
+  { id: 'AI Tests', label: 'AI Tests', icon: Sparkles },
+  { id: 'Attempted Tests', label: 'Attempted Tests', icon: Award }
 ];
 
 export const Dashboard = () => {
   const [tests, setTests] = useState([]);
+  const [attempts, setAttempts] = useState([]);
   const [attemptedTestIds, setAttemptedTestIds] = useState(new Set());
   const [loading, setLoading] = useState(true);
   const [selectedFilter, setSelectedFilter] = useState('All');
@@ -32,8 +34,10 @@ export const Dashboard = () => {
       ]);
 
       setTests(testsRes.tests || []);
+      const userAttempts = attemptsRes.attempts || [];
+      setAttempts(userAttempts);
 
-      const attemptedIds = new Set((attemptsRes.attempts || []).map(a => a.testId?._id || a.testId));
+      const attemptedIds = new Set(userAttempts.map(a => a.testId?._id || a.testId));
       setAttemptedTestIds(attemptedIds);
     } catch (err) {
       setError(err.message || 'Failed to load available tests');
@@ -53,6 +57,7 @@ export const Dashboard = () => {
     if (filterId === 'Platform Tests') return tests.filter((t) => !t.isAIGenerated && !t.teacherId).length;
     if (filterId === 'Teacher Tests') return tests.filter((t) => !t.isAIGenerated && Boolean(t.teacherId)).length;
     if (filterId === 'AI Tests') return tests.filter((t) => Boolean(t.isAIGenerated)).length;
+    if (filterId === 'Attempted Tests') return attempts.length;
     return tests.length;
   };
 
@@ -139,6 +144,137 @@ export const Dashboard = () => {
             Retry Now
           </button>
         </div>
+      ) : selectedFilter === 'Attempted Tests' ? (
+        attempts.length === 0 ? (
+          <div className="p-12 text-center bg-[#14111f] rounded-2xl border border-[#383050] text-[#9f99b0] space-y-3">
+            <Award className="w-12 h-12 text-purple-400 mx-auto" />
+            <h3 className="text-base font-bold text-white">No Attempted Tests Yet</h3>
+            <p className="text-xs text-slate-400 max-w-sm mx-auto">
+              Take any test from Platform, Teacher, or AI tests to start building your attempt history and generate AI revision plans.
+            </p>
+            <button
+              onClick={() => setSelectedFilter('All')}
+              className="mt-2 px-5 py-2.5 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition-colors"
+            >
+              Browse Available Tests
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {attempts.map((att) => {
+              const testObj =
+                typeof att.testId === 'object' && att.testId !== null
+                  ? att.testId
+                  : tests.find((t) => t._id === att.testId) || {};
+              const testTitle = testObj.title || 'Assessment Test';
+              const testTopic = testObj.topic || 'Computer Science';
+              const testDesc = testObj.description || 'Completed test assessment attempt.';
+              const typeInfo = getTestTypeInfo(testObj);
+              const TypeIcon = typeInfo.icon;
+              const testId = testObj._id || att.testId;
+
+              return (
+                <div
+                  key={att._id}
+                  className="group bg-[#14111f] rounded-2xl p-6 border border-[#383050] hover:border-purple-500/30 transition-colors flex flex-col justify-between relative shadow-lg"
+                >
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-4">
+                      <div className="p-2.5 rounded-xl bg-[#1c1729] border border-[#383050]">
+                        {getTopicIcon(testTopic)}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-950/80 border border-emerald-700 text-emerald-400 uppercase shadow-sm">
+                          <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                          Attempted
+                        </span>
+                        <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-mono border ${typeInfo.colorClass}`}>
+                          <TypeIcon className="w-3 h-3" />
+                          {typeInfo.label}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-2 mb-2">
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#1c1729] text-purple-300 border border-[#383050]">
+                        {testTopic}
+                      </span>
+                      <span className="text-[10px] font-mono text-slate-400">
+                        {att.submittedAt ? new Date(att.submittedAt).toLocaleDateString() : 'Completed'}
+                      </span>
+                    </div>
+
+                    <h3 className="text-lg font-bold text-[#f0eef5] mb-2 truncate" title={testTitle}>
+                      {testTitle}
+                    </h3>
+                    <p className="text-[#9f99b0] text-xs line-clamp-2 leading-relaxed mb-6">
+                      {testDesc}
+                    </p>
+                  </div>
+
+                  <div>
+                    <div className="grid grid-cols-3 gap-2 p-3 rounded-xl bg-[#1c1729] border border-[#383050] mb-4 text-center text-xs">
+                      <div>
+                        <div className="text-[#6b6380] flex items-center justify-center gap-1">
+                          <Award className="w-3 h-3" /> Score
+                        </div>
+                        <div className="font-mono font-bold text-emerald-400 mt-0.5">
+                          {att.score} <span className="text-[10px] text-slate-500">/ {att.maxScore}</span>
+                        </div>
+                      </div>
+
+                      <div>
+                        <div className="text-[#6b6380] flex items-center justify-center gap-1">
+                          <CheckCircle2 className="w-3 h-3" /> Accuracy
+                        </div>
+                        <div className="font-mono font-bold text-purple-400 mt-0.5">
+                          {att.accuracy}%
+                        </div>
+                      </div>
+
+                      <div>
+                        <div className="text-[#6b6380] flex items-center justify-center gap-1">
+                          <Clock className="w-3 h-3" /> Time
+                        </div>
+                        <div className="font-mono font-bold text-amber-400 mt-0.5">
+                          {Math.floor((att.totalTimeSpentSeconds || att.timeSpentSeconds || 0) / 60)}m
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          onClick={() => navigate(`/test/${testId}?retake=true`)}
+                          className="py-2.5 rounded-xl font-bold border border-[#383050] bg-[#1c1729] text-purple-300 hover:bg-[#251e35] transition-colors flex items-center justify-center gap-1.5 text-xs"
+                        >
+                          <RotateCcw className="w-4 h-4 text-purple-400" />
+                          <span>Retake</span>
+                        </button>
+
+                        <button
+                          onClick={() => navigate(`/results/${att._id}`)}
+                          className="py-2.5 rounded-xl font-bold border border-[#383050] bg-[#1c1729] text-purple-300 hover:bg-[#251e35] transition-colors flex items-center justify-center gap-1.5 text-xs"
+                        >
+                          <CheckCircle2 className="w-4 h-4 text-purple-400" />
+                          <span>Review</span>
+                        </button>
+                      </div>
+
+                      <button
+                        onClick={() => navigate(`/results/${att._id}?tab=ai-plan`)}
+                        className="w-full py-2.5 rounded-xl font-bold bg-purple-600 hover:bg-purple-500 text-white transition-colors flex items-center justify-center gap-2 text-xs shadow-md shadow-purple-600/20"
+                      >
+                        <Sparkles className="w-4 h-4 text-purple-200" />
+                        <span>View AI Revision Plan</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )
       ) : filteredTests.length === 0 ? (
         <div className="p-12 text-center bg-[#14111f] rounded-2xl border border-[#383050] text-[#9f99b0]">
           No tests found for {selectedFilter === 'All' ? 'the selected filter' : selectedFilter}.

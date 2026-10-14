@@ -258,7 +258,7 @@ export const getUserAttempts = async (req, res) => {
     const userId = req.user?.userId;
 
     const attempts = await Attempt.find({ userId, status: 'submitted' })
-      .populate('testId', 'title topic timeLimitMinutes totalQuestions markingScheme')
+      .populate('testId', 'title description topic timeLimitMinutes totalQuestions markingScheme isAIGenerated teacherId')
       .sort({ submittedAt: -1 });
 
     res.json({ attempts });
