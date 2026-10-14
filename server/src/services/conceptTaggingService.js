@@ -38,6 +38,33 @@ export function isJunkConcept(concept) {
   return false;
 }
 
+export function isGenericTopicConcept(concept, testTopic = '', testTitle = '') {
+  if (!concept || typeof concept !== 'string') return true;
+  const c = concept.trim().toLowerCase();
+  const topic = (testTopic || '').trim().toLowerCase();
+  const title = (testTitle || '').trim().toLowerCase();
+
+  // Exactly equals parent topic (e.g. "Object-Oriented Programming" in an OOP test)
+  if (topic && c === topic) return true;
+
+  // Exactly equals test title (e.g. "OOP Test 5: Design Patterns & Behavioral Architecture")
+  if (title && c === title) return true;
+
+  // Generic filler values
+  const genericFillers = [
+    'general',
+    'general principles',
+    'computer science',
+    'assessment',
+    'mcq assessment',
+    'fundamentals',
+    'computer science assessment'
+  ];
+  if (genericFillers.includes(c)) return true;
+
+  return false;
+}
+
 /**
  * Ensures all questions belonging to a test have concept & difficulty tags.
  * Performs tag-on-first-use using atomic locks on the Test model.
@@ -54,7 +81,9 @@ export async function ensureTestTagged(testId) {
       return { tagged: true, newlyTagged: false };
     }
 
-    const needsTagging = questions.filter((q) => !q.concept || !q.difficulty || isJunkConcept(q.concept));
+    const needsTagging = questions.filter(
+      (q) => !q.concept || !q.difficulty || isJunkConcept(q.concept) || isGenericTopicConcept(q.concept, test.topic, test.title)
+    );
     if (needsTagging.length === 0) {
       return { tagged: true, newlyTagged: false };
     }
@@ -104,7 +133,8 @@ export async function ensureTestTagged(testId) {
 
     if (config.geminiApiKey) {
       try {
-        taggingResults = await tagQuestionsWithAI(test, questions, existingConcepts.filter((c) => !isJunkConcept(c)));
+        const cleanExisting = existingConcepts.filter((c) => !isJunkConcept(c) && !isGenericTopicConcept(c, test.topic, test.title));
+        taggingResults = await tagQuestionsWithAI(test, questions, cleanExisting);
       } catch (err) {
         console.warn(`Tagging with AI failed for test ${testId}:`, err.message);
       }
@@ -113,14 +143,22 @@ export async function ensureTestTagged(testId) {
     // Fallback tagging if AI is unavailable or failed
     if (!taggingResults || taggingResults.length === 0) {
       taggingResults = needsTagging.map((q) => {
-        let derivedConcept = test.topic || 'General';
+        let derivedConcept = '';
 
         // Check if correct option or any option is a clean Title Case CS concept name (e.g. "Builder Pattern")
         const correctOpt = q.options && q.options[q.correctOptionIndex];
-        if (correctOpt && /^[A-Z][A-Za-z0-9\s-]{2,40}$/.test(correctOpt) && !isJunkConcept(correctOpt)) {
+        if (
+          correctOpt &&
+          /^[A-Z][A-Za-z0-9\s-]{2,40}$/.test(correctOpt) &&
+          !isJunkConcept(correctOpt) &&
+          !isGenericTopicConcept(correctOpt, test.topic, test.title)
+        ) {
           derivedConcept = correctOpt.trim();
         } else if (test.title) {
-          derivedConcept = test.title.replace(/Test\s*\d*:\s*/i, '').trim();
+          const subTitle = test.title.replace(/.*Test\s*\d*:\s*/i, '').trim();
+          derivedConcept = subTitle || `${test.topic} - Module ${q.order}`;
+        } else {
+          derivedConcept = `${test.topic} - Part ${q.order}`;
         }
 
         return {
@@ -174,7 +212,10 @@ async function tagQuestionsWithAI(test, questions, existingConcepts = []) {
   const prompt = `You are a Senior Computer Science Curriculum Architect.
 Analyze the following exam questions for the test "${test.title}" (Topic: ${test.topic}).
 For each question, assign:
-1. "concept": A concise, standard CS sub-topic/concept name (e.g. "Deadlocks", "Virtual Memory", "B-Trees", "TCP Handshake", "Polymorphism").
+1. "concept": A concise, standard, specific CS sub-topic, pattern, algorithm, or mechanism (e.g. "Builder Pattern", "Observer Pattern", "Deadlocks", "Virtual Memory", "B-Trees", "TCP Handshake", "Polymorphism").
+   CRITICAL REQUIREMENT:
+   - Do NOT output the broad course or topic name itself (do NOT output "${test.topic}", "Computer Science", or general fillers).
+   - Output the specific sub-concept tested.
    Prefer reusing any of these existing canonical concepts if they apply: ${JSON.stringify(existingConcepts.slice(0, 30))}.
 2. "difficulty": Exactly one of "easy", "medium", or "hard".
 

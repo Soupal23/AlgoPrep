@@ -8,7 +8,7 @@ import {
   normalizeConceptKey
 } from '../src/services/revisionPlanService.js';
 import { revisionPlanSchema } from '../src/schemas/revisionPlanSchema.js';
-import { isJunkConcept } from '../src/services/conceptTaggingService.js';
+import { isJunkConcept, isGenericTopicConcept } from '../src/services/conceptTaggingService.js';
 
 describe('Revision Plan Subsystem Unit Tests', () => {
   describe('Approved Domains Whitelist Validator', () => {
@@ -211,6 +211,20 @@ describe('Revision Plan Subsystem Unit Tests', () => {
       expect(isJunkConcept('Virtual Memory')).toBe(false);
       expect(isJunkConcept('Process Synchronization')).toBe(false);
       expect(isJunkConcept('B-Trees')).toBe(false);
+    });
+
+    it('should identify broad/topic-echo concepts as generic', () => {
+      expect(isGenericTopicConcept('Object-Oriented Programming', 'Object-Oriented Programming')).toBe(true);
+      expect(isGenericTopicConcept('Operating Systems', 'Operating Systems')).toBe(true);
+      expect(isGenericTopicConcept('Computer Networks', 'Computer Networks')).toBe(true);
+      expect(isGenericTopicConcept('General', 'Any Topic')).toBe(true);
+      expect(isGenericTopicConcept('General Principles', 'Any Topic')).toBe(true);
+
+      // Specific granular concepts are NOT generic
+      expect(isGenericTopicConcept('Builder Pattern', 'Object-Oriented Programming')).toBe(false);
+      expect(isGenericTopicConcept('Singleton Pattern', 'Object-Oriented Programming')).toBe(false);
+      expect(isGenericTopicConcept('Deadlocks', 'Operating Systems')).toBe(false);
+      expect(isGenericTopicConcept('TCP Handshake', 'Computer Networks')).toBe(false);
     });
   });
 });

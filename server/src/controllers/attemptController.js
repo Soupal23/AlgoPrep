@@ -3,7 +3,7 @@ import { Test } from '../models/Test.js';
 import { Question } from '../models/Question.js';
 import { RevisionPlan } from '../models/RevisionPlan.js';
 import { calculateScore } from '../utils/scoring.js';
-import { ensureTestTagged, isJunkConcept } from '../services/conceptTaggingService.js';
+import { ensureTestTagged, isJunkConcept, isGenericTopicConcept } from '../services/conceptTaggingService.js';
 import {
   buildSignals,
   getHistory,
@@ -355,11 +355,20 @@ export const getAIRevisionPlan = async (req, res) => {
     // 1. Check for existing persisted revision plan
     const existingPlan = await RevisionPlan.findOne({ attemptId: id });
     if (existingPlan && existingPlan.schemaVersion === 1) {
-      const hasJunkStrengths = existingPlan.plan?.strengths?.some(isJunkConcept);
-      const hasJunkWeak = existingPlan.plan?.weakConcepts?.some((w) => isJunkConcept(w.concept));
+      const topic = attempt.testId?.topic || '';
+      const title = attempt.testId?.title || '';
+      const hasJunkStrengths = existingPlan.plan?.strengths?.some(
+        (s) => isJunkConcept(s) || isGenericTopicConcept(s, topic, title)
+      );
+      const hasJunkWeak = existingPlan.plan?.weakConcepts?.some(
+        (w) => isJunkConcept(w.concept) || isGenericTopicConcept(w.concept, topic, title)
+      );
+      const isCoarseBreakdown =
+        existingPlan.plan?.conceptBreakdown?.length === 1 &&
+        isGenericTopicConcept(existingPlan.plan.conceptBreakdown[0].concept, topic, title);
 
-      if (hasJunkStrengths || hasJunkWeak) {
-        // Plan was poisoned by historical junk concepts; delete it to heal and re-generate clean plan
+      if (hasJunkStrengths || hasJunkWeak || isCoarseBreakdown) {
+        // Plan was poisoned by historical junk concepts or broad topic-echo; delete it to heal and re-generate clean granular plan
         await RevisionPlan.deleteOne({ _id: existingPlan._id });
       } else {
         res.json({
