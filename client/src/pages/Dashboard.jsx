@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../services/api';
 import { Clock, HelpCircle, Award, Sparkles, Play, Shield, Cpu, Network, Database, Code, BookOpen, CheckCircle2, RotateCcw, Layers, UserCheck } from 'lucide-react';
 
@@ -12,14 +12,30 @@ const FILTERS = [
 ];
 
 export const Dashboard = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  const initialFilterParam = searchParams.get('filter');
+  const getInitialFilter = () => {
+    if (initialFilterParam === 'attempted' || initialFilterParam === 'Attempted Tests') {
+      return 'Attempted Tests';
+    }
+    return 'All';
+  };
+
   const [tests, setTests] = useState([]);
   const [attempts, setAttempts] = useState([]);
   const [attemptedTestIds, setAttemptedTestIds] = useState(new Set());
   const [loading, setLoading] = useState(true);
-  const [selectedFilter, setSelectedFilter] = useState('All');
+  const [selectedFilter, setSelectedFilter] = useState(getInitialFilter);
   const [error, setError] = useState('');
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    const filterParam = searchParams.get('filter');
+    if (filterParam === 'attempted' || filterParam === 'Attempted Tests') {
+      setSelectedFilter('Attempted Tests');
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     fetchDashboardData();
@@ -106,7 +122,14 @@ export const Dashboard = () => {
           return (
             <button
               key={f.id}
-              onClick={() => setSelectedFilter(f.id)}
+              onClick={() => {
+                setSelectedFilter(f.id);
+                if (f.id === 'Attempted Tests') {
+                  setSearchParams({ filter: 'attempted' });
+                } else {
+                  setSearchParams({});
+                }
+              }}
               className={`px-4 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${
                 isActive
                   ? 'bg-indigo-600 text-white shadow-md'

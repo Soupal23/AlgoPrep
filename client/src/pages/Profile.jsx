@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api';
 import { resolveFileUrl } from '../utils/fileUrl';
-import { User, Award, ArrowRight, ExternalLink, Camera, Save, CheckCircle2, AlertCircle, Sparkles } from 'lucide-react';
+import { User, Award, ArrowRight, Camera, Save, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export const Profile = () => {
   const [user, setUser] = useState(api.getStoredUser());
@@ -154,10 +154,14 @@ export const Profile = () => {
 
           {user?.role === 'student' && (
             <div className="flex items-center gap-6 text-center text-xs font-mono">
-              <div className="bg-[#1c1729] px-4 py-3 rounded-2xl border border-[#383050]">
-                <span className="text-slate-500 block">Total Attempted</span>
+              <Link
+                to="/dashboard?filter=attempted"
+                className="bg-[#1c1729] hover:bg-[#251e35] px-4 py-3 rounded-2xl border border-[#383050] hover:border-purple-500/40 transition-colors group"
+                title="View your attempts on the Test Dashboard"
+              >
+                <span className="text-slate-500 block group-hover:text-purple-300 transition-colors">Total Attempted</span>
                 <span className="text-lg font-extrabold text-white">{attempts.length}</span>
-              </div>
+              </Link>
               <div className="bg-[#1c1729] px-4 py-3 rounded-2xl border border-[#383050]">
                 <span className="text-slate-500 block">Average Accuracy</span>
                 <span className="text-lg font-extrabold text-emerald-400">{avgAccuracy}%</span>
@@ -218,108 +222,6 @@ export const Profile = () => {
           </button>
         </form>
       </div>
-
-      {/* Attempted Tests Section (Student view) */}
-      {user?.role === 'student' && (
-        <div className="bg-[#14111f] rounded-3xl p-8 border border-[#383050] space-y-6 shadow-xl">
-          <div className="flex items-center justify-between border-b border-[#383050] pb-4">
-            <div>
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <Award className="w-5 h-5 text-purple-400" />
-                <span>Attempted Tests History</span>
-              </h2>
-            </div>
-            <Link
-              to="/dashboard"
-              className="text-xs font-mono text-purple-400 hover:text-purple-300 transition-colors flex items-center gap-1"
-            >
-              <span>View in Test Dashboard</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-
-          {loading ? (
-            <div className="p-12 text-center space-y-3">
-              <div className="w-8 h-8 border-2 border-purple-400 border-t-transparent rounded-full animate-spin mx-auto" />
-              <p className="text-xs font-mono text-slate-400">Loading attempt history...</p>
-            </div>
-          ) : attempts.length === 0 ? (
-            <div className="p-12 text-center space-y-4">
-              <p className="text-slate-400 text-sm">You have not completed any test attempts yet.</p>
-              <Link
-                to="/dashboard"
-                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-md transition-colors"
-              >
-                <span>Explore Available Tests</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {attempts.map((att) => {
-                const testTitle = att.testId?.title || 'CS Test Attempt';
-                const testTopic = att.testId?.topic || 'Computer Science';
-
-                return (
-                  <div
-                    key={att._id}
-                    className="bg-[#1c1729] rounded-2xl p-6 border border-[#383050] hover:border-purple-400/40 transition-all space-y-4 flex flex-col justify-between"
-                  >
-                    <div>
-                      <div className="flex items-start justify-between gap-2">
-                        <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-[#14111f] text-purple-300 border border-[#383050]">
-                          {testTopic}
-                        </span>
-                        <span className="text-[10px] font-mono text-slate-400">
-                          {att.submittedAt ? new Date(att.submittedAt).toLocaleDateString() : 'Completed'}
-                        </span>
-                      </div>
-
-                      <h3 className="text-base font-bold text-white mt-2">{testTitle}</h3>
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-2 text-center text-xs font-mono bg-[#14111f] p-3 rounded-xl border border-[#383050]">
-                      <div>
-                        <span className="text-slate-500 block text-[10px]">Score</span>
-                        <span className="text-emerald-400 font-bold text-sm">
-                          {att.score} / {att.maxScore}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-slate-500 block text-[10px]">Accuracy</span>
-                        <span className="text-purple-400 font-bold text-sm">{att.accuracy}%</span>
-                      </div>
-                      <div>
-                        <span className="text-slate-500 block text-[10px]">Time</span>
-                        <span className="text-amber-400 font-bold text-sm">
-                          {Math.floor((att.totalTimeSpentSeconds || att.timeSpentSeconds || 0) / 60)}m
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Link
-                        to={`/results/${att._id}`}
-                        className="w-full py-2.5 rounded-xl bg-[#14111f] hover:bg-[#251e35] text-purple-300 text-xs font-bold border border-[#383050] transition-colors flex items-center justify-center gap-2"
-                      >
-                        <span>View Scorecard & Review</span>
-                        <ExternalLink className="w-3.5 h-3.5" />
-                      </Link>
-                      <Link
-                        to={`/results/${att._id}?tab=ai-plan`}
-                        className="w-full py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-colors flex items-center justify-center gap-2 shadow-md shadow-purple-600/20"
-                      >
-                        <Sparkles className="w-3.5 h-3.5 text-purple-200" />
-                        <span>View AI Revision Plan</span>
-                      </Link>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      )}
     </div>
   );
 };
