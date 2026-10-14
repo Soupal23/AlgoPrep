@@ -16,6 +16,7 @@ import { Profile } from './pages/Profile';
 import { SyllabusAI } from './pages/SyllabusAI';
 
 // Phase 5B Pages
+import { TeacherHub } from './pages/TeacherHub';
 import { BrowseTeachers } from './pages/BrowseTeachers';
 import { AnnouncementFeed } from './pages/AnnouncementFeed';
 import { RecordedLectures } from './pages/RecordedLectures';
@@ -80,7 +81,7 @@ export const AppContent = () => {
             path="/teachers"
             element={
               <RoleRoute allowedRoles={['student']}>
-                <BrowseTeachers />
+                <TeacherHub />
               </RoleRoute>
             }
           />
@@ -88,7 +89,7 @@ export const AppContent = () => {
             path="/announcements"
             element={
               <RoleRoute allowedRoles={['student']}>
-                <AnnouncementFeed />
+                <Navigate to="/teachers?tab=announcements" replace />
               </RoleRoute>
             }
           />
@@ -96,7 +97,7 @@ export const AppContent = () => {
             path="/lectures"
             element={
               <RoleRoute allowedRoles={['student']}>
-                <RecordedLectures />
+                <Navigate to="/teachers?tab=lectures" replace />
               </RoleRoute>
             }
           />

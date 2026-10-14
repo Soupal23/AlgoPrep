@@ -47,35 +47,36 @@ export const Navbar = () => {
     const role = user.role || 'student';
 
     if (role === 'student') {
+      const isTeacherHubActive =
+        location.pathname === '/teachers' ||
+        location.pathname === '/announcements' ||
+        location.pathname === '/lectures';
+
       return (
         <div className="space-y-1">
           <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)} className={verticalLinkClass('/dashboard')}>
             <ListChecks className="w-4 h-4 text-purple-400 shrink-0" />
             <span>Dashboard Tests</span>
           </Link>
-          <Link to="/teachers" onClick={() => setMobileMenuOpen(false)} className={verticalLinkClass('/teachers')}>
+          <Link
+            to="/teachers"
+            onClick={() => setMobileMenuOpen(false)}
+            className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+              isTeacherHubActive
+                ? 'bg-[#251e35] text-indigo-400 border border-[#383050] shadow-sm font-bold'
+                : 'text-[#9f99b0] hover:text-[#f0eef5] hover:bg-[#1c1729]'
+            }`}
+          >
             <Users className="w-4 h-4 text-purple-400 shrink-0" />
             <span>Browse Teachers</span>
-          </Link>
-          <Link to="/announcements" onClick={() => setMobileMenuOpen(false)} className={verticalLinkClass('/announcements')}>
-            <Megaphone className="w-4 h-4 text-purple-400 shrink-0" />
-            <span>Announcements</span>
-          </Link>
-          <Link to="/lectures" onClick={() => setMobileMenuOpen(false)} className={verticalLinkClass('/lectures')}>
-            <Video className="w-4 h-4 text-purple-400 shrink-0" />
-            <span>Recorded Lectures</span>
-          </Link>
-          <Link to="/messages" onClick={() => setMobileMenuOpen(false)} className={verticalLinkClass('/messages')}>
-            <MessageSquare className="w-4 h-4 text-purple-400 shrink-0" />
-            <span>Messages</span>
           </Link>
           <Link to="/ai-generate" onClick={() => setMobileMenuOpen(false)} className={verticalLinkClass('/ai-generate')}>
             <FileUp className="w-4 h-4 text-purple-400 shrink-0" />
             <span>AI Quiz Generator</span>
           </Link>
-          <Link to="/profile" onClick={() => setMobileMenuOpen(false)} className={verticalLinkClass('/profile')}>
-            <UserIcon className="w-4 h-4 text-purple-400 shrink-0" />
-            <span>My Profile</span>
+          <Link to="/messages" onClick={() => setMobileMenuOpen(false)} className={verticalLinkClass('/messages')}>
+            <MessageSquare className="w-4 h-4 text-purple-400 shrink-0" />
+            <span>Messages</span>
           </Link>
         </div>
       );
