@@ -8,6 +8,7 @@ import {
   normalizeConceptKey
 } from '../src/services/revisionPlanService.js';
 import { revisionPlanSchema } from '../src/schemas/revisionPlanSchema.js';
+import { isJunkConcept } from '../src/services/conceptTaggingService.js';
 
 describe('Revision Plan Subsystem Unit Tests', () => {
   describe('Approved Domains Whitelist Validator', () => {
@@ -185,6 +186,31 @@ describe('Revision Plan Subsystem Unit Tests', () => {
       expect(plan.weakConcepts.length).toBe(0);
       expect(plan.resources.length).toBeGreaterThan(0);
       expect(plan.summary.encouragement).toContain('Flawless performance');
+    });
+  });
+
+  describe('Junk Concept Detector & Sanitation', () => {
+    it('should detect sentence fragments and preposition-led snippets as junk', () => {
+      expect(isJunkConcept('of a complex object from its r')).toBe(true);
+      expect(isJunkConcept('logic to client')).toBe(true);
+      expect(isJunkConcept('of clients with queues or undo')).toBe(true);
+      expect(isJunkConcept('for high throughput')).toBe(true);
+      expect(isJunkConcept('about virtual memory and its')).toBe(true);
+      expect(isJunkConcept('in')).toBe(true);
+      expect(isJunkConcept('')).toBe(true);
+      expect(isJunkConcept(null)).toBe(true);
+      expect(isJunkConcept(undefined)).toBe(true);
+    });
+
+    it('should accept valid canonical CS topics and concepts', () => {
+      expect(isJunkConcept('Builder Pattern')).toBe(false);
+      expect(isJunkConcept('Singleton Pattern')).toBe(false);
+      expect(isJunkConcept('Observer Pattern')).toBe(false);
+      expect(isJunkConcept('Factory Method Pattern')).toBe(false);
+      expect(isJunkConcept('Deadlocks')).toBe(false);
+      expect(isJunkConcept('Virtual Memory')).toBe(false);
+      expect(isJunkConcept('Process Synchronization')).toBe(false);
+      expect(isJunkConcept('B-Trees')).toBe(false);
     });
   });
 });

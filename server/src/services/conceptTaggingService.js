@@ -12,6 +12,32 @@ const taggingResponseSchema = z.array(
   })
 );
 
+export function isJunkConcept(concept) {
+  if (!concept || typeof concept !== 'string') return true;
+  const trimmed = concept.trim();
+  if (trimmed.length < 3) return true;
+
+  // Preposition/conjunction/fragment starter (e.g. "of a complex object...", "logic to client", "to ", "in ", "for ")
+  if (/^(of|on|in|to|for|with|by|at|from|about|logic to|as a|that)\b/i.test(trimmed)) {
+    return true;
+  }
+
+  // Starts with lowercase letter (canonical CS concepts are Title Case, e.g. "Builder Pattern", "Deadlocks")
+  if (/^[a-z]/.test(trimmed)) {
+    return true;
+  }
+
+  // Fragment check: ends with trailing preposition/conjunction/incomplete word (e.g. "...from its", "...or", "...its r")
+  if (/\b(or|and|from|with|by|its|the|an|a|to|of)$/i.test(trimmed)) {
+    return true;
+  }
+  if (/\b[a-z]{1,2}$/i.test(trimmed) && trimmed.length > 15) {
+    return true;
+  }
+
+  return false;
+}
+
 /**
  * Ensures all questions belonging to a test have concept & difficulty tags.
  * Performs tag-on-first-use using atomic locks on the Test model.
@@ -28,8 +54,8 @@ export async function ensureTestTagged(testId) {
       return { tagged: true, newlyTagged: false };
     }
 
-    const untaggedQuestions = questions.filter((q) => !q.concept || !q.difficulty);
-    if (untaggedQuestions.length === 0) {
+    const needsTagging = questions.filter((q) => !q.concept || !q.difficulty || isJunkConcept(q.concept));
+    if (needsTagging.length === 0) {
       return { tagged: true, newlyTagged: false };
     }
 
@@ -78,7 +104,7 @@ export async function ensureTestTagged(testId) {
 
     if (config.geminiApiKey) {
       try {
-        taggingResults = await tagQuestionsWithAI(test, questions, existingConcepts);
+        taggingResults = await tagQuestionsWithAI(test, questions, existingConcepts.filter((c) => !isJunkConcept(c)));
       } catch (err) {
         console.warn(`Tagging with AI failed for test ${testId}:`, err.message);
       }
@@ -86,24 +112,26 @@ export async function ensureTestTagged(testId) {
 
     // Fallback tagging if AI is unavailable or failed
     if (!taggingResults || taggingResults.length === 0) {
-      taggingResults = untaggedQuestions.map((q) => {
-        // Derive clean concept title from question text or topic
+      taggingResults = needsTagging.map((q) => {
         let derivedConcept = test.topic || 'General';
-        const text = q.questionText || '';
-        const match = text.match(/about\s+([A-Za-z0-9\s-]{3,30})|on\s+([A-Za-z0-9\s-]{3,30})/i);
-        if (match) {
-          derivedConcept = (match[1] || match[2]).trim();
+
+        // Check if correct option or any option is a clean Title Case CS concept name (e.g. "Builder Pattern")
+        const correctOpt = q.options && q.options[q.correctOptionIndex];
+        if (correctOpt && /^[A-Z][A-Za-z0-9\s-]{2,40}$/.test(correctOpt) && !isJunkConcept(correctOpt)) {
+          derivedConcept = correctOpt.trim();
+        } else if (test.title) {
+          derivedConcept = test.title.replace(/Test\s*\d*:\s*/i, '').trim();
         }
 
         return {
           questionId: q._id.toString(),
           concept: derivedConcept.slice(0, 60),
-          difficulty: 'medium'
+          difficulty: q.difficulty || 'medium'
         };
       });
     }
 
-    // Apply tags safely (only filling null fields)
+    // Apply tags safely
     await applyTags(taggingResults);
 
     await Test.findByIdAndUpdate(test._id, {
@@ -189,8 +217,7 @@ export async function applyTags(taggingResults) {
   const ops = taggingResults.map((item) => ({
     updateOne: {
       filter: {
-        _id: item.questionId,
-        $or: [{ concept: null }, { difficulty: null }]
+        _id: item.questionId
       },
       update: {
         $set: {

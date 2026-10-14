@@ -3,7 +3,7 @@ import { Test } from '../models/Test.js';
 import { Question } from '../models/Question.js';
 import { RevisionPlan } from '../models/RevisionPlan.js';
 import { calculateScore } from '../utils/scoring.js';
-import { ensureTestTagged } from '../services/conceptTaggingService.js';
+import { ensureTestTagged, isJunkConcept } from '../services/conceptTaggingService.js';
 import {
   buildSignals,
   getHistory,
@@ -355,14 +355,22 @@ export const getAIRevisionPlan = async (req, res) => {
     // 1. Check for existing persisted revision plan
     const existingPlan = await RevisionPlan.findOne({ attemptId: id });
     if (existingPlan && existingPlan.schemaVersion === 1) {
-      res.json({
-        plan: existingPlan.plan,
-        source: existingPlan.source,
-        generatedAt: existingPlan.generatedAt,
-        canRegenerate: existingPlan.regenerateCount < 3,
-        regenerateCount: existingPlan.regenerateCount
-      });
-      return;
+      const hasJunkStrengths = existingPlan.plan?.strengths?.some(isJunkConcept);
+      const hasJunkWeak = existingPlan.plan?.weakConcepts?.some((w) => isJunkConcept(w.concept));
+
+      if (hasJunkStrengths || hasJunkWeak) {
+        // Plan was poisoned by historical junk concepts; delete it to heal and re-generate clean plan
+        await RevisionPlan.deleteOne({ _id: existingPlan._id });
+      } else {
+        res.json({
+          plan: existingPlan.plan,
+          source: existingPlan.source,
+          generatedAt: existingPlan.generatedAt,
+          canRegenerate: existingPlan.regenerateCount < 3,
+          regenerateCount: existingPlan.regenerateCount
+        });
+        return;
+      }
     }
 
     // 2. Ensure test has concepts & difficulty tags (tag-on-first-use)
