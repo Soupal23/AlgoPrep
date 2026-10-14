@@ -31,7 +31,9 @@ export const TeacherTests = () => {
           questionText: '',
           options: ['', '', '', ''],
           correctOptionIndex: 0,
-          explanation: ''
+          explanation: '',
+          concept: '',
+          difficulty: 'medium'
         }
       ]
     }));
@@ -389,6 +391,31 @@ export const TeacherTests = () => {
                         onChange={(e) => updateQuestion(qIndex, 'explanation', e.target.value)}
                         className="w-full px-3 py-2 rounded-xl bg-[#14111f] border border-[#383050] text-white focus:outline-none focus:border-purple-400 min-h-[50px]"
                       />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3 pt-1">
+                      <div>
+                        <label className="block text-slate-400 font-mono mb-1">Concept Tag (Optional)</label>
+                        <input
+                          type="text"
+                          value={q.concept || ''}
+                          onChange={(e) => updateQuestion(qIndex, 'concept', e.target.value)}
+                          placeholder="e.g. Deadlocks, TCP Handshake"
+                          className="w-full px-3 py-1.5 rounded-lg bg-[#14111f] border border-[#383050] text-white focus:outline-none focus:border-purple-400"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-slate-400 font-mono mb-1">Difficulty (Optional)</label>
+                        <select
+                          value={q.difficulty || 'medium'}
+                          onChange={(e) => updateQuestion(qIndex, 'difficulty', e.target.value)}
+                          className="w-full px-3 py-1.5 rounded-lg bg-[#14111f] border border-[#383050] text-white focus:outline-none focus:border-purple-400"
+                        >
+                          <option value="easy">Easy</option>
+                          <option value="medium">Medium</option>
+                          <option value="hard">Hard</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
                 ))}

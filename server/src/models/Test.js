@@ -15,7 +15,17 @@ const testSchema = new Schema(
     teacherId: { type: Schema.Types.ObjectId, ref: 'User', default: null, index: true },
     validFrom: { type: Date, default: null },
     validUntil: { type: Date, default: null },
-    createdBy: { type: Schema.Types.ObjectId, ref: 'User' }
+    createdBy: { type: Schema.Types.ObjectId, ref: 'User' },
+    conceptTagging: {
+      status: {
+        type: String,
+        enum: ['none', 'in_progress', 'done', 'failed'],
+        default: 'none'
+      },
+      lockedUntil: { type: Date, default: null },
+      attempts: { type: Number, default: 0 },
+      lastError: { type: String, default: null }
+    }
   },
   { timestamps: true }
 );

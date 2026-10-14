@@ -85,7 +85,10 @@ export const runSeed = async () => {
       timeLimitMinutes: testItem.timeLimitMinutes,
       markingScheme: testItem.markingScheme,
       totalQuestions: testItem.questions.length,
-      createdBy: demoAdmin._id
+      createdBy: demoAdmin._id,
+      conceptTagging: {
+        status: 'done'
+      }
     });
 
     const questionDocs = testItem.questions.map((q) => ({
@@ -94,7 +97,10 @@ export const runSeed = async () => {
       options: q.options,
       correctOptionIndex: q.correctOptionIndex,
       explanation: q.explanation,
-      order: q.order
+      order: q.order,
+      concept: q.concept || testItem.topic,
+      difficulty: q.difficulty || (q.order % 3 === 1 ? 'easy' : q.order % 3 === 2 ? 'medium' : 'hard'),
+      tagSource: 'ai_inferred'
     }));
 
     await Question.insertMany(questionDocs);

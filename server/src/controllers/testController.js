@@ -108,7 +108,10 @@ export const createTeacherTest = async (req, res) => {
       options: q.options,
       correctOptionIndex: q.correctOptionIndex,
       explanation: q.explanation || '',
-      order: idx + 1
+      order: idx + 1,
+      concept: q.concept && q.concept.trim() ? q.concept.trim() : null,
+      difficulty: ['easy', 'medium', 'hard'].includes(q.difficulty) ? q.difficulty : null,
+      tagSource: (q.concept && q.concept.trim()) || q.difficulty ? 'teacher' : null
     }));
 
     await Question.insertMany(questionDocs);

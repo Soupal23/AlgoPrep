@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { api } from '../services/api';
-import { Award, CheckCircle2, XCircle, Clock, ShieldAlert, Sparkles, HelpCircle, Check, X, RotateCcw, BookOpen, Target, Lightbulb, ExternalLink } from 'lucide-react';
+import { Award, Clock, Sparkles, HelpCircle, Check, X, RotateCcw } from 'lucide-react';
+import { RevisionPlanPanel } from '../components/revision/RevisionPlanPanel';
 
 export const Results = () => {
   const { id } = useParams();
@@ -9,9 +10,7 @@ export const Results = () => {
   const [test, setTest] = useState(null);
   const [questions, setQuestions] = useState([]);
   const [myStats, setMyStats] = useState(null);
-  const [revisionPlan, setRevisionPlan] = useState('');
   const [loading, setLoading] = useState(true);
-  const [loadingAI, setLoadingAI] = useState(false);
   const [error, setError] = useState('');
 
   const [activeTab, setActiveTab] = useState('review'); // 'review' | 'ai-plan'
@@ -43,109 +42,22 @@ export const Results = () => {
     }
   };
 
-  const fetchAIRevisionPlan = async () => {
-    if (revisionPlan || loadingAI) return;
-    try {
-      setLoadingAI(true);
-      const res = await api.getAIRevisionPlan(id);
-      setRevisionPlan(res.revisionPlan);
-    } catch (err) {
-      setRevisionPlan('Failed to load AI revision plan.');
-    } finally {
-      setLoadingAI(false);
-    }
-  };
-
   const handleTabChange = (tab) => {
     setActiveTab(tab);
-    if (tab === 'ai-plan' && !revisionPlan) {
-      fetchAIRevisionPlan();
-    }
   };
 
-  const parseFormattedLine = (str) => {
-    if (!str) return '';
-    // Parse markdown links [text](url) -> <a href="url" target="_blank" rel="noopener noreferrer">text ↗</a>
-    let parsed = str.replace(
-      /\[(.*?)\]\((.*?)\)/g,
-      '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:underline font-semibold inline-flex items-center gap-0.5">$1 ↗</a>'
-    );
-    // Parse **bold** -> <strong class="text-cyan-300 font-bold">$1</strong>
-    parsed = parsed.replace(/\*\*(.*?)\*\*/g, '<strong class="text-cyan-300 font-bold">$1</strong>');
-    return parsed;
+  const handleJumpToQuestion = (order) => {
+    setActiveTab('review');
+    setQuestionFilter('all');
+    setTimeout(() => {
+      const el = document.getElementById(`q-${order}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 150);
   };
 
-  const renderFormattedMarkdown = (text) => {
-    if (!text) return null;
 
-    const lines = text.split('\n');
-    return lines.map((line, idx) => {
-      let trimmed = line.trim();
-
-      if (!trimmed) return <div key={idx} className="h-2" />;
-
-      if (trimmed === '---') {
-        return <hr key={idx} className="border-slate-800 my-4" />;
-      }
-
-      // Main Section Header (###)
-      if (trimmed.startsWith('###')) {
-        const title = trimmed.replace(/^###\s*/, '');
-        const isResourceHeader = title.includes('Resources');
-        return (
-          <div key={idx} className="pt-4 pb-2 border-b border-slate-800/80 mb-3 flex items-center gap-2">
-            {isResourceHeader ? (
-              <BookOpen className="w-5 h-5 text-emerald-400 shrink-0" />
-            ) : (
-              <Sparkles className="w-5 h-5 text-purple-400 shrink-0" />
-            )}
-            <h3 className="text-lg font-extrabold text-white">{title}</h3>
-          </div>
-        );
-      }
-
-      // Sub Section Header (####)
-      if (trimmed.startsWith('####')) {
-        const title = trimmed.replace(/^####\s*/, '');
-        return (
-          <div key={idx} className="pt-3 pb-1 mt-2 mb-2 flex items-center gap-2">
-            <Lightbulb className="w-4 h-4 text-amber-400 shrink-0" />
-            <h4 className="text-base font-bold text-slate-100">{title}</h4>
-          </div>
-        );
-      }
-
-      // Bullet points (- or *)
-      if (trimmed.startsWith('-') || trimmed.startsWith('*')) {
-        const content = trimmed.replace(/^[-*]\s*/, '');
-        return (
-          <div key={idx} className="flex items-start gap-2.5 text-sm text-slate-300 ml-2 mb-2 leading-relaxed">
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-2 shrink-0" />
-            <div dangerouslySetInnerHTML={{ __html: parseFormattedLine(content) }} />
-          </div>
-        );
-      }
-
-      // Ordered list items (1. 2. 3.)
-      if (/^\d+\.\s/.test(trimmed)) {
-        const content = trimmed.replace(/^\d+\.\s*/, '');
-        const numMatch = trimmed.match(/^\d+/);
-        const num = numMatch ? numMatch[0] : '1';
-        return (
-          <div key={idx} className="flex items-start gap-2.5 text-sm text-slate-300 ml-2 mb-2 leading-relaxed">
-            <span className="w-5 h-5 rounded-lg bg-slate-800 text-cyan-400 font-mono text-xs flex items-center justify-center shrink-0 font-bold">
-              {num}
-            </span>
-            <div dangerouslySetInnerHTML={{ __html: parseFormattedLine(content) }} />
-          </div>
-        );
-      }
-
-      return (
-        <p key={idx} className="text-sm text-slate-300 leading-relaxed mb-2" dangerouslySetInnerHTML={{ __html: parseFormattedLine(trimmed) }} />
-      );
-    });
-  };
 
   if (loading) {
     return (
@@ -326,6 +238,7 @@ export const Results = () => {
               return (
                 <div
                   key={q._id}
+                  id={`q-${q.order}`}
                   className={`glass-card rounded-2xl p-6 border transition-all ${
                     q.status === 'correct'
                       ? 'border-emerald-500/30'
@@ -413,28 +326,7 @@ export const Results = () => {
 
       {/* TAB 2: AI Revision Plan */}
       {activeTab === 'ai-plan' && (
-        <div className="glass-card rounded-3xl p-8 border border-purple-500/30 space-y-6">
-          <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
-            <div className="p-2.5 rounded-xl bg-purple-500/20 text-purple-400 border border-purple-500/30">
-              <Sparkles className="w-6 h-6" />
-            </div>
-            <div>
-              <h3 className="text-xl font-bold text-white">Personalized Revision Plan & Resources</h3>
-              <p className="text-xs text-slate-400">Synthesized based on your performance, missed concepts, and curated learning materials</p>
-            </div>
-          </div>
-
-          {loadingAI ? (
-            <div className="p-12 text-center space-y-3">
-              <div className="w-8 h-8 border-2 border-purple-400 border-t-transparent rounded-full animate-spin mx-auto" />
-              <p className="text-xs font-mono text-slate-400">Generating AI Tutor recommendations and study links...</p>
-            </div>
-          ) : (
-            <div className="bg-slate-950/60 p-6 rounded-2xl border border-slate-800/80 space-y-2 shadow-inner">
-              {renderFormattedMarkdown(revisionPlan)}
-            </div>
-          )}
-        </div>
+        <RevisionPlanPanel attemptId={id} onJumpToQuestion={handleJumpToQuestion} />
       )}
     </div>
   );

@@ -7,7 +7,9 @@ export const aiGeneratedQuestionSchema = z.object({
   questionText: z.string().min(5, 'Question text must be at least 5 characters'),
   options: z.array(z.string().min(1)).length(4, 'Must provide exactly 4 options'),
   correctOptionIndex: z.number().min(0).max(3, 'Correct option index must be between 0 and 3'),
-  explanation: z.string().min(5, 'Explanation must be at least 5 characters')
+  explanation: z.string().min(5, 'Explanation must be at least 5 characters'),
+  concept: z.string().min(1).default('General Concept'),
+  difficulty: z.enum(['easy', 'medium', 'hard']).default('medium')
 });
 
 export const aiGeneratedTestSchema = z.object({
@@ -44,6 +46,8 @@ Requirements:
 - Each question must have 4 distinct options.
 - Zero-indexed correctOptionIndex (0, 1, 2, or 3).
 - Detailed technical explanation for why the correct option is right.
+- "concept": Concise CS topic or concept name (e.g. "Deadlocks", "Binary Search", "TCP Handshake").
+- "difficulty": "easy" | "medium" | "hard"
 
 Respond ONLY with valid JSON conforming to this schema:
 {
@@ -58,7 +62,9 @@ Respond ONLY with valid JSON conforming to this schema:
       "questionText": "Question string?",
       "options": ["Option A", "Option B", "Option C", "Option D"],
       "correctOptionIndex": 0,
-      "explanation": "Detailed explanation."
+      "explanation": "Detailed explanation.",
+      "concept": "Core Concept Name",
+      "difficulty": "medium"
     }
   ]
 }`;
@@ -134,7 +140,9 @@ const fallbackSyllabusGenerator = (syllabusText, numQuestions, topicName) => {
         `${concept} forces single-threaded execution across all multi-core architectures.`
       ],
       correctOptionIndex: 0,
-      explanation: `According to the syllabus content on ${concept}, option A accurately describes its core architectural role and efficiency guarantees.`
+      explanation: `According to the syllabus content on ${concept}, option A accurately describes its core architectural role and efficiency guarantees.`,
+      concept,
+      difficulty: i % 3 === 0 ? 'easy' : i % 3 === 1 ? 'medium' : 'hard'
     });
   }
 

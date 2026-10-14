@@ -14,6 +14,11 @@ const attemptSchema = new Schema(
       of: String,
       default: new Map()
     },
+    questionTimeSpent: {
+      type: Map,
+      of: Number,
+      default: new Map()
+    },
     status: {
       type: String,
       enum: ['in-progress', 'submitted', 'expired'],

@@ -1,16 +1,23 @@
 import { Attempt } from '../models/Attempt.js';
 import { Test } from '../models/Test.js';
 import { Question } from '../models/Question.js';
+import { RevisionPlan } from '../models/RevisionPlan.js';
 import { calculateScore } from '../utils/scoring.js';
-import { GoogleGenAI } from '@google/genai';
-import { config } from '../config/env.js';
+import { ensureTestTagged } from '../services/conceptTaggingService.js';
+import {
+  buildSignals,
+  getHistory,
+  generateAIPlan,
+  buildFallbackPlan
+} from '../services/revisionPlanService.js';
+import { selectCandidates } from '../data/resourceCatalog.js';
 import mongoose from 'mongoose';
 
 export const saveProgress = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user?.userId;
-    const { answers, questionStates, version, tabSwitchEvent } = req.body;
+    const { answers, questionStates, questionTimeSpent, version, tabSwitchEvent } = req.body;
 
     if (!userId) {
       res.status(401).json({ error: 'Unauthorized' });
@@ -56,6 +63,18 @@ export const saveProgress = async (req, res) => {
       Object.entries(questionStates).forEach(([qId, qState]) => {
         if (typeof qState === 'string') {
           attempt.questionStates.set(qId, qState);
+        }
+      });
+    }
+
+    if (questionTimeSpent && typeof questionTimeSpent === 'object') {
+      if (!attempt.questionTimeSpent) {
+        attempt.questionTimeSpent = new Map();
+      }
+      Object.entries(questionTimeSpent).forEach(([qId, timeSpent]) => {
+        if (typeof timeSpent === 'number' && timeSpent >= 0) {
+          const current = attempt.questionTimeSpent.get(qId) || 0;
+          attempt.questionTimeSpent.set(qId, Math.max(current, Math.round(timeSpent)));
         }
       });
     }
@@ -107,7 +126,7 @@ export const submitAttempt = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user?.userId;
-    const { answers, questionStates, version } = req.body;
+    const { answers, questionStates, questionTimeSpent, version } = req.body;
 
     if (!userId) {
       res.status(401).json({ error: 'Unauthorized' });
@@ -146,6 +165,18 @@ export const submitAttempt = async (req, res) => {
       Object.entries(questionStates).forEach(([qId, qState]) => {
         if (typeof qState === 'string') {
           attempt.questionStates.set(qId, qState);
+        }
+      });
+    }
+
+    if (questionTimeSpent && typeof questionTimeSpent === 'object') {
+      if (!attempt.questionTimeSpent) {
+        attempt.questionTimeSpent = new Map();
+      }
+      Object.entries(questionTimeSpent).forEach(([qId, timeSpent]) => {
+        if (typeof timeSpent === 'number' && timeSpent >= 0) {
+          const current = attempt.questionTimeSpent.get(qId) || 0;
+          attempt.questionTimeSpent.set(qId, Math.max(current, Math.round(timeSpent)));
         }
       });
     }
@@ -255,10 +286,15 @@ export const getAttemptReview = async (req, res) => {
     const questions = await Question.find({ testId: attempt.testId._id }).sort({ order: 1 });
 
     const userAnswers = attempt.answers || new Map();
+    const questionStates = attempt.questionStates || new Map();
+    const timeSpentMap = attempt.questionTimeSpent || new Map();
 
     const reviewQuestions = questions.map((q) => {
       const qId = q._id.toString();
       const selectedOptionIndex = userAnswers.get ? userAnswers.get(qId) : userAnswers[qId];
+      const qState = questionStates.get ? questionStates.get(qId) : questionStates[qId];
+      const timeSpent = timeSpentMap.get ? timeSpentMap.get(qId) : timeSpentMap[qId] || 0;
+      const isMarked = qState === 'marked' || qState === 'answered_marked';
 
       let isCorrect = false;
       let status = 'unattempted';
@@ -282,7 +318,11 @@ export const getAttemptReview = async (req, res) => {
         correctOptionIndex: q.correctOptionIndex,
         explanation: q.explanation,
         status,
-        isCorrect
+        isCorrect,
+        timeSpent,
+        isMarked,
+        concept: q.concept || null,
+        difficulty: q.difficulty || null
       };
     });
 
@@ -296,7 +336,6 @@ export const getAttemptReview = async (req, res) => {
   }
 };
 
-// Phase 3 & 4 Enhanced: Educational High-Yield AI Revision Plan Generator with Recommended Study Resources
 export const getAIRevisionPlan = async (req, res) => {
   try {
     const { id } = req.params;
@@ -308,175 +347,160 @@ export const getAIRevisionPlan = async (req, res) => {
       return;
     }
 
+    if (attempt.status !== 'submitted') {
+      res.status(400).json({ error: 'Cannot generate a revision plan for an unsubmitted test attempt' });
+      return;
+    }
+
+    // 1. Check for existing persisted revision plan
+    const existingPlan = await RevisionPlan.findOne({ attemptId: id });
+    if (existingPlan && existingPlan.schemaVersion === 1) {
+      res.json({
+        plan: existingPlan.plan,
+        source: existingPlan.source,
+        generatedAt: existingPlan.generatedAt,
+        canRegenerate: existingPlan.regenerateCount < 3,
+        regenerateCount: existingPlan.regenerateCount
+      });
+      return;
+    }
+
+    // 2. Ensure test has concepts & difficulty tags (tag-on-first-use)
+    await ensureTestTagged(attempt.testId._id);
+
+    // 3. Fetch questions with tags
     const questions = await Question.find({ testId: attempt.testId._id }).sort({ order: 1 });
-    const userAnswers = attempt.answers || new Map();
 
-    const missedDetails = [];
-    let correctCount = 0;
+    // 4. Extract history, signals, and candidate resources
+    const history = await getHistory(userId, attempt.testId._id, attempt._id);
+    const signals = await buildSignals(attempt, attempt.testId, questions, history);
+    const candidateResources = selectCandidates(
+      attempt.testId.topic,
+      Array.from(signals.conceptMap.keys())
+    );
 
-    questions.forEach((q) => {
-      const qId = q._id.toString();
-      const selected = userAnswers.get ? userAnswers.get(qId) : userAnswers[qId];
+    // 5. Try generating AI plan; gracefully fallback to deterministic schema plan if AI fails
+    let plan = null;
+    let source = 'fallback';
 
-      if (selected === q.correctOptionIndex) {
-        correctCount++;
-      } else {
-        const userChoiceText = (selected !== undefined && selected !== null && selected >= 0)
-          ? q.options[selected]
-          : 'Unattempted';
+    try {
+      plan = await generateAIPlan(signals, history, candidateResources);
+      source = 'ai';
+    } catch (aiErr) {
+      console.warn('AI revision generation failed, using structured fallback:', aiErr.message);
+      plan = buildFallbackPlan(signals, history, candidateResources);
+      source = 'fallback';
+    }
 
-        missedDetails.push({
-          order: q.order,
-          questionText: q.questionText,
-          userSelected: userChoiceText,
-          correctAnswer: q.options[q.correctOptionIndex],
-          explanation: q.explanation
-        });
-      }
+    const conceptKeys = Array.from(signals.conceptMap.values()).map((c) => c.conceptKey);
+
+    // 6. Persist revision plan atomically
+    const savedDoc = await RevisionPlan.findOneAndUpdate(
+      { attemptId: attempt._id },
+      {
+        $setOnInsert: {
+          attemptId: attempt._id,
+          userId: attempt.userId,
+          testId: attempt.testId._id,
+          source,
+          schemaVersion: 1,
+          plan,
+          conceptKeys,
+          regenerateCount: 0,
+          previousPlan: null,
+          generatedAt: new Date()
+        }
+      },
+      { upsert: true, new: true }
+    );
+
+    res.json({
+      plan: savedDoc.plan,
+      source: savedDoc.source,
+      generatedAt: savedDoc.generatedAt,
+      canRegenerate: savedDoc.regenerateCount < 3,
+      regenerateCount: savedDoc.regenerateCount
     });
-
-    let revisionPlan = '';
-
-    if (config.geminiApiKey) {
-      try {
-        const ai = new GoogleGenAI({ apiKey: config.geminiApiKey });
-        const prompt = `You are a Senior Computer Science Educator analyzing a candidate's exam results.
-Test Title: "${attempt.testId.title}" (${attempt.testId.topic})
-Score: ${attempt.score} / ${attempt.maxScore} (${attempt.accuracy}% Accuracy)
-Total Questions: ${questions.length} | Correct: ${correctCount} | Missed/Unattempted: ${missedDetails.length}
-
-The candidate missed or unattempted the following specific questions:
-${missedDetails.map((m, idx) => `
-[Item ${idx + 1}]
-- Question: ${m.questionText}
-- Candidate Choice: ${m.userSelected}
-- Correct Key: ${m.correctAnswer}
-- Explanation: ${m.explanation}
-`).join('\n')}
-
-Generate an exceptional, high-yield, structured CS Study & Remediation Plan in Markdown.
-
-Structure required:
-### 📊 Performance Diagnostic Summary
-(Provide performance level assessment and accuracy breakdown)
-
-### 🔍 Concept-by-Concept Remediation Breakdown
-(For each missed concept, explain the core computer science principle clearly and why the correct key is correct)
-
-### 📚 Recommended High-Yield Revision Resources
-(Provide 3-5 specific, highly authoritative learning resources, standard textbooks, documentation links like MDN/OSDev/RFCs/CMU/MIT OCW, and online tutorial topics tailored directly to the candidate's missed concepts. Format links as [Title](URL))
-
-### 🛠️ 3-Step Actionable Revision Strategy
-1. **Theoretical Deep-Dive**: (Key topics to re-read)
-2. **Practice Recommendations**: (Specific edge cases to practice)
-3. **Recommended Next Steps**: (Follow-up tests on AlgoPrep Dashboard)
-
-Format cleanly in Markdown with bold key terms and markdown links. Make it encouraging, analytical, and highly educational.`;
-
-        const response = await ai.models.generateContent({
-          model: 'gemini-3.6-flash',
-          contents: prompt
-        });
-
-        revisionPlan = response.text;
-      } catch (err) {
-        console.warn('Gemini API call for revision plan failed. Using structured fallback.', err.message);
-      }
-    }
-
-    if (!revisionPlan) {
-      const perfLevel = attempt.accuracy >= 80 ? 'Mastery Level' : attempt.accuracy >= 50 ? 'Intermediate Competency' : 'Needs Targeted Revision';
-
-      const topicResourcesMap = {
-        'Operating Systems': [
-          '📖 **Textbook**: *Operating System Concepts* by Silberschatz, Galvin & Gagne (Chapter: Processes & Virtual Memory)',
-          '🌐 **Documentation**: [OSDev Wiki & Kernel Architecture](https://wiki.osdev.org)',
-          '🎓 **Course**: [MIT OCW 6.S081: Operating System Engineering](https://ocw.mit.edu)'
-        ],
-        'Computer Networks': [
-          '📖 **Textbook**: *Computer Networking: A Top-Down Approach* by Kurose & Ross (Chapter: Transport & Network Layers)',
-          '🌐 **Documentation**: [RFC 793 - Transmission Control Protocol (TCP)](https://datatracker.ietf.org/doc/html/rfc793)',
-          '🎓 **Course**: [Stanford CS144: Introduction to Computer Networking](https://cs144.github.io)'
-        ],
-        'DBMS': [
-          '📖 **Textbook**: *Database System Concepts* by Silberschatz, Korth & Sudarshan (Chapter: Normalization & Indexing)',
-          '🌐 **Documentation**: [PostgreSQL Internals & Query Architecture](https://www.postgresql.org/docs/current/internals.html)',
-          '🎓 **Course**: [CMU 15-445/645: Database Systems (Andy Pavlo)](https://db.cs.cmu.edu)'
-        ],
-        'Data Structures & Algorithms': [
-          '📖 **Textbook**: *Introduction to Algorithms (CLRS)* by Cormen, Leiserson, Rivest & Stein',
-          '🌐 **Visualizer**: [VisuAlgo — Visualizing Data Structures and Algorithms](https://visualgo.net)',
-          '🎓 **Course**: [MIT OCW 6.006: Introduction to Algorithms](https://ocw.mit.edu)'
-        ],
-        'Object-Oriented Programming': [
-          '📖 **Textbook**: *Design Patterns: Elements of Reusable Object-Oriented Software* (Gang of Four)',
-          '🌐 **Guide**: [Refactoring.Guru — Design Patterns & SOLID Principles](https://refactoring.guru)',
-          '📖 **Book**: *Clean Code: A Handbook of Agile Software Craftsmanship* by Robert C. Martin'
-        ]
-      };
-
-      const defaultResources = topicResourcesMap[attempt.testId.topic] || [
-        '📖 **Reference**: Standard Computer Science Core Engineering Textbooks',
-        '🌐 **Guide**: [GeeksforGeeks CS Core Tutorials](https://www.geeksforgeeks.org)',
-        '🎓 **Course**: [MIT OpenCourseWare Computer Science Curriculum](https://ocw.mit.edu)'
-      ];
-
-      let fallbackMarkdown = `### 📊 Performance Diagnostic Summary
-**Test:** ${attempt.testId.title} (${attempt.testId.topic})  
-**Score:** ${attempt.score} / ${attempt.maxScore} (${attempt.accuracy}% Accuracy) — **${perfLevel}**
-
----
-
-### 🔍 Concept-by-Concept Remediation Breakdown
-`;
-
-      if (missedDetails.length === 0) {
-        fallbackMarkdown += `\n🎉 **Perfect Score!** You demonstrated 100% mastery across all concepts in ${attempt.testId.topic}. You are ready for advanced topic tests!`;
-      } else {
-        missedDetails.forEach((m) => {
-          let cleanTopic = m.questionText
-            .replace(/^Based on the uploaded syllabus section on\s+["']?(.*?)["']?,\s+which of the following statements.*/i, '$1')
-            .trim();
-
-          if (cleanTopic.length > 70) {
-            cleanTopic = `Question ${m.order} Concept`;
-          }
-
-          fallbackMarkdown += `\n#### Q${m.order}: ${cleanTopic}
-- **Your Choice:** ${m.userSelected}
-- **Correct Key:** ${m.correctAnswer}
-- **Key Takeaway:** ${m.explanation}
-`;
-        });
-      }
-
-      fallbackMarkdown += `
-
----
-
-### 📚 Recommended High-Yield Revision Resources
-${defaultResources.map(r => `- ${r}`).join('\n')}
-
----
-
-### 🛠️ Actionable 3-Step Study Plan
-#### 1. Fundamental Theoretical Review
-- Review core textbook principles covering **${attempt.testId.topic}**.
-- Re-examine the detailed explanation boxes for each missed question in the **Question Answer Key** tab above.
-
-#### 2. Targeted Practice & Pitfall Avoidance
-- Practice 5–10 additional problems focusing on tricky edge cases in ${attempt.testId.topic}.
-- Pay special attention to distinguishing correct keys from common distractor trap options.
-
-#### 3. Recommended Follow-up Modules
-- Retake this CBT assessment after reviewing the missed concepts to verify your score improvement.
-- Explore adjacent topic tests in the AlgoPrep Dashboard to build well-rounded computer science mastery!`;
-
-      revisionPlan = fallbackMarkdown;
-    }
-
-    res.json({ revisionPlan });
   } catch (err) {
+    console.error('getAIRevisionPlan error:', err);
     res.status(500).json({ error: 'Failed to generate revision plan' });
+  }
+};
+
+export const regenerateAIRevisionPlan = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user?.userId;
+
+    const attempt = await Attempt.findById(id).populate('testId');
+    if (!attempt || attempt.userId.toString() !== userId) {
+      res.status(403).json({ error: 'Unauthorized or attempt not found' });
+      return;
+    }
+
+    if (attempt.status !== 'submitted') {
+      res.status(400).json({ error: 'Cannot regenerate revision plan for an unsubmitted test' });
+      return;
+    }
+
+    const existingPlan = await RevisionPlan.findOne({ attemptId: id });
+    if (!existingPlan) {
+      res.status(404).json({ error: 'No existing revision plan found to regenerate' });
+      return;
+    }
+
+    if (existingPlan.regenerateCount >= 3) {
+      res.status(400).json({ error: 'Maximum revision plan regenerations (3) reached for this attempt' });
+      return;
+    }
+
+    // Ensure test has tags (retries if tagging had previously failed)
+    await ensureTestTagged(attempt.testId._id);
+
+    const questions = await Question.find({ testId: attempt.testId._id }).sort({ order: 1 });
+    const history = await getHistory(userId, attempt.testId._id, attempt._id);
+    const signals = await buildSignals(attempt, attempt.testId, questions, history);
+    const candidateResources = selectCandidates(
+      attempt.testId.topic,
+      Array.from(signals.conceptMap.keys())
+    );
+
+    // Must make a fresh AI call
+    let newPlan = null;
+    try {
+      newPlan = await generateAIPlan(signals, history, candidateResources);
+    } catch (aiErr) {
+      console.warn('AI regeneration call failed:', aiErr.message);
+      res.status(503).json({
+        error: 'AI regeneration failed. Preserving your existing plan.',
+        plan: existingPlan.plan,
+        source: existingPlan.source,
+        canRegenerate: existingPlan.regenerateCount < 3,
+        regenerateCount: existingPlan.regenerateCount
+      });
+      return;
+    }
+
+    const conceptKeys = Array.from(signals.conceptMap.values()).map((c) => c.conceptKey);
+
+    existingPlan.previousPlan = existingPlan.plan;
+    existingPlan.plan = newPlan;
+    existingPlan.source = 'ai';
+    existingPlan.conceptKeys = conceptKeys;
+    existingPlan.regenerateCount += 1;
+    existingPlan.generatedAt = new Date();
+
+    await existingPlan.save();
+
+    res.json({
+      plan: existingPlan.plan,
+      source: existingPlan.source,
+      generatedAt: existingPlan.generatedAt,
+      canRegenerate: existingPlan.regenerateCount < 3,
+      regenerateCount: existingPlan.regenerateCount
+    });
+  } catch (err) {
+    console.error('regenerateAIRevisionPlan error:', err);
+    res.status(500).json({ error: 'Failed to regenerate revision plan' });
   }
 };

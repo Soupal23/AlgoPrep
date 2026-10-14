@@ -364,6 +364,12 @@ class ApiService {
     return this.request(`/attempts/${attemptId}/ai-revision`);
   }
 
+  async regenerateAIRevisionPlan(attemptId) {
+    return this.request(`/attempts/${attemptId}/ai-revision/regenerate`, {
+      method: 'POST'
+    });
+  }
+
   async getUserAttempts() {
     return this.request('/attempts/user/my-attempts');
   }

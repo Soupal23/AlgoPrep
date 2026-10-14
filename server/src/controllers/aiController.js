@@ -35,7 +35,10 @@ export const generateAITestController = async (req, res, next) => {
       markingScheme: generatedData.markingScheme || { correct: 4, incorrect: -1 },
       totalQuestions: generatedData.questions.length,
       isAIGenerated: true,
-      createdBy: req.user.userId
+      createdBy: req.user.userId,
+      conceptTagging: {
+        status: 'done'
+      }
     });
 
     // Save Questions to database
@@ -45,7 +48,10 @@ export const generateAITestController = async (req, res, next) => {
       options: q.options,
       correctOptionIndex: q.correctOptionIndex,
       explanation: q.explanation,
-      order: q.order || idx + 1
+      order: q.order || idx + 1,
+      concept: q.concept || 'General Concept',
+      difficulty: q.difficulty || 'medium',
+      tagSource: 'ai_generated'
     }));
 
     await Question.insertMany(questionDocs);

@@ -131,3 +131,11 @@ export const attemptSubmitLimiter = createLimiter({
   keyGenerator: userKey,
   errorMessage: 'Too many submission attempts. Please wait a moment and try again.'
 });
+
+export const revisionRegenerateLimiter = createLimiter({
+  windowMs: 15 * MINUTE,
+  limit: envInt('RATE_LIMIT_REVISION_REGEN_MAX', 15),
+  keyGenerator: userKey,
+  errorMessage: 'Too many revision plan regenerations. Please wait a while before regenerating again.'
+});
+

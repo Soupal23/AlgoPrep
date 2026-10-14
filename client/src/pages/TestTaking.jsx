@@ -50,6 +50,8 @@ export const TestTaking = () => {
   const attemptIdRef = useRef(null);
   const answersRef = useRef({});
   const statesRef = useRef({});
+  const questionTimeSpentRef = useRef({});
+  const questionEnterTimestampRef = useRef(Date.now());
   const pendingTabEventsRef = useRef([]);
   const dirtyRef = useRef(false);
   const inFlightRef = useRef(null); // Promise of the save currently in flight
@@ -125,6 +127,18 @@ export const TestTaking = () => {
     }
   };
 
+  const recordActiveQuestionTime = useCallback(() => {
+    const activeQ = questions[currentIndex];
+    if (!activeQ?._id) return;
+    const now = Date.now();
+    const elapsedSec = Math.max(0, Math.floor((now - questionEnterTimestampRef.current) / 1000));
+    questionEnterTimestampRef.current = now;
+    if (elapsedSec > 0) {
+      questionTimeSpentRef.current[activeQ._id] =
+        (questionTimeSpentRef.current[activeQ._id] || 0) + elapsedSec;
+    }
+  }, [questions, currentIndex]);
+
   /**
    * Sends at most one save at a time with a snapshot of the latest state.
    * If changes happen while a save is in flight, another save follows once it completes.
@@ -151,9 +165,11 @@ export const TestTaking = () => {
       let retryDelayMs = 0;
       try {
         setSavingStatus('saving');
+        recordActiveQuestionTime();
         const res = await api.saveProgress(attemptIdRef.current, {
           answers: answersRef.current,
           questionStates: statesRef.current,
+          questionTimeSpent: { ...questionTimeSpentRef.current },
           version: nextVersion,
           tabSwitchEvent: tabEvent
         });
@@ -404,6 +420,7 @@ export const TestTaking = () => {
   }, [triggerViolation]);
 
   const handleSelectQuestion = (index, currentStateOverride) => {
+    recordActiveQuestionTime();
     setCurrentIndex(index);
     const targetQId = questions[index]?._id;
     const baseStates = currentStateOverride || statesRef.current;
@@ -486,6 +503,8 @@ export const TestTaking = () => {
     setIsSubmitting(true);
     setSubmitStatusText('');
 
+    recordActiveQuestionTime();
+
     // Stop further autosaves and wait for any in-flight save to settle.
     clearTimeout(debounceTimerRef.current);
     clearTimeout(retryTimerRef.current);
@@ -503,6 +522,7 @@ export const TestTaking = () => {
         await api.submitAttempt(attemptIdRef.current, {
           answers: answersRef.current,
           questionStates: statesRef.current,
+          questionTimeSpent: { ...questionTimeSpentRef.current },
           version: versionRef.current + 1,
           timeSpentSeconds: 0
         });
