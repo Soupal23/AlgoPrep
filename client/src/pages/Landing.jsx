@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { resolveFileUrl } from '../utils/fileUrl';
@@ -23,9 +23,75 @@ import {
   UserPlus
 } from 'lucide-react';
 
+const SAMPLE_PREVIEW_QUESTIONS = [
+  {
+    id: 1,
+    topic: 'Graph Algorithms',
+    difficulty: 'Medium',
+    prompt: 'What is the time complexity of Dijkstra’s algorithm using a binary min-heap on a graph with V vertices and E edges?',
+    options: [
+      { label: 'A', text: 'O(V²)' },
+      { label: 'B', text: 'O((V + E) log V)' },
+      { label: 'C', text: 'O(V · E)' },
+      { label: 'D', text: 'O(E log E + V²)' }
+    ],
+    correctIndex: 1,
+    aiInsight: '94th Percentile • Strong in Shortest Paths • Next: Bellman-Ford'
+  },
+  {
+    id: 2,
+    topic: 'Dynamic Programming',
+    difficulty: 'Hard',
+    prompt: 'Which property must a problem satisfy alongside Optimal Substructure to make Dynamic Programming strictly preferable to Divide & Conquer?',
+    options: [
+      { label: 'A', text: 'Greedy Choice Property' },
+      { label: 'B', text: 'Overlapping Subproblems' },
+      { label: 'C', text: 'Tail Recursion' },
+      { label: 'D', text: 'DAG Topological Ordering' }
+    ],
+    correctIndex: 1,
+    aiInsight: '91st Percentile • Memoization Mastered • Next: Bitmask DP'
+  },
+  {
+    id: 3,
+    topic: 'Operating Systems',
+    difficulty: 'Medium',
+    prompt: 'Which Coffman deadlock condition is invalidated when a system enforces a strict global numbering of all resource types?',
+    options: [
+      { label: 'A', text: 'Mutual Exclusion' },
+      { label: 'B', text: 'Hold and Wait' },
+      { label: 'C', text: 'No Preemption' },
+      { label: 'D', text: 'Circular Wait' }
+    ],
+    correctIndex: 3,
+    aiInsight: '96th Percentile • Concurrency Ready • Next: Banker’s Algorithm'
+  }
+];
+
 export const Landing = () => {
   const { user, isAuthenticated, login, signup } = useAuth();
   const navigate = useNavigate();
+
+  // Interactive Mini CBT Preview state
+  const [activeQIndex, setActiveQIndex] = useState(0);
+  const [selectedOptions, setSelectedOptions] = useState({ 0: 1, 1: 1, 2: 3 });
+  const [secondsLeft, setSecondsLeft] = useState(29 * 60 + 42);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setSecondsLeft((prev) => (prev > 60 ? prev - 1 : 29 * 60 + 42));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatTimer = (secs) => {
+    const m = String(Math.floor(secs / 60)).padStart(2, '0');
+    const s = String(secs % 60).padStart(2, '0');
+    return `00:${m}:${s}`;
+  };
+
+  const currentQuestion = SAMPLE_PREVIEW_QUESTIONS[activeQIndex];
+  const selectedOpt = selectedOptions[activeQIndex];
 
   // Auth panel state
   const [authMode, setAuthMode] = useState('login'); // 'login' | 'register'
@@ -127,69 +193,182 @@ export const Landing = () => {
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-[#0a0a0f] text-[#f0eef5] flex flex-col justify-between p-4 sm:p-6 lg:p-8">
       {/* Main Split-Screen Section */}
-      <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center py-6">
+      <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center py-2">
         
-        {/* LEFT COLUMN: Brand, Portal Intro & 3 Feature Cards */}
-        <div className="lg:col-span-7 space-y-8">
+        {/* LEFT COLUMN: Brand Header + Interactive Mini CBT & AI Preview Window */}
+        <div className="lg:col-span-7 space-y-5">
           
-          {/* Portal Main Title */}
-          <div className="space-y-4">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[#f0eef5] leading-[1.15]">
+          {/* Portal Main Title & Feature Badges */}
+          <div className="space-y-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#14111f] border border-[#383050] text-[11px] font-mono text-indigo-300">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>LIVE CBT SIMULATION &amp; AI REVISION ENGINE</span>
+            </div>
+
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[#f0eef5] leading-[1.12]">
               MASTER YOUR SKILLS.{' '}
-              <span className="text-indigo-400 block sm:inline">ACE YOUR EXAMS.</span>
+              <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-300 bg-clip-text text-transparent block sm:inline">
+                ACE YOUR EXAMS.
+              </span>
             </h1>
 
-            {/* Sub-tagline */}
-            <p className="text-sm sm:text-base text-[#9f99b0] leading-relaxed max-w-2xl font-medium tracking-wide">
-              RECORDED LECTURES • AI SYLLABUS • REAL-TIME EXAM SIMULATIONS • PEER MESSAGING
+            <p className="text-xs sm:text-sm text-[#9f99b0] max-w-2xl leading-relaxed">
+              Engineered for computer science students and competitive coders with proctored exam simulations, AI syllabus-to-quiz generation, and classroom collaboration.
             </p>
-            <p className="text-xs text-slate-400 max-w-xl">
-              Engineered specifically for computer science students, competitive coders, and learners to master technical skills and excel under real exam conditions.
-            </p>
+
+            {/* Compact Capability Pills */}
+            <div className="flex flex-wrap items-center gap-2 pt-0.5">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#14111f] border border-[#383050] text-[11px] font-medium text-slate-300">
+                <Video className="w-3.5 h-3.5 text-purple-400" />
+                Recorded Lectures
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#14111f] border border-[#383050] text-[11px] font-medium text-slate-300">
+                <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+                AI Syllabus PDF → Quiz
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#14111f] border border-[#383050] text-[11px] font-medium text-slate-300">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                Tab-Switch Proctoring
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#14111f] border border-[#383050] text-[11px] font-medium text-slate-300">
+                <MessageSquare className="w-3.5 h-3.5 text-purple-400" />
+                Peer &amp; Teacher Chat
+              </span>
+            </div>
           </div>
 
-          {/* 3 Core Feature Cards Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-            
-            {/* Feature Card 1 */}
-            <div className="bg-[#14111f] rounded-2xl p-5 border border-[#383050] space-y-3 shadow-lg flex flex-col justify-between">
-              <div className="w-9 h-9 rounded-xl bg-[#1c1729] border border-[#383050] flex items-center justify-center text-purple-400">
-                <Clock className="w-4 h-4" />
+          {/* Interactive Mini CBT & AI Preview Window */}
+          <div className="relative rounded-2xl bg-[#14111f] border border-[#383050] shadow-2xl overflow-hidden">
+            {/* Window Top Bar */}
+            <div className="px-4 py-2.5 bg-[#1c1729] border-b border-[#383050] flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-400/80" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400/80" />
+                </div>
+                <span className="text-[11px] font-mono text-[#9f99b0] hidden sm:inline">
+                  algoprep-cbt://live-session
+                </span>
               </div>
-              <div>
-                <h3 className="text-xs font-bold text-white uppercase tracking-wider">Deterministic CBT Engine</h3>
-                <p className="text-[11px] text-slate-400 mt-1 leading-normal">
-                  Timed exam simulation with tab-switch proctoring & instant percentile scoring.
-                </p>
+
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-950/70 border border-emerald-800/70 text-emerald-300 text-[10px] font-mono font-semibold">
+                  <ShieldCheck className="w-3 h-3" />
+                  Proctored
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-[#14111f] border border-[#383050] text-indigo-300 text-[11px] font-mono font-bold">
+                  <Clock className="w-3 h-3 text-purple-400" />
+                  {formatTimer(secondsLeft)}
+                </span>
               </div>
             </div>
 
-            {/* Feature Card 2 */}
-            <div className="bg-[#14111f] rounded-2xl p-5 border border-[#383050] space-y-3 shadow-lg flex flex-col justify-between">
-              <div className="w-9 h-9 rounded-xl bg-[#1c1729] border border-[#383050] flex items-center justify-center text-indigo-400">
-                <Sparkles className="w-4 h-4" />
+            {/* Window Body: Interactive Question Switcher & Options */}
+            <div className="p-4 sm:p-5 space-y-3.5">
+              {/* Question Header & Palette Switcher */}
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-0.5 rounded-md bg-indigo-950/90 border border-indigo-800 text-indigo-300 text-[10px] font-mono font-bold uppercase">
+                    Q{currentQuestion.id} of 3
+                  </span>
+                  <span className="text-xs font-bold text-white">
+                    {currentQuestion.topic}
+                  </span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#1c1729] border border-[#383050] text-purple-300">
+                    {currentQuestion.difficulty}
+                  </span>
+                </div>
+
+                {/* Clickable Mini Question Palette */}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] font-mono text-[#9f99b0] mr-1">Palette:</span>
+                  {SAMPLE_PREVIEW_QUESTIONS.map((q, idx) => (
+                    <button
+                      key={q.id}
+                      type="button"
+                      onClick={() => setActiveQIndex(idx)}
+                      className={`w-6 h-6 rounded-lg text-[10px] font-mono font-bold transition-all cursor-pointer ${
+                        activeQIndex === idx
+                          ? 'bg-indigo-600 text-white shadow-sm ring-2 ring-indigo-400/40'
+                          : 'bg-[#1c1729] text-[#9f99b0] border border-[#383050] hover:text-white'
+                      }`}
+                      title={`Switch to Question ${q.id}`}
+                    >
+                      {q.id}
+                    </button>
+                  ))}
+                </div>
               </div>
-              <div>
-                <h3 className="text-xs font-bold text-white uppercase tracking-wider">AI Syllabus Builder</h3>
-                <p className="text-[11px] text-slate-400 mt-1 leading-normal">
-                  Upload PDF course outlines or text notes to create instant custom mock tests.
-                </p>
+
+              {/* Question Prompt */}
+              <p className="text-xs sm:text-[13px] text-[#f0eef5] font-medium leading-relaxed bg-[#1c1729]/70 p-3 rounded-xl border border-[#383050]/80">
+                {currentQuestion.prompt}
+              </p>
+
+              {/* 2x2 Options Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {currentQuestion.options.map((opt, idx) => {
+                  const isSelected = selectedOpt === idx;
+                  const isCorrect = idx === currentQuestion.correctIndex;
+
+                  let optionStyle =
+                    'bg-[#1c1729] border-[#383050] text-[#9f99b0] hover:border-indigo-500/60 hover:text-[#f0eef5]';
+                  if (isSelected && isCorrect) {
+                    optionStyle =
+                      'bg-emerald-950/40 border-emerald-600/80 text-emerald-200 shadow-sm';
+                  } else if (isSelected && !isCorrect) {
+                    optionStyle =
+                      'bg-rose-950/40 border-rose-700/80 text-rose-200';
+                  }
+
+                  return (
+                    <button
+                      key={opt.label}
+                      type="button"
+                      onClick={() =>
+                        setSelectedOptions((prev) => ({ ...prev, [activeQIndex]: idx }))
+                      }
+                      className={`flex items-center justify-between gap-2 px-3 py-2 rounded-xl border text-left text-xs transition-all cursor-pointer ${optionStyle}`}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <span
+                          className={`w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-mono font-bold shrink-0 ${
+                            isSelected
+                              ? isCorrect
+                                ? 'bg-emerald-500 text-slate-950'
+                                : 'bg-rose-500 text-white'
+                              : 'bg-[#14111f] text-[#9f99b0] border border-[#383050]'
+                          }`}
+                        >
+                          {opt.label}
+                        </span>
+                        <span className="font-mono text-[11px] truncate">{opt.text}</span>
+                      </div>
+                      {isSelected && isCorrect && (
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
-            {/* Feature Card 3 */}
-            <div className="bg-[#14111f] rounded-2xl p-5 border border-[#383050] space-y-3 shadow-lg flex flex-col justify-between">
-              <div className="w-9 h-9 rounded-xl bg-[#1c1729] border border-[#383050] flex items-center justify-center text-emerald-400">
-                <Users className="w-4 h-4" />
+            {/* Window Bottom Bar: Floating AI Revision Insight */}
+            <div className="px-4 py-2.5 bg-gradient-to-r from-indigo-950/60 via-[#1c1729] to-purple-950/60 border-t border-[#383050] flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2 text-[11px]">
+                <span className="inline-flex items-center justify-center w-5 h-5 rounded-md bg-indigo-600/30 border border-indigo-500/40 text-indigo-300">
+                  <Sparkles className="w-3 h-3" />
+                </span>
+                <span className="font-semibold text-indigo-300">AI Revision Insight:</span>
+                <span className="text-slate-300 font-mono text-[10px] sm:text-[11px]">
+                  {currentQuestion.aiInsight}
+                </span>
               </div>
-              <div>
-                <h3 className="text-xs font-bold text-white uppercase tracking-wider">Classroom Hub</h3>
-                <p className="text-[11px] text-slate-400 mt-1 leading-normal">
-                  Teacher-student messaging, class rosters, & recorded lecture video access.
-                </p>
-              </div>
+              <span className="text-[10px] font-mono text-purple-300 hidden sm:inline">
+                Interactive Preview • Click Q1–Q3
+              </span>
             </div>
-
           </div>
 
         </div>
