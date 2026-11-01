@@ -9,7 +9,7 @@ export const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { login, signup } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -19,7 +19,7 @@ export const Login = () => {
 
     try {
       await login(email, password);
-      navigate('/');
+      navigate('/dashboard');
     } catch (err) {
       setError(err.message || 'Login failed');
     } finally {
@@ -27,12 +27,12 @@ export const Login = () => {
     }
   };
 
-  const handleDemoLogin = async () => {
+  const handleDemoStudentLogin = async () => {
     setError('');
     setLoading(true);
     try {
-      await login('teacher@algoprep.com', 'password123');
-      navigate('/teacher/dashboard');
+      await login('student@algoprep.com', 'password123');
+      navigate('/dashboard');
     } catch (err) {
       setError(err.message || 'Demo login failed');
     } finally {
@@ -48,6 +48,7 @@ export const Login = () => {
             <Terminal className="w-6 h-6 text-white" />
           </div>
           <h2 className="text-2xl font-extrabold text-[#f0eef5]">Welcome back to AlgoPrep</h2>
+          <p className="text-xs text-[#9f99b0] mt-1">Sign in to your learning dashboard</p>
         </div>
 
         {error && (
@@ -103,11 +104,11 @@ export const Login = () => {
 
         <div className="mt-6 pt-6 border-t border-[#383050] flex flex-col gap-3 text-center">
           <button
-            onClick={handleDemoLogin}
+            onClick={handleDemoStudentLogin}
             disabled={loading}
             className="w-full py-2.5 rounded-xl text-xs font-semibold bg-[#1c1729] border border-[#383050] text-purple-400 hover:bg-[#251e35] transition-colors"
           >
-            Instant Demo Login (Teacher)
+            Instant Demo Login (Student)
           </button>
 
           <p className="text-xs text-[#9f99b0]">
@@ -121,3 +122,5 @@ export const Login = () => {
     </div>
   );
 };
+
+export default Login;

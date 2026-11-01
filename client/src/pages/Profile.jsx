@@ -207,7 +207,7 @@ export const Profile = () => {
               rows={3}
               value={formData.bio}
               onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-              placeholder="Tell us about your background, interests, or teaching goals..."
+              placeholder="Tell us about your background, interests, or study goals..."
               className="w-full px-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#383050] text-white text-sm focus:outline-none focus:border-purple-400"
             />
           </div>

@@ -13,8 +13,6 @@ import {
   Mail,
   User as UserIcon,
   Users,
-  Video,
-  MessageSquare,
   Activity,
   ShieldCheck,
   Play,
@@ -95,7 +93,7 @@ export const Landing = () => {
 
   // Auth panel state
   const [authMode, setAuthMode] = useState('login'); // 'login' | 'register'
-  const [loginRole, setLoginRole] = useState('student'); // 'student' | 'teacher' | 'admin'
+  const [loginRole, setLoginRole] = useState('student'); // 'student' | 'admin'
 
   // Form states
   const [loginEmail, setLoginEmail] = useState('');
@@ -116,9 +114,7 @@ export const Landing = () => {
 
     try {
       const loggedUser = await login(loginEmail, loginPassword);
-      if (loggedUser.role === 'teacher') {
-        navigate('/teacher/dashboard');
-      } else if (loggedUser.role === 'admin') {
+      if (loggedUser.role === 'admin') {
         navigate('/admin');
       } else {
         navigate('/dashboard');
@@ -136,14 +132,8 @@ export const Landing = () => {
     setLoading(true);
 
     try {
-      const newUser = await signup(regName, regEmail, regPassword, 'student');
-      if (newUser.role === 'teacher') {
-        navigate('/teacher/dashboard');
-      } else if (newUser.role === 'admin') {
-        navigate('/admin');
-      } else {
-        navigate('/dashboard');
-      }
+      await signup(regName, regEmail, regPassword);
+      navigate('/dashboard');
     } catch (err) {
       setError(err.message || 'Registration failed');
     } finally {
@@ -158,16 +148,12 @@ export const Landing = () => {
     const demoEmail =
       loginRole === 'admin'
         ? 'soupalpurkayastha@gmail.com'
-        : loginRole === 'teacher'
-        ? 'teacher@algoprep.com'
         : 'student@algoprep.com';
     const demoPass = loginRole === 'admin' ? '_algoprep1234' : 'password123';
 
     try {
       const u = await login(demoEmail, demoPass);
-      if (u.role === 'teacher') {
-        navigate('/teacher/dashboard');
-      } else if (u.role === 'admin') {
+      if (u.role === 'admin') {
         navigate('/admin');
       } else {
         navigate('/dashboard');
@@ -175,15 +161,13 @@ export const Landing = () => {
     } catch (err) {
       if (loginRole === 'student') {
         try {
-          const u = await signup('Alex Student', 'student@algoprep.com', 'password123', 'student');
+          await signup('Alex Student', 'student@algoprep.com', 'password123');
           navigate('/dashboard');
         } catch (signupErr) {
           setError('Demo student login failed');
         }
-      } else if (loginRole === 'admin') {
-        setError('Demo admin login failed');
       } else {
-        setError('Demo teacher login failed');
+        setError('Demo admin login failed');
       }
     } finally {
       setLoading(false);
@@ -213,26 +197,22 @@ export const Landing = () => {
             </h1>
 
             <p className="text-xs sm:text-sm text-[#9f99b0] max-w-2xl leading-relaxed">
-              Engineered for computer science students and competitive coders with proctored exam simulations, AI syllabus-to-quiz generation, and classroom collaboration.
+              Engineered for computer science students and competitive coders with structured roadmaps, proctored exam simulations, AI syllabus-to-quiz generation, and mastery tracking.
             </p>
 
             {/* Compact Capability Pills */}
             <div className="flex flex-wrap items-center gap-2 pt-0.5">
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#14111f] border border-[#383050] text-[11px] font-medium text-slate-300">
-                <Video className="w-3.5 h-3.5 text-purple-400" />
-                Recorded Lectures
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#14111f] border border-[#383050] text-[11px] font-medium text-slate-300">
                 <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-                AI Syllabus PDF → Quiz
+                AI Syllabus → Roadmap &amp; Quiz
               </span>
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#14111f] border border-[#383050] text-[11px] font-medium text-slate-300">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                Tab-Switch Proctoring
+                CBT Exam Simulation
               </span>
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#14111f] border border-[#383050] text-[11px] font-medium text-slate-300">
-                <MessageSquare className="w-3.5 h-3.5 text-purple-400" />
-                Peer &amp; Teacher Chat
+                <Award className="w-3.5 h-3.5 text-purple-400" />
+                Adaptive Revision Engine
               </span>
             </div>
           </div>
@@ -453,7 +433,7 @@ export const Landing = () => {
                       <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#9f99b0]">
                         Sign In Portal:
                       </label>
-                      <div className="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-[#1c1729] border border-[#383050]">
+                      <div className="grid grid-cols-2 gap-1.5 p-1 rounded-xl bg-[#1c1729] border border-[#383050]">
                         <button
                           type="button"
                           onClick={() => setLoginRole('student')}
@@ -464,17 +444,6 @@ export const Landing = () => {
                           }`}
                         >
                           Student
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setLoginRole('teacher')}
-                          className={`py-1.5 rounded-lg text-[11px] font-bold transition-all ${
-                            loginRole === 'teacher'
-                              ? 'bg-[#251e35] text-purple-300 border border-[#383050]'
-                              : 'text-[#9f99b0] hover:text-[#f0eef5]'
-                          }`}
-                        >
-                          Teacher
                         </button>
                         <button
                           type="button"
@@ -493,7 +462,7 @@ export const Landing = () => {
                     {/* Email Input */}
                     <div>
                       <label className="block text-xs font-semibold uppercase tracking-wider text-[#9f99b0] mb-1.5">
-                        {loginRole === 'admin' ? 'Administrator Email' : loginRole === 'teacher' ? 'Instructor Email' : 'Student Email'}
+                        {loginRole === 'admin' ? 'Administrator Email' : 'Student Email'}
                       </label>
                       <div className="relative">
                         <Mail className="w-4 h-4 text-[#6b6380] absolute left-3.5 top-3.5" />
@@ -502,7 +471,7 @@ export const Landing = () => {
                           required
                           value={loginEmail}
                           onChange={(e) => setLoginEmail(e.target.value)}
-                          placeholder={loginRole === 'admin' ? 'admin@algoprep.com' : loginRole === 'teacher' ? 'teacher@algoprep.com' : 'student@algoprep.com'}
+                          placeholder={loginRole === 'admin' ? 'admin@algoprep.com' : 'student@algoprep.com'}
                           className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#1c1729] border border-[#383050] text-[#f0eef5] text-xs focus:outline-none focus:border-indigo-500 transition-colors"
                         />
                       </div>
@@ -532,7 +501,7 @@ export const Landing = () => {
                       disabled={loading}
                       className="w-full py-3 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-md transition-colors flex items-center justify-center gap-2 text-xs"
                     >
-                      {loading ? 'Signing in...' : `Sign In to ${loginRole === 'admin' ? 'Admin Panel' : loginRole === 'teacher' ? 'Teacher Portal' : 'Student Workspace'}`}
+                      {loading ? 'Signing in...' : `Sign In to ${loginRole === 'admin' ? 'Admin Panel' : 'Student Workspace'}`}
                       <ArrowRight className="w-4 h-4" />
                     </button>
 
@@ -544,7 +513,7 @@ export const Landing = () => {
                         disabled={loading}
                         className="w-full py-2.5 rounded-xl text-xs font-semibold bg-[#1c1729] border border-[#383050] text-purple-400 hover:bg-[#251e35] transition-colors"
                       >
-                        {loginRole === 'admin' ? 'Instant Demo Login (Admin)' : loginRole === 'teacher' ? 'Instant Demo Login (Teacher)' : 'Instant Demo Register (Student)'}
+                        {loginRole === 'admin' ? 'Instant Demo Login (Admin)' : 'Instant Demo Login (Student)'}
                       </button>
                     </div>
                   </form>
@@ -616,16 +585,6 @@ export const Landing = () => {
                       {loading ? 'Creating Account...' : 'Register Student Account'}
                       <ArrowRight className="w-4 h-4" />
                     </button>
-
-                    {/* Instructor Application Link */}
-                    <div className="pt-3 border-t border-[#383050] text-center">
-                      <p className="text-[11px] text-[#9f99b0]">
-                        Want to teach on AlgoPrep?{' '}
-                        <Link to="/teach-here" className="text-purple-400 font-semibold hover:underline">
-                          Apply for Instructor Account
-                        </Link>
-                      </p>
-                    </div>
                   </form>
                 )}
               </>

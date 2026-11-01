@@ -4,7 +4,7 @@ export const getUsers = async (req, res) => {
   const { role, isActive } = req.query;
   const filter = {};
 
-  if (role && ['student', 'teacher', 'admin'].includes(role)) {
+  if (role && ['student', 'admin'].includes(role)) {
     filter.role = role;
   }
 

@@ -6,8 +6,7 @@ import { Clock, HelpCircle, Award, Sparkles, Play, Shield, Cpu, Network, Databas
 const FILTERS = [
   { id: 'All', label: 'All Tests', icon: Layers },
   { id: 'Platform Tests', label: 'Platform Tests', icon: Shield },
-  { id: 'Teacher Tests', label: 'Teacher Tests', icon: UserCheck },
-  { id: 'AI Tests', label: 'AI Tests', icon: Sparkles },
+  { id: 'AI Tests', label: 'Quick Quiz (AI)', icon: Sparkles },
   { id: 'Attempted Tests', label: 'Attempted Tests', icon: Award }
 ];
 
@@ -63,16 +62,14 @@ export const Dashboard = () => {
   };
 
   const filteredTests = tests.filter((t) => {
-    if (selectedFilter === 'Platform Tests') return !t.isAIGenerated && !t.teacherId;
-    if (selectedFilter === 'Teacher Tests') return !t.isAIGenerated && Boolean(t.teacherId);
-    if (selectedFilter === 'AI Tests') return Boolean(t.isAIGenerated);
+    if (selectedFilter === 'Platform Tests') return t.kind === 'platform' || (!t.isAIGenerated && !t.ownerId);
+    if (selectedFilter === 'AI Tests') return t.kind === 'quick' || Boolean(t.isAIGenerated);
     return true;
   });
 
   const getFilterCount = (filterId) => {
-    if (filterId === 'Platform Tests') return tests.filter((t) => !t.isAIGenerated && !t.teacherId).length;
-    if (filterId === 'Teacher Tests') return tests.filter((t) => !t.isAIGenerated && Boolean(t.teacherId)).length;
-    if (filterId === 'AI Tests') return tests.filter((t) => Boolean(t.isAIGenerated)).length;
+    if (filterId === 'Platform Tests') return tests.filter((t) => t.kind === 'platform' || (!t.isAIGenerated && !t.ownerId)).length;
+    if (filterId === 'AI Tests') return tests.filter((t) => t.kind === 'quick' || Boolean(t.isAIGenerated)).length;
     if (filterId === 'Attempted Tests') return attempts.length;
     return tests.length;
   };

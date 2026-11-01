@@ -5,17 +5,10 @@ import { resolveFileUrl } from '../utils/fileUrl';
 import {
   Terminal,
   LogOut,
-  Award,
   FileUp,
   ListChecks,
   User as UserIcon,
-  Users,
-  Megaphone,
-  Video,
-  MessageSquare,
   ShieldCheck,
-  UserCheck,
-  Briefcase,
   Menu,
   X
 } from 'lucide-react';
@@ -44,124 +37,38 @@ export const Navbar = () => {
   const renderNavLinks = () => {
     if (!user) return null;
 
-    const role = user.role || 'student';
+    const isAdmin = user.role === 'admin';
 
-    if (role === 'student') {
-      const isTeacherHubActive =
-        location.pathname === '/teachers' ||
-        location.pathname === '/announcements' ||
-        location.pathname === '/lectures';
-
-      return (
-        <div className="space-y-1">
-          <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)} className={verticalLinkClass('/dashboard')}>
-            <ListChecks className="w-4 h-4 text-purple-400 shrink-0" />
-            <span>Dashboard Tests</span>
-          </Link>
-          <Link
-            to="/teachers"
-            onClick={() => setMobileMenuOpen(false)}
-            className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
-              isTeacherHubActive
-                ? 'bg-[#251e35] text-indigo-400 border border-[#383050] shadow-sm font-bold'
-                : 'text-[#9f99b0] hover:text-[#f0eef5] hover:bg-[#1c1729]'
-            }`}
-          >
-            <Users className="w-4 h-4 text-purple-400 shrink-0" />
-            <span>Browse Teachers</span>
-          </Link>
-          <Link to="/ai-generate" onClick={() => setMobileMenuOpen(false)} className={verticalLinkClass('/ai-generate')}>
-            <FileUp className="w-4 h-4 text-purple-400 shrink-0" />
-            <span>AI Quiz Generator</span>
-          </Link>
-          <Link to="/messages" onClick={() => setMobileMenuOpen(false)} className={verticalLinkClass('/messages')}>
-            <MessageSquare className="w-4 h-4 text-purple-400 shrink-0" />
-            <span>Messages</span>
-          </Link>
-        </div>
-      );
-    }
-
-    if (role === 'teacher') {
-      return (
-        <div className="space-y-1">
-          <Link to="/teacher/dashboard" onClick={() => setMobileMenuOpen(false)} className={verticalLinkClass('/teacher/dashboard')}>
-            <ListChecks className="w-4 h-4 text-purple-400 shrink-0" />
-            <span>Teacher Dashboard</span>
-          </Link>
-          <Link to="/teacher/roster" onClick={() => setMobileMenuOpen(false)} className={verticalLinkClass('/teacher/roster')}>
-            <UserCheck className="w-4 h-4 text-purple-400 shrink-0" />
-            <span>Class Roster</span>
-          </Link>
-          <Link to="/teacher/announcements" onClick={() => setMobileMenuOpen(false)} className={verticalLinkClass('/teacher/announcements')}>
-            <Megaphone className="w-4 h-4 text-purple-400 shrink-0" />
-            <span>Announcements</span>
-          </Link>
-          <Link to="/teacher/lectures" onClick={() => setMobileMenuOpen(false)} className={verticalLinkClass('/teacher/lectures')}>
-            <Video className="w-4 h-4 text-purple-400 shrink-0" />
-            <span>Manage Lectures</span>
-          </Link>
-          <Link to="/teacher/tests" onClick={() => setMobileMenuOpen(false)} className={verticalLinkClass('/teacher/tests')}>
-            <FileUp className="w-4 h-4 text-purple-400 shrink-0" />
-            <span>Manage Tests</span>
-          </Link>
-          <Link to="/messages" onClick={() => setMobileMenuOpen(false)} className={verticalLinkClass('/messages')}>
-            <MessageSquare className="w-4 h-4 text-purple-400 shrink-0" />
-            <span>Messages</span>
-          </Link>
-          <Link to="/leaderboard" onClick={() => setMobileMenuOpen(false)} className={verticalLinkClass('/leaderboard')}>
-            <Award className="w-4 h-4 text-purple-400 shrink-0" />
-            <span>Leaderboard</span>
-          </Link>
-          <Link to="/profile" onClick={() => setMobileMenuOpen(false)} className={verticalLinkClass('/profile')}>
-            <UserIcon className="w-4 h-4 text-purple-400 shrink-0" />
-            <span>My Profile</span>
-          </Link>
-        </div>
-      );
-    }
-
-    if (role === 'admin') {
-      return (
-        <div className="space-y-1">
+    return (
+      <div className="space-y-1">
+        <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)} className={verticalLinkClass('/dashboard')}>
+          <ListChecks className="w-4 h-4 text-purple-400 shrink-0" />
+          <span>Practice Tests</span>
+        </Link>
+        <Link to="/ai-generate" onClick={() => setMobileMenuOpen(false)} className={verticalLinkClass('/ai-generate')}>
+          <FileUp className="w-4 h-4 text-purple-400 shrink-0" />
+          <span>Quick Quiz</span>
+        </Link>
+        <Link to="/profile" onClick={() => setMobileMenuOpen(false)} className={verticalLinkClass('/profile')}>
+          <UserIcon className="w-4 h-4 text-purple-400 shrink-0" />
+          <span>My Profile</span>
+        </Link>
+        {isAdmin && (
           <Link to="/admin" onClick={() => setMobileMenuOpen(false)} className={verticalLinkClass('/admin')}>
-            <ShieldCheck className="w-4 h-4 text-purple-400 shrink-0" />
-            <span>Admin Moderation</span>
+            <ShieldCheck className="w-4 h-4 text-rose-400 shrink-0" />
+            <span>Admin Users</span>
           </Link>
-          <Link to="/messages" onClick={() => setMobileMenuOpen(false)} className={verticalLinkClass('/messages')}>
-            <MessageSquare className="w-4 h-4 text-purple-400 shrink-0" />
-            <span>Platform Messages</span>
-          </Link>
-          <Link to="/leaderboard" onClick={() => setMobileMenuOpen(false)} className={verticalLinkClass('/leaderboard')}>
-            <Award className="w-4 h-4 text-purple-400 shrink-0" />
-            <span>Leaderboards</span>
-          </Link>
-          <Link to="/profile" onClick={() => setMobileMenuOpen(false)} className={verticalLinkClass('/profile')}>
-            <UserIcon className="w-4 h-4 text-purple-400 shrink-0" />
-            <span>Admin Profile</span>
-          </Link>
-        </div>
-      );
-    }
-
-    return null;
+        )}
+      </div>
+    );
   };
 
   const getRoleBadge = () => {
     if (!user?.role) return null;
-    const role = user.role;
-
-    if (role === 'admin') {
+    if (user.role === 'admin') {
       return (
         <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-rose-950/80 border border-rose-800 text-rose-300 uppercase">
           ADMIN
-        </span>
-      );
-    }
-    if (role === 'teacher') {
-      return (
-        <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-purple-950/80 border border-purple-800 text-purple-300 uppercase">
-          TEACHER
         </span>
       );
     }
@@ -188,11 +95,16 @@ export const Navbar = () => {
 
           <div className="flex items-center gap-3 sm:gap-4">
             <Link
-              to="/teach-here"
-              className="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-purple-400 hover:text-purple-300 px-3.5 py-2 rounded-xl bg-[#1c1729] border border-[#383050] transition-colors"
+              to="/login"
+              className="text-xs sm:text-sm font-semibold text-slate-300 hover:text-white px-3.5 py-2 rounded-xl transition-colors"
             >
-              <Briefcase className="w-4 h-4" />
-              <span>Teach Here</span>
+              Sign In
+            </Link>
+            <Link
+              to="/register"
+              className="text-xs sm:text-sm font-semibold text-white px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 transition-colors shadow-sm"
+            >
+              Get Started
             </Link>
           </div>
         </div>
@@ -239,7 +151,7 @@ export const Navbar = () => {
                   AlgoPrep
                 </span>
                 <span className="text-[10px] font-mono text-[#9f99b0] uppercase tracking-wider mt-1 block">
-                  CBT Assessment
+                  AI Prep Platform
                 </span>
               </div>
             </Link>
@@ -254,7 +166,7 @@ export const Navbar = () => {
           </div>
 
           <div className="pt-1 flex items-center justify-between">
-            <span className="text-[11px] font-mono text-slate-400">PORTAL ROLE:</span>
+            <span className="text-[11px] font-mono text-slate-400">ROLE:</span>
             {getRoleBadge()}
           </div>
         </div>
@@ -263,7 +175,7 @@ export const Navbar = () => {
         <div className="flex-1 overflow-y-auto p-4 space-y-6">
           <div>
             <span className="px-3 text-[10px] font-mono font-bold uppercase tracking-wider text-[#6b6380] block mb-2">
-              Navigation Menu
+              Menu
             </span>
             {renderNavLinks()}
           </div>
