@@ -4,6 +4,7 @@ import { connectDB } from './config/db.js';
 import { config } from './config/env.js';
 import { Test } from './models/Test.js';
 import { runSeed } from './seeds/seed.js';
+import { startWorkers } from './queue/startWorkers.js';
 
 const startServer = async () => {
   await connectDB();
@@ -13,6 +14,15 @@ const startServer = async () => {
   if (testCount === 0) {
     console.log('No tests found on server startup. Auto-seeding CS topic-wise tests...');
     await runSeed();
+  }
+
+  // Start BullMQ background workers if enabled
+  if (config.runWorkers) {
+    try {
+      startWorkers();
+    } catch (workerErr) {
+      console.warn('Could not initialize background workers (Redis may be offline):', workerErr.message);
+    }
   }
 
   const httpServer = http.createServer(app);

@@ -8,6 +8,7 @@ import attemptRoutes from './routes/attemptRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import jobRoutes from './routes/jobRoutes.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 import path from 'path';
@@ -45,6 +46,7 @@ app.use('/api/attempts', attemptRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/jobs', jobRoutes);
 
 app.use(errorHandler);
 
