@@ -1,6 +1,7 @@
 import { Worker } from 'bullmq';
 import { getRedisConnection } from './connection.js';
 import { updateJobProgress, completeJob, failJob } from '../services/jobService.js';
+import { createIngestionWorker } from '../workers/ingestionWorker.js';
 import logger from '../utils/logger.js';
 
 let workers = [];
@@ -41,6 +42,15 @@ export const startWorkers = () => {
   });
 
   workers.push(testWorker);
+
+  // Ingestion Worker
+  try {
+    const ingestWorker = createIngestionWorker();
+    workers.push(ingestWorker);
+  } catch (err) {
+    logger.warn({ err: err.message }, 'Could not initialize Ingestion Worker');
+  }
+
   logger.info('Background job workers initialized');
 };
 

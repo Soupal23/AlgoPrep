@@ -13,6 +13,8 @@ import { Results } from './pages/Results';
 import { Profile } from './pages/Profile';
 import { SyllabusAI } from './pages/SyllabusAI';
 import { AdminDashboard } from './pages/AdminDashboard';
+import { Workspaces } from './pages/Workspaces';
+import { WorkspaceDetail } from './pages/WorkspaceDetail';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
@@ -48,6 +50,22 @@ export const AppContent = () => {
           <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
 
           {/* Student / Core Routes */}
+          <Route
+            path="/workspaces"
+            element={
+              <ProtectedRoute>
+                <Workspaces />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/workspaces/:id"
+            element={
+              <ProtectedRoute>
+                <WorkspaceDetail />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/dashboard"
             element={

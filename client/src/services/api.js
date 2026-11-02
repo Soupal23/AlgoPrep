@@ -267,6 +267,64 @@ class ApiService {
       body: formData
     });
   }
+
+  // Workspaces API
+  async getWorkspaces() {
+    return this.request('/workspaces');
+  }
+
+  async createWorkspace(data) {
+    return this.request('/workspaces', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  }
+
+  async getWorkspaceById(id) {
+    return this.request(`/workspaces/${id}`);
+  }
+
+  async updateWorkspace(id, data) {
+    return this.request(`/workspaces/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    });
+  }
+
+  async deleteWorkspace(id) {
+    return this.request(`/workspaces/${id}`, {
+      method: 'DELETE'
+    });
+  }
+
+  async uploadMaterials(workspaceId, formData) {
+    return this.request(`/workspaces/${workspaceId}/materials`, {
+      method: 'POST',
+      body: formData
+    });
+  }
+
+  async getMaterials(workspaceId) {
+    return this.request(`/workspaces/${workspaceId}/materials`);
+  }
+
+  async deleteMaterial(workspaceId, materialId) {
+    return this.request(`/workspaces/${workspaceId}/materials/${materialId}`, {
+      method: 'DELETE'
+    });
+  }
+
+  async searchWorkspace(workspaceId, query, k = 6) {
+    return this.request(`/workspaces/${workspaceId}/search`, {
+      method: 'POST',
+      body: JSON.stringify({ query, k })
+    });
+  }
+
+  // Jobs API
+  async getJob(jobId) {
+    return this.request(`/jobs/${jobId}`);
+  }
 }
 
 export const api = new ApiService();

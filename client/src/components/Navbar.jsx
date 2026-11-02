@@ -10,7 +10,8 @@ import {
   User as UserIcon,
   ShieldCheck,
   Menu,
-  X
+  X,
+  Layers
 } from 'lucide-react';
 
 export const Navbar = () => {
@@ -41,6 +42,10 @@ export const Navbar = () => {
 
     return (
       <div className="space-y-1">
+        <Link to="/workspaces" onClick={() => setMobileMenuOpen(false)} className={verticalLinkClass('/workspaces')}>
+          <Layers className="w-4 h-4 text-purple-400 shrink-0" />
+          <span>Study Workspaces</span>
+        </Link>
         <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)} className={verticalLinkClass('/dashboard')}>
           <ListChecks className="w-4 h-4 text-purple-400 shrink-0" />
           <span>Practice Tests</span>
