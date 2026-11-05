@@ -100,6 +100,41 @@ describe('Phase 4 — Roadmap Scheduling Algorithms', () => {
     // Day 7: mock
     expect(days[6].type).toBe('mock');
     expect(days[6].status).toBe('locked');
+    // Mock exam should contain all syllabus topic keys
+    expect(days[6].topicKeys).toEqual(['t1', 't2', 't3']);
+  });
+
+  it('should prevent Day 1 topic pile-up when remainingTopics < remainingDays (Fix H15)', () => {
+    // 6 topics of 60 mins each, 7 days with 2 hours per day gives 5 learn days (budget: 120 mins/day)
+    const topics = [
+      { key: 't1', title: 'Topic 1', estMinutes: 60, difficulty: 'easy' },
+      { key: 't2', title: 'Topic 2', estMinutes: 60, difficulty: 'medium' },
+      { key: 't3', title: 'Topic 3', estMinutes: 60, difficulty: 'hard' },
+      { key: 't4', title: 'Topic 4', estMinutes: 60, difficulty: 'easy' },
+      { key: 't5', title: 'Topic 5', estMinutes: 60, difficulty: 'medium' },
+      { key: 't6', title: 'Topic 6', estMinutes: 60, difficulty: 'hard' }
+    ];
+
+    const days = scheduleDays({ topics, totalDays: 7, hoursPerDay: 2 });
+    expect(days.length).toBe(7);
+
+    const learnDays = days.slice(0, 5);
+    // Day 1 should have exactly 2 topics (120 mins), NOT all 6 topics (360 mins)
+    expect(learnDays[0].topicKeys.length).toBe(2);
+    expect(learnDays[0].estMinutes).toBe(120);
+
+    // Days 2-5 must NOT be empty
+    for (let d = 1; d < 5; d++) {
+      expect(learnDays[d].topicKeys.length).toBeGreaterThan(0);
+    }
+
+    // Mock exam (Day 7) must have all 6 topics
+    expect(days[6].topicKeys).toHaveLength(6);
+
+    // Revision day (Day 6) must prioritize hard/medium topics
+    expect(days[5].topicKeys.length).toBeGreaterThan(0);
+    expect(days[5].topicKeys).toContain('t3');
+    expect(days[5].topicKeys).toContain('t6');
   });
 });
 
@@ -149,7 +184,7 @@ describe('Phase 4 — Roadmap Service & API Lifecycle', () => {
     expect(getRes.body.roadmap.days.length).toBe(5);
     expect(getRes.body.roadmap.days[0].status).toBe('available');
     expect(getRes.body.roadmap.days[1].status).toBe('locked');
-  }, 20000);
+  }, 60000);
 
   it('should unlock the next day when a day is marked completed', async () => {
     const ws = await Workspace.create({

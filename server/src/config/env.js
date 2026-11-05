@@ -31,6 +31,7 @@ export const config = {
   langfuseHost: process.env.LANGFUSE_HOST || 'https://cloud.langfuse.com',
 
   adminSeedPassword: process.env.ADMIN_SEED_PASSWORD || '',
+  adminSeedEmail: process.env.ADMIN_SEED_EMAIL || 'admin@algoprep.com',
   nodeEnv: process.env.NODE_ENV || 'development',
   runWorkers: process.env.RUN_WORKERS !== 'false',
 
@@ -38,3 +39,21 @@ export const config = {
   cloudinaryApiKey: process.env.CLOUDINARY_API_KEY || '',
   cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET || ''
 };
+
+// Fail fast in production if security secrets use insecure defaults
+if (config.nodeEnv === 'production') {
+  if (
+    !process.env.JWT_ACCESS_SECRET ||
+    config.jwtAccessSecret === 'algoprep_access_secret_super_secure_key_2026_jwt' ||
+    config.jwtAccessSecret.length < 32
+  ) {
+    throw new Error('FATAL SECURITY ERROR: JWT_ACCESS_SECRET must be explicitly set to a strong secret (>=32 chars) in production.');
+  }
+  if (
+    !process.env.JWT_REFRESH_SECRET ||
+    config.jwtRefreshSecret === 'algoprep_refresh_secret_super_secure_key_2026_jwt' ||
+    config.jwtRefreshSecret.length < 32
+  ) {
+    throw new Error('FATAL SECURITY ERROR: JWT_REFRESH_SECRET must be explicitly set to a strong secret (>=32 chars) in production.');
+  }
+}

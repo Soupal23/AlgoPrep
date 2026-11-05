@@ -87,8 +87,19 @@ export async function parseDocument(buffer, mimeType = '', originalName = '') {
     extension === 'docx'
   ) {
     try {
-      const rawText = await parseOffice(buffer);
-      const cleaned = cleanText(typeof rawText === 'string' ? rawText : String(rawText));
+      const rawOutput = await parseOffice(buffer);
+      let textString = '';
+      if (typeof rawOutput === 'string') {
+        textString = rawOutput;
+      } else if (rawOutput && typeof rawOutput.toText === 'function') {
+        textString = rawOutput.toText();
+      } else if (rawOutput && typeof rawOutput.text === 'string') {
+        textString = rawOutput.text;
+      } else if (rawOutput) {
+        textString = String(rawOutput);
+      }
+
+      const cleaned = cleanText(textString);
 
       // Separate slides if slide markers exist or by double newlines
       const rawSlides = cleaned.split(/(?:---+|Slide \d+:?|\n\n\n+)/i).filter(s => s.trim().length > 0);
@@ -108,7 +119,16 @@ export async function parseDocument(buffer, mimeType = '', originalName = '') {
     }
   }
 
-  // 4. Plain Text & Markdown
+  // 4. Plain Text & Markdown (Validate that unsupported binary files are rejected)
+  const isTextLike =
+    mimeType.startsWith('text/') ||
+    mimeType.includes('plain') ||
+    ['txt', 'md', 'markdown', 'csv', 'json'].includes(extension);
+
+  if (!isTextLike) {
+    throw new Error(`Unsupported file type '${originalName || mimeType}'. Allowed types: PDF, DOCX, PPTX, TXT, MD.`);
+  }
+
   const textContent = cleanText(buffer.toString('utf-8'));
   const chunks = textContent.split(/(?:\n---+\n|\n#{1,2} )/).filter(t => t.trim().length > 0);
 

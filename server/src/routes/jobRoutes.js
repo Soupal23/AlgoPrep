@@ -1,12 +1,11 @@
 import { Router } from 'express';
-import { getJobStatus, streamJobStatus } from '../controllers/jobController.js';
-import { authenticateJWT } from '../middleware/auth.js';
+import { getJobStatus, streamJobStatus, createStreamTicket } from '../controllers/jobController.js';
+import { authenticateJWT, optionalJWT } from '../middleware/auth.js';
 
 const router = Router();
 
-router.use(authenticateJWT);
-
-router.get('/:id', getJobStatus);
-router.get('/:id/stream', streamJobStatus);
+router.post('/:id/stream-ticket', authenticateJWT, createStreamTicket);
+router.get('/:id', authenticateJWT, getJobStatus);
+router.get('/:id/stream', optionalJWT, streamJobStatus);
 
 export default router;

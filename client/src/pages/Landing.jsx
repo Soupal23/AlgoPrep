@@ -145,29 +145,15 @@ export const Landing = () => {
     setError('');
     setLoading(true);
 
-    const demoEmail =
-      loginRole === 'admin'
-        ? 'soupalpurkayastha@gmail.com'
-        : 'student@algoprep.com';
-    const demoPass = loginRole === 'admin' ? '_algoprep1234' : 'password123';
-
     try {
-      const u = await login(demoEmail, demoPass);
-      if (u.role === 'admin') {
-        navigate('/admin');
-      } else {
-        navigate('/dashboard');
-      }
+      await login('student@algoprep.com', 'password123');
+      navigate('/dashboard');
     } catch (err) {
-      if (loginRole === 'student') {
-        try {
-          await signup('Alex Student', 'student@algoprep.com', 'password123');
-          navigate('/dashboard');
-        } catch (signupErr) {
-          setError('Demo student login failed');
-        }
-      } else {
-        setError('Demo admin login failed');
+      try {
+        await signup('Alex Student', 'student@algoprep.com', 'password123');
+        navigate('/dashboard');
+      } catch (signupErr) {
+        setError('Demo student login failed. Please register or sign in with your credentials.');
       }
     } finally {
       setLoading(false);
@@ -505,17 +491,19 @@ export const Landing = () => {
                       <ArrowRight className="w-4 h-4" />
                     </button>
 
-                    {/* Instant Demo Login CTA */}
-                    <div className="pt-3 border-t border-[#383050]">
-                      <button
-                        type="button"
-                        onClick={handleDemoLogin}
-                        disabled={loading}
-                        className="w-full py-2.5 rounded-xl text-xs font-semibold bg-[#1c1729] border border-[#383050] text-purple-400 hover:bg-[#251e35] transition-colors"
-                      >
-                        {loginRole === 'admin' ? 'Instant Demo Login (Admin)' : 'Instant Demo Login (Student)'}
-                      </button>
-                    </div>
+                    {/* Instant Demo Login CTA (Students only) */}
+                    {loginRole === 'student' && (
+                      <div className="pt-3 border-t border-[#383050]">
+                        <button
+                          type="button"
+                          onClick={handleDemoLogin}
+                          disabled={loading}
+                          className="w-full py-2.5 rounded-xl text-xs font-semibold bg-[#1c1729] border border-[#383050] text-purple-400 hover:bg-[#251e35] transition-colors"
+                        >
+                          Instant Demo Login (Student)
+                        </button>
+                      </div>
+                    )}
                   </form>
                 )}
 

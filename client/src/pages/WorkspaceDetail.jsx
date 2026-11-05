@@ -162,10 +162,16 @@ export const WorkspaceDetail = () => {
   };
 
   // 5. SSE Progress Stream for Job
-  const subscribeToJobStream = (jobId) => {
-    const token = localStorage.getItem('algoprep_access_token');
+  const subscribeToJobStream = async (jobId) => {
     const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-    const sseUrl = `${apiBase}/jobs/${jobId}/stream${token ? `?token=${encodeURIComponent(token)}` : ''}`;
+    let sseUrl;
+    try {
+      const ticketRes = await api.getJobStreamTicket(jobId);
+      sseUrl = `${apiBase}/jobs/${jobId}/stream?ticket=${encodeURIComponent(ticketRes.ticket)}`;
+    } catch {
+      const token = localStorage.getItem('algoprep_access_token');
+      sseUrl = `${apiBase}/jobs/${jobId}/stream${token ? `?token=${encodeURIComponent(token)}` : ''}`;
+    }
 
     const eventSource = new EventSource(sseUrl);
 

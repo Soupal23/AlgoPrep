@@ -109,18 +109,22 @@ export const ingestMaterial = async ({
       // Remove any previously existing chunks for this material (in case of re-ingest)
       await Chunk.deleteMany({ materialId });
 
-      const chunkDocs = chunks.map((chunk, index) => ({
-        workspaceId,
-        materialId,
-        ownerId: userId,
-        text: chunk.text,
-        tokenCount: chunk.tokenCount,
-        location: chunk.location,
-        embedding: embeddings[index] || [],
-        embeddingModel: 'text-embedding-004',
-        embeddingDim: 768,
-        hash: chunk.hash
-      }));
+      const chunkDocs = chunks.map((chunk, index) => {
+        const hasEmbedding = Array.isArray(embeddings[index]) && embeddings[index].length > 0;
+        return {
+          workspaceId,
+          materialId,
+          ownerId: userId,
+          text: chunk.text,
+          tokenCount: chunk.tokenCount,
+          location: chunk.location,
+          embedding: hasEmbedding ? embeddings[index] : [],
+          embeddingStatus: hasEmbedding ? 'ready' : 'failed',
+          embeddingModel: 'text-embedding-004',
+          embeddingDim: 768,
+          hash: chunk.hash
+        };
+      });
 
       await Chunk.insertMany(chunkDocs);
     }

@@ -52,32 +52,9 @@ export const signup = async (req, res) => {
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
-  const normalizedEmail = email.toLowerCase();
+  const normalizedEmail = (email || '').toLowerCase().trim();
 
-  let user = await User.findOne({ email: normalizedEmail });
-
-  const adminPass = config.adminSeedPassword || 'password123';
-  // Auto-provision demo accounts if database has not been seeded yet
-  if (!user && normalizedEmail === 'student@algoprep.com' && password === 'password123') {
-    const hashedPassword = await bcrypt.hash('password123', 10);
-    user = await User.create({
-      name: 'Alex Student',
-      email: 'student@algoprep.com',
-      password: hashedPassword,
-      role: 'student',
-      isActive: true
-    });
-  } else if (!user && normalizedEmail === 'admin@algoprep.com' && password === adminPass) {
-    const hashedPassword = await bcrypt.hash(adminPass, 10);
-    user = await User.create({
-      name: 'Admin Instructor',
-      email: 'admin@algoprep.com',
-      password: hashedPassword,
-      role: 'admin',
-      isActive: true
-    });
-  }
-
+  const user = await User.findOne({ email: normalizedEmail });
   if (!user) {
     res.status(401).json({ error: 'Invalid email or password' });
     return;

@@ -16,6 +16,12 @@ const chunkSchema = new Schema(
       type: [Number],
       default: []
     },
+    embeddingStatus: {
+      type: String,
+      enum: ['ready', 'failed', 'pending'],
+      default: 'ready',
+      index: true
+    },
     embeddingModel: { type: String, default: 'text-embedding-004' },
     embeddingDim: { type: Number, default: 768 },
     hash: { type: String, required: true, index: true }

@@ -58,18 +58,30 @@ class LLMGateway {
     };
 
     const callFn = async () => {
-      const response = await ai.models.generateContent({
-        model,
-        contents: prompt,
-        config: reqConfig
+      let timeoutId;
+      const timeoutPromise = new Promise((_, reject) => {
+        timeoutId = setTimeout(() => reject(new Error('Gemini API call timed out after 12000ms')), 12000);
       });
-      return response;
+
+      try {
+        const result = await Promise.race([
+          ai.models.generateContent({
+            model,
+            contents: prompt,
+            config: reqConfig
+          }),
+          timeoutPromise
+        ]);
+        return result;
+      } finally {
+        clearTimeout(timeoutId);
+      }
     };
 
     try {
       const response = await pRetry(callFn, {
-        retries: 3,
-        minTimeout: 1000,
+        retries: 1,
+        minTimeout: 500,
         factor: 2,
         onFailedAttempt: (error) => {
           logger.warn(
@@ -132,16 +144,29 @@ class LLMGateway {
 
     const executeCall = async (userPrompt) => {
       const callFn = async () => {
-        return ai.models.generateContent({
-          model,
-          contents: userPrompt,
-          config: reqConfig
+        let timeoutId;
+        const timeoutPromise = new Promise((_, reject) => {
+          timeoutId = setTimeout(() => reject(new Error('Gemini API call timed out after 12000ms')), 12000);
         });
+
+        try {
+          const result = await Promise.race([
+            ai.models.generateContent({
+              model,
+              contents: userPrompt,
+              config: reqConfig
+            }),
+            timeoutPromise
+          ]);
+          return result;
+        } finally {
+          clearTimeout(timeoutId);
+        }
       };
 
       return pRetry(callFn, {
-        retries: 2,
-        minTimeout: 1000,
+        retries: 1,
+        minTimeout: 500,
         factor: 2
       });
     };

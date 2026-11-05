@@ -51,6 +51,29 @@ export const saveProgress = async (req, res) => {
       return;
     }
 
+    const test = await Test.findById(attempt.testId);
+    if (!test) {
+      res.status(404).json({ error: 'Associated test not found' });
+      return;
+    }
+
+    const startTime = new Date(attempt.startedAt).getTime();
+    const penaltyMs = (attempt.penaltySeconds || 0) * 1000;
+    const testDurationMs = test.timeLimitMinutes * 60 * 1000;
+    const effectiveEndMs = startTime + testDurationMs - penaltyMs;
+    const gracePeriodMs = 15000; // 15s grace period for in-flight requests
+
+    if (Date.now() > effectiveEndMs + gracePeriodMs) {
+      attempt.status = 'expired';
+      await attempt.save();
+      res.status(400).json({
+        error: 'Test time limit has expired',
+        isExpired: true,
+        timeRemainingSeconds: 0
+      });
+      return;
+    }
+
     if (answers && typeof answers === 'object') {
       Object.entries(answers).forEach(([qId, optionIdx]) => {
         if (typeof optionIdx === 'number') {
@@ -71,10 +94,12 @@ export const saveProgress = async (req, res) => {
       if (!attempt.questionTimeSpent) {
         attempt.questionTimeSpent = new Map();
       }
+      const maxQuestionSec = test.timeLimitMinutes * 60;
       Object.entries(questionTimeSpent).forEach(([qId, timeSpent]) => {
         if (typeof timeSpent === 'number' && timeSpent >= 0) {
           const current = attempt.questionTimeSpent.get(qId) || 0;
-          attempt.questionTimeSpent.set(qId, Math.max(current, Math.round(timeSpent)));
+          const clampedTime = Math.min(Math.round(timeSpent), maxQuestionSec);
+          attempt.questionTimeSpent.set(qId, Math.max(current, clampedTime));
         }
       });
     }
@@ -83,30 +108,23 @@ export const saveProgress = async (req, res) => {
       attempt.lastSavedVersion = version;
     }
 
-    let timeRemainingSeconds = undefined;
-    let endTimeIso = undefined;
-
     if (tabSwitchEvent) {
       attempt.tabSwitches += 1;
-      const penalty = typeof tabSwitchEvent.penaltySeconds === 'number' ? tabSwitchEvent.penaltySeconds : 600;
+      // Fixed 600s (10 min) server penalty to prevent client-side manipulation
+      const penalty = 600;
       attempt.penaltySeconds = (attempt.penaltySeconds || 0) + penalty;
       attempt.tabSwitchEvents.push({
         timestamp: new Date(tabSwitchEvent.timestamp || Date.now()),
-        reason: tabSwitchEvent.reason || 'tab_switch',
+        reason: typeof tabSwitchEvent.reason === 'string' ? tabSwitchEvent.reason.slice(0, 100) : 'tab_switch',
         penaltySeconds: penalty
       });
     }
 
     await attempt.save();
 
-    const test = await Test.findById(attempt.testId);
-    if (test) {
-      const startTime = new Date(attempt.startedAt).getTime();
-      const penaltyMs = (attempt.penaltySeconds || 0) * 1000;
-      const effectiveEndMs = startTime + test.timeLimitMinutes * 60 * 1000 - penaltyMs;
-      timeRemainingSeconds = Math.max(0, Math.floor((effectiveEndMs - Date.now()) / 1000));
-      endTimeIso = new Date(effectiveEndMs).toISOString();
-    }
+    const updatedEffectiveEndMs = startTime + testDurationMs - ((attempt.penaltySeconds || 0) * 1000);
+    const timeRemainingSeconds = Math.max(0, Math.floor((updatedEffectiveEndMs - Date.now()) / 1000));
+    const endTimeIso = new Date(updatedEffectiveEndMs).toISOString();
 
     res.json({
       success: true,
@@ -280,6 +298,11 @@ export const getAttemptReview = async (req, res) => {
 
     if (attempt.userId.toString() !== userId) {
       res.status(403).json({ error: 'Forbidden' });
+      return;
+    }
+
+    if (attempt.status !== 'submitted' && attempt.status !== 'expired') {
+      res.status(409).json({ error: 'Review is only available after attempt submission or expiration' });
       return;
     }
 

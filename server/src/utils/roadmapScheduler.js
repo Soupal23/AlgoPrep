@@ -126,17 +126,17 @@ export function scheduleDays({ topics = [], totalDays = 7, hoursPerDay = 2 }) {
       for (let i = 0; i < topics.length; i++) {
         const topic = topics[i];
         const est = topic.estMinutes || 60;
-        const remainingTopics = topics.length - i;
-        const remainingDays = learnDaysCount - currentDayIdx;
+        const remainingTopicsAfterThis = topics.length - (i + 1);
+        const remainingDaysAfterThisDay = learnDaysCount - (currentDayIdx + 1);
 
-        // If current day has topics and adding this one exceeds budget,
-        // and we still have enough days left for remaining topics, advance day
-        if (
-          currentDayMinutes + est > dailyTargetMins &&
-          learnDayTopics[currentDayIdx].length > 0 &&
-          remainingDays > 1 &&
-          remainingTopics >= remainingDays
-        ) {
+        // Advance to next learn day if:
+        // 1. Current day already has content AND adding this topic exceeds daily target budget
+        // OR
+        // 2. Remaining topics must be reserved so remaining learn days do not stay empty
+        const dayOverBudget = currentDayMinutes + est > dailyTargetMins && learnDayTopics[currentDayIdx].length > 0;
+        const mustAdvanceToFillRemainingDays = remainingTopicsAfterThis < remainingDaysAfterThisDay && learnDayTopics[currentDayIdx].length > 0;
+
+        if ((dayOverBudget || mustAdvanceToFillRemainingDays) && currentDayIdx < learnDaysCount - 1) {
           currentDayIdx++;
           currentDayMinutes = 0;
         }
@@ -181,6 +181,16 @@ export function scheduleDays({ topics = [], totalDays = 7, hoursPerDay = 2 }) {
   // 4. Assemble revision day if applicable
   if (hasRevision) {
     const dayNum = dayPlan.length + 1;
+    // Select priority topics for revision: prioritize hard and medium concepts across syllabus
+    // (Note: in Phase 8 this can be dynamically enhanced with student's actual weak concept keys)
+    const hardTopics = topics.filter(t => t.difficulty === 'hard');
+    const mediumTopics = topics.filter(t => t.difficulty === 'medium');
+    let revisionCandidates = [...hardTopics, ...mediumTopics];
+    if (revisionCandidates.length === 0) {
+      revisionCandidates = topics;
+    }
+    const revisionTopicKeys = revisionCandidates.slice(0, 4).map(t => t.key);
+
     dayPlan.push({
       dayNumber: dayNum,
       title: 'Synthesis, Formula Review & Weak Area Revision',
@@ -189,7 +199,7 @@ export function scheduleDays({ topics = [], totalDays = 7, hoursPerDay = 2 }) {
         'Re-attempt problematic questions and resolve conceptual ambiguities',
         'Consolidate key formulas, theorems, and architectural patterns'
       ],
-      topicKeys: topics.slice(-3).map(t => t.key),
+      topicKeys: revisionTopicKeys,
       estMinutes: dailyTargetMins,
       type: 'revision',
       status: 'locked',
@@ -212,7 +222,7 @@ export function scheduleDays({ topics = [], totalDays = 7, hoursPerDay = 2 }) {
         'Analyze question-level accuracy, speed, and negative marking impact',
         'Review AI remediation plan and personalized next steps'
       ],
-      topicKeys: [],
+      topicKeys: topics.map(t => t.key),
       estMinutes: dailyTargetMins,
       type: 'mock',
       status: 'locked',

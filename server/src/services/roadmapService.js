@@ -95,8 +95,9 @@ export const generateRoadmap = async ({
         temperature: 0.2
       });
 
-      if (response?.object?.topics && response.object.topics.length > 0) {
-        extractedTopics = response.object.topics;
+      const topics = response?.data?.topics || response?.object?.topics;
+      if (Array.isArray(topics) && topics.length > 0) {
+        extractedTopics = topics;
       }
     } catch (llmErr) {
       logger.warn(

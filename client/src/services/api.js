@@ -326,6 +326,12 @@ class ApiService {
     return this.request(`/jobs/${jobId}`);
   }
 
+  async getJobStreamTicket(jobId) {
+    return this.request(`/jobs/${jobId}/stream-ticket`, {
+      method: 'POST'
+    });
+  }
+
   // Roadmap & Days API
   async getRoadmap(workspaceId) {
     return this.request(`/workspaces/${workspaceId}/roadmap`);

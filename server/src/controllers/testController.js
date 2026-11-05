@@ -199,6 +199,11 @@ export const deleteTest = async (req, res) => {
       return;
     }
 
+    if (test.kind === 'platform') {
+      res.status(403).json({ error: 'Cannot delete core platform test benchmarks via API' });
+      return;
+    }
+
     const isOwner = test.ownerId?.toString() === userId?.toString() || test.createdBy?.toString() === userId?.toString();
     if (userRole !== 'admin' && !isOwner) {
       res.status(403).json({ error: 'Forbidden: You do not have permission to delete this test' });
