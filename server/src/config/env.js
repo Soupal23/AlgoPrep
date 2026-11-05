@@ -17,9 +17,9 @@ export const config = {
 
   // Gemini AI Models
   geminiApiKey: process.env.GEMINI_API_KEY || '',
-  geminiModelFast: process.env.GEMINI_MODEL_FAST || 'gemini-2.5-flash-lite',
-  geminiModelDefault: process.env.GEMINI_MODEL_DEFAULT || 'gemini-2.5-flash',
-  geminiModelReasoning: process.env.GEMINI_MODEL_REASONING || 'gemini-2.5-pro',
+  geminiModelFast: process.env.GEMINI_MODEL_FAST || 'gemini-3.8-flash',
+  geminiModelDefault: process.env.GEMINI_MODEL_DEFAULT || 'gemini-3.8-flash',
+  geminiModelReasoning: process.env.GEMINI_MODEL_REASONING || 'gemini-3.8-pro',
   geminiEmbedModel: process.env.GEMINI_EMBED_MODEL || 'text-embedding-004',
   embedDimensions: parseInt(process.env.EMBED_DIMENSIONS || '768', 10),
 

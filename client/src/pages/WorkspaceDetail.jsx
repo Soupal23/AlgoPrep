@@ -38,6 +38,17 @@ export const WorkspaceDetail = () => {
   const [searchResults, setSearchResults] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
 
+  // Roadmap Generation Modal State
+  const [isRoadmapModalOpen, setIsRoadmapModalOpen] = useState(false);
+  const [roadmapSettings, setRoadmapSettings] = useState({
+    days: 7,
+    hoursPerDay: 2,
+    level: 'intermediate'
+  });
+  const [roadmapJobId, setRoadmapJobId] = useState(null);
+  const [roadmapJobProgress, setRoadmapJobProgress] = useState(null);
+  const [roadmapError, setRoadmapError] = useState('');
+
   const fileInputRef = useRef(null);
 
   // 1. Fetch Workspace & Materials
@@ -54,6 +65,23 @@ export const WorkspaceDetail = () => {
   });
 
   const workspace = workspaceData;
+
+  // 1.1 Fetch Active Roadmap if exists
+  const {
+    data: existingRoadmap,
+    refetch: refetchRoadmap
+  } = useQuery({
+    queryKey: ['roadmap', id],
+    queryFn: async () => {
+      try {
+        const res = await api.getRoadmap(id);
+        return res.roadmap;
+      } catch (e) {
+        return null;
+      }
+    },
+    retry: false
+  });
 
   // 2. Material Deletion Mutation
   const deleteMaterialMutation = useMutation({
@@ -178,6 +206,53 @@ export const WorkspaceDetail = () => {
     };
   };
 
+  // 5.1 SSE Stream for Roadmap Generation
+  const subscribeToRoadmapJobStream = (jobId) => {
+    const token = localStorage.getItem('algoprep_access_token');
+    const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+    const sseUrl = `${apiBase}/jobs/${jobId}/stream${token ? `?token=${encodeURIComponent(token)}` : ''}`;
+
+    const eventSource = new EventSource(sseUrl);
+
+    eventSource.onmessage = (event) => {
+      try {
+        const payload = JSON.parse(event.data);
+        setRoadmapJobProgress(payload);
+
+        if (payload.status === 'completed') {
+          eventSource.close();
+          refetchRoadmap();
+          setTimeout(() => {
+            setIsRoadmapModalOpen(false);
+            navigate(`/workspaces/${id}/roadmap`);
+          }, 1200);
+        } else if (payload.status === 'failed') {
+          eventSource.close();
+          setRoadmapError(payload.error || 'Roadmap generation failed. Please try again.');
+        }
+      } catch (err) {}
+    };
+
+    eventSource.onerror = () => {
+      eventSource.close();
+    };
+  };
+
+  const handleGenerateRoadmap = async (e) => {
+    e.preventDefault();
+    setRoadmapError('');
+
+    try {
+      const res = await api.generateRoadmap(id, roadmapSettings);
+      if (res.jobId) {
+        setRoadmapJobId(res.jobId);
+        subscribeToRoadmapJobStream(res.jobId);
+      }
+    } catch (err) {
+      setRoadmapError(err.message || 'Failed to trigger roadmap generation');
+    }
+  };
+
   // 6. Handle Semantic Search
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -260,15 +335,24 @@ export const WorkspaceDetail = () => {
 
           {/* Action CTAs */}
           <div className="flex flex-wrap items-center gap-3 shrink-0">
-            <button
-              onClick={() => {
-                alert('Roadmap Generator will be enabled in Phase 4 once syllabus materials are uploaded!');
-              }}
-              className="flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-sm shadow-lg shadow-indigo-950/50 transition-all cursor-pointer"
-            >
-              <Compass className="w-4 h-4" />
-              <span>Generate Study Roadmap</span>
-            </button>
+            {existingRoadmap ? (
+              <Link
+                to={`/workspaces/${id}/roadmap`}
+                className="flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-indigo-600 hover:from-emerald-500 hover:to-indigo-500 text-white font-bold text-sm shadow-lg shadow-emerald-950/50 transition-all cursor-pointer"
+              >
+                <Compass className="w-4 h-4" />
+                <span>View Study Roadmap</span>
+                <ChevronRight className="w-4 h-4" />
+              </Link>
+            ) : (
+              <button
+                onClick={() => setIsRoadmapModalOpen(true)}
+                className="flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-sm shadow-lg shadow-indigo-950/50 transition-all cursor-pointer"
+              >
+                <Compass className="w-4 h-4" />
+                <span>Generate Study Roadmap</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -585,6 +669,123 @@ export const WorkspaceDetail = () => {
           )}
         </div>
       </div>
+
+      {/* Roadmap Setup Modal */}
+      {isRoadmapModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-3xl bg-[#14111f] border border-[#383050] p-6 sm:p-8 space-y-6 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[#251e35] pb-4">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-indigo-600/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400">
+                  <Compass className="w-5 h-5" />
+                </div>
+                <h2 className="text-lg font-bold text-white">Generate Study Roadmap</h2>
+              </div>
+              <button
+                onClick={() => setIsRoadmapModalOpen(false)}
+                className="text-slate-400 hover:text-white p-1 rounded-lg"
+              >
+                ✕
+              </button>
+            </div>
+
+            {roadmapError && (
+              <div className="p-3 rounded-xl bg-rose-950/40 border border-rose-800 text-rose-300 text-xs">
+                {roadmapError}
+              </div>
+            )}
+
+            {roadmapJobId ? (
+              <div className="space-y-4 py-6 text-center">
+                <Loader2 className="w-8 h-8 animate-spin text-indigo-400 mx-auto" />
+                <div>
+                  <h3 className="text-sm font-bold text-white">
+                    {roadmapJobProgress?.stage || 'Analyzing syllabus & curriculum materials...'}
+                  </h3>
+                  <p className="text-xs text-[#9f99b0] mt-1">
+                    Extracting topics, resolving dependencies, and structuring schedule...
+                  </p>
+                </div>
+                {roadmapJobProgress?.progress && (
+                  <div className="w-full h-2 rounded-full bg-[#1c1729] overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-300 rounded-full"
+                      style={{ width: `${roadmapJobProgress.progress}%` }}
+                    />
+                  </div>
+                )}
+              </div>
+            ) : (
+              <form onSubmit={handleGenerateRoadmap} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-[#9f99b0] mb-1.5">
+                    Target Preparation Days
+                  </label>
+                  <select
+                    value={roadmapSettings.days}
+                    onChange={(e) => setRoadmapSettings({ ...roadmapSettings, days: Number(e.target.value) })}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#1c1729] border border-[#383050] text-xs text-white focus:outline-none focus:border-indigo-500"
+                  >
+                    <option value={5}>5 Days (Intensive Sprint)</option>
+                    <option value={7}>7 Days (Standard Week)</option>
+                    <option value={10}>10 Days (Comprehensive)</option>
+                    <option value={14}>14 Days (Two-Week In-Depth)</option>
+                    <option value={21}>21 Days (Semester Pace)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-[#9f99b0] mb-1.5">
+                    Daily Study Commitment
+                  </label>
+                  <select
+                    value={roadmapSettings.hoursPerDay}
+                    onChange={(e) => setRoadmapSettings({ ...roadmapSettings, hoursPerDay: Number(e.target.value) })}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#1c1729] border border-[#383050] text-xs text-white focus:outline-none focus:border-indigo-500"
+                  >
+                    <option value={1}>1 hour / day</option>
+                    <option value={2}>2 hours / day (Recommended)</option>
+                    <option value={3}>3 hours / day</option>
+                    <option value={4}>4+ hours / day (Immersion)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-[#9f99b0] mb-1.5">
+                    Target Rigor & Level
+                  </label>
+                  <select
+                    value={roadmapSettings.level}
+                    onChange={(e) => setRoadmapSettings({ ...roadmapSettings, level: e.target.value })}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#1c1729] border border-[#383050] text-xs text-white focus:outline-none focus:border-indigo-500"
+                  >
+                    <option value="beginner">Beginner (Foundational explanations & clear pacing)</option>
+                    <option value="intermediate">Intermediate (Standard University / College Level)</option>
+                    <option value="advanced">Advanced (Deep Theoretical Rigor & Problem-Solving)</option>
+                  </select>
+                </div>
+
+                <div className="pt-2 flex items-center justify-end gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsRoadmapModalOpen(false)}
+                    className="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white bg-[#1c1729] border border-[#383050] transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 transition-all cursor-pointer shadow-md"
+                  >
+                    <Compass className="w-4 h-4" />
+                    <span>Create Roadmap</span>
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

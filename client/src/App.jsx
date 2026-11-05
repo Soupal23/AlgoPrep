@@ -15,6 +15,7 @@ import { SyllabusAI } from './pages/SyllabusAI';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { Workspaces } from './pages/Workspaces';
 import { WorkspaceDetail } from './pages/WorkspaceDetail';
+import { RoadmapView } from './pages/RoadmapView';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
@@ -63,6 +64,14 @@ export const AppContent = () => {
             element={
               <ProtectedRoute>
                 <WorkspaceDetail />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/workspaces/:id/roadmap"
+            element={
+              <ProtectedRoute>
+                <RoadmapView />
               </ProtectedRoute>
             }
           />

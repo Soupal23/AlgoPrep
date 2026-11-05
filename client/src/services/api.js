@@ -325,6 +325,43 @@ class ApiService {
   async getJob(jobId) {
     return this.request(`/jobs/${jobId}`);
   }
+
+  // Roadmap & Days API
+  async getRoadmap(workspaceId) {
+    return this.request(`/workspaces/${workspaceId}/roadmap`);
+  }
+
+  async generateRoadmap(workspaceId, settings) {
+    return this.request(`/workspaces/${workspaceId}/roadmap`, {
+      method: 'POST',
+      body: JSON.stringify(settings)
+    });
+  }
+
+  async regenerateRoadmap(roadmapId, settings) {
+    return this.request(`/roadmaps/${roadmapId}/regenerate`, {
+      method: 'POST',
+      body: JSON.stringify({ settings })
+    });
+  }
+
+  async reorderDays(roadmapId, dayIds) {
+    return this.request(`/roadmaps/${roadmapId}/days/reorder`, {
+      method: 'PATCH',
+      body: JSON.stringify({ dayIds })
+    });
+  }
+
+  async getDay(dayId) {
+    return this.request(`/days/${dayId}`);
+  }
+
+  async updateDayStatus(dayId, status) {
+    return this.request(`/days/${dayId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status })
+    });
+  }
 }
 
 export const api = new ApiService();

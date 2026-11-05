@@ -2,6 +2,7 @@ import { Worker } from 'bullmq';
 import { getRedisConnection } from './connection.js';
 import { updateJobProgress, completeJob, failJob } from '../services/jobService.js';
 import { createIngestionWorker } from '../workers/ingestionWorker.js';
+import { createRoadmapWorker } from '../workers/roadmapWorker.js';
 import logger from '../utils/logger.js';
 
 let workers = [];
@@ -49,6 +50,14 @@ export const startWorkers = () => {
     workers.push(ingestWorker);
   } catch (err) {
     logger.warn({ err: err.message }, 'Could not initialize Ingestion Worker');
+  }
+
+  // Roadmap Worker
+  try {
+    const roadmapWorker = createRoadmapWorker();
+    workers.push(roadmapWorker);
+  } catch (err) {
+    logger.warn({ err: err.message }, 'Could not initialize Roadmap Worker');
   }
 
   logger.info('Background job workers initialized');

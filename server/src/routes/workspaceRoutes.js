@@ -15,6 +15,10 @@ import {
   getMaterialById,
   deleteMaterial
 } from '../controllers/materialController.js';
+import {
+  createOrGenerateRoadmap,
+  getWorkspaceRoadmap
+} from '../controllers/roadmapController.js';
 
 const router = express.Router();
 
@@ -27,6 +31,10 @@ router.route('/:id')
   .get(authenticateJWT, getWorkspaceById)
   .put(authenticateJWT, updateWorkspace)
   .delete(authenticateJWT, deleteWorkspace);
+
+router.route('/:id/roadmap')
+  .post(authenticateJWT, createOrGenerateRoadmap)
+  .get(authenticateJWT, getWorkspaceRoadmap);
 
 router.post('/:id/search', authenticateJWT, searchWorkspace);
 
