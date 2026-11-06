@@ -16,6 +16,7 @@ import { AdminDashboard } from './pages/AdminDashboard';
 import { Workspaces } from './pages/Workspaces';
 import { WorkspaceDetail } from './pages/WorkspaceDetail';
 import { RoadmapView } from './pages/RoadmapView';
+import { DayView } from './pages/DayView';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
@@ -72,6 +73,22 @@ export const AppContent = () => {
             element={
               <ProtectedRoute>
                 <RoadmapView />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/workspaces/:workspaceId/days/:dayId"
+            element={
+              <ProtectedRoute>
+                <DayView />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/days/:dayId"
+            element={
+              <ProtectedRoute>
+                <DayView />
               </ProtectedRoute>
             }
           />

@@ -3,6 +3,7 @@ import { Material } from '../models/Material.js';
 import { Chunk } from '../models/Chunk.js';
 import { Roadmap } from '../models/Roadmap.js';
 import { Day } from '../models/Day.js';
+import { Notes } from '../models/Notes.js';
 import { Job } from '../models/Job.js';
 import { retriever } from '../ai/retriever.js';
 import logger from '../utils/logger.js';
@@ -172,11 +173,12 @@ export const deleteWorkspace = async (req, res, next) => {
       });
     }
 
-    // Cascading cleanup of materials, chunks, roadmaps, days & background jobs
+    // Cascading cleanup of materials, chunks, roadmaps, days, notes & background jobs
     const roadmaps = await Roadmap.find({ workspaceId: id }).select('_id');
     const roadmapIds = roadmaps.map((r) => r._id);
 
     await Day.deleteMany({ roadmapId: { $in: roadmapIds } });
+    await Notes.deleteMany({ workspaceId: id });
     await Roadmap.deleteMany({ workspaceId: id });
     await Job.deleteMany({ workspaceId: id });
     await Material.deleteMany({ workspaceId: id });

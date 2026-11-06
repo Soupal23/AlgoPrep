@@ -368,6 +368,23 @@ class ApiService {
       body: JSON.stringify({ status })
     });
   }
+
+  // Day Notes API (Phase 5)
+  async getDayNotes(dayId, isSync = false) {
+    return this.request(`/days/${dayId}/notes${isSync ? '?sync=true' : ''}`);
+  }
+
+  async regenerateDayNotes(dayId, isSync = false) {
+    return this.request(`/days/${dayId}/notes/regenerate${isSync ? '?sync=true' : ''}`, {
+      method: 'POST'
+    });
+  }
+
+  async markNotesRead(dayId) {
+    return this.request(`/days/${dayId}/notes/read`, {
+      method: 'POST'
+    });
+  }
 }
 
 export const api = new ApiService();

@@ -5,7 +5,7 @@ const jobSchema = new Schema(
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
     type: {
       type: String,
-      enum: ['ingest', 'roadmap', 'day_content', 'resources', 'analysis', 'test_job'],
+      enum: ['ingest', 'roadmap', 'day_content', 'content', 'resources', 'analysis', 'test_job'],
       required: true,
       index: true
     },

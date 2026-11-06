@@ -3,6 +3,7 @@ import { getRedisConnection } from './connection.js';
 import { updateJobProgress, completeJob, failJob } from '../services/jobService.js';
 import { createIngestionWorker } from '../workers/ingestionWorker.js';
 import { createRoadmapWorker } from '../workers/roadmapWorker.js';
+import { createDayContentWorker } from '../workers/dayContentWorker.js';
 import logger from '../utils/logger.js';
 
 let workers = [];
@@ -58,6 +59,14 @@ export const startWorkers = () => {
     workers.push(roadmapWorker);
   } catch (err) {
     logger.warn({ err: err.message }, 'Could not initialize Roadmap Worker');
+  }
+
+  // Day Content (Notes) Worker
+  try {
+    const dayContentWorker = createDayContentWorker();
+    workers.push(dayContentWorker);
+  } catch (err) {
+    logger.warn({ err: err.message }, 'Could not initialize Day Content Worker');
   }
 
   logger.info('Background job workers initialized');

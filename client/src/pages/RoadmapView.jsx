@@ -334,9 +334,13 @@ export const RoadmapView = () => {
                   <div className="flex flex-wrap items-center gap-3 self-end md:self-center shrink-0">
                     {isCompleted ? (
                       <div className="flex items-center gap-2">
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-950/80 border border-emerald-800 text-emerald-300">
-                          <CheckCircle2 className="w-4 h-4" /> Completed
-                        </span>
+                        <Link
+                          to={`/workspaces/${workspaceId}/days/${day._id}`}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-[#1c1729] hover:bg-[#251e35] border border-emerald-800/80 text-emerald-300 transition-colors shadow-sm"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <span>Review Notes</span>
+                        </Link>
                         <button
                           onClick={() => updateStatusMutation.mutate({ dayId: day._id, status: 'available' })}
                           className="text-[11px] text-[#9f99b0] hover:text-white underline cursor-pointer"
@@ -346,15 +350,13 @@ export const RoadmapView = () => {
                       </div>
                     ) : isAvailable ? (
                       <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => {
-                            alert(`Day ${day.dayNumber} study module (RAG Notes, Curated Resources & CBT Quiz) will be wired in Phase 5!`);
-                          }}
+                        <Link
+                          to={`/workspaces/${workspaceId}/days/${day._id}`}
                           className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs shadow-md transition-all cursor-pointer"
                         >
                           <Play className="w-3.5 h-3.5 fill-current" />
                           <span>Study Day</span>
-                        </button>
+                        </Link>
                         <button
                           onClick={() => updateStatusMutation.mutate({ dayId: day._id, status: 'completed' })}
                           className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#1c1729] hover:bg-[#251e35] border border-[#383050] text-slate-300 hover:text-white font-semibold text-xs transition-colors cursor-pointer"

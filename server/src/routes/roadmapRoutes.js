@@ -6,6 +6,11 @@ import {
   getDayById,
   updateDayStatusController
 } from '../controllers/roadmapController.js';
+import {
+  getDayNotesController,
+  regenerateDayNotesController,
+  markNotesReadController
+} from '../controllers/dayController.js';
 
 const router = express.Router();
 
@@ -16,5 +21,10 @@ router.patch('/roadmaps/:id/days/reorder', authenticateJWT, reorderDays);
 // Day Lifecycle
 router.get('/days/:dayId', authenticateJWT, getDayById);
 router.patch('/days/:dayId/status', authenticateJWT, updateDayStatusController);
+
+// Day Notes Lifecycle (Phase 5)
+router.get('/days/:dayId/notes', authenticateJWT, getDayNotesController);
+router.post('/days/:dayId/notes/regenerate', authenticateJWT, regenerateDayNotesController);
+router.post('/days/:dayId/notes/read', authenticateJWT, markNotesReadController);
 
 export default router;

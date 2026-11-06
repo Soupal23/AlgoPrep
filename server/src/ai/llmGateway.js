@@ -78,11 +78,23 @@ class LLMGateway {
       }
     };
 
+    const isFatalOrQuota = (err) => {
+      const msg = err?.message || '';
+      return (
+        msg.includes('RESOURCE_EXHAUSTED') ||
+        msg.includes('429') ||
+        msg.includes('limit exceeded') ||
+        msg.includes('NOT_FOUND') ||
+        msg.includes('404')
+      );
+    };
+
     try {
       const response = await pRetry(callFn, {
         retries: 1,
         minTimeout: 500,
         factor: 2,
+        shouldRetry: (err) => !isFatalOrQuota(err),
         onFailedAttempt: (error) => {
           logger.warn(
             { task, model, attempt: error.attemptNumber, err: error.message },
@@ -167,7 +179,17 @@ class LLMGateway {
       return pRetry(callFn, {
         retries: 1,
         minTimeout: 500,
-        factor: 2
+        factor: 2,
+        shouldRetry: (err) => {
+          const msg = err?.message || '';
+          return (
+            !msg.includes('RESOURCE_EXHAUSTED') &&
+            !msg.includes('429') &&
+            !msg.includes('limit exceeded') &&
+            !msg.includes('NOT_FOUND') &&
+            !msg.includes('404')
+          );
+        }
       });
     };
 
