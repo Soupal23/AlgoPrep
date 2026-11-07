@@ -4,6 +4,7 @@ import { updateJobProgress, completeJob, failJob } from '../services/jobService.
 import { createIngestionWorker } from '../workers/ingestionWorker.js';
 import { createRoadmapWorker } from '../workers/roadmapWorker.js';
 import { createDayContentWorker } from '../workers/dayContentWorker.js';
+import { createResourceWorker } from '../workers/resourceWorker.js';
 import logger from '../utils/logger.js';
 
 let workers = [];
@@ -67,6 +68,14 @@ export const startWorkers = () => {
     workers.push(dayContentWorker);
   } catch (err) {
     logger.warn({ err: err.message }, 'Could not initialize Day Content Worker');
+  }
+
+  // Curated Resources Worker
+  try {
+    const resourceWorker = createResourceWorker();
+    workers.push(resourceWorker);
+  } catch (err) {
+    logger.warn({ err: err.message }, 'Could not initialize Resource Worker');
   }
 
   logger.info('Background job workers initialized');

@@ -1,6 +1,9 @@
 import { Day } from '../models/Day.js';
 import { Notes } from '../models/Notes.js';
+import { Job } from '../models/Job.js';
+import { DayResource } from '../models/DayResource.js';
 import { generateDayNotes, getNotesByDayId, markNotesAsRead } from '../services/notesService.js';
+import { getDayResources, getOrCurateDayResources, saveResourceFeedback } from '../services/resourceService.js';
 import { createJob } from '../services/jobService.js';
 import { getQueues } from '../queue/queues.js';
 import { isRedisReady } from '../queue/connection.js';
@@ -210,6 +213,258 @@ export const markNotesReadController = async (req, res, next) => {
       message: 'Notes marked as read.',
       readStatus: result.notes.readStatus,
       dayStatus: result.day?.status
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * GET /api/days/:dayId/resources
+ * Retrieves existing curated resources for a day, or dispatches curation if pending.
+ */
+export const getDayResourcesController = async (req, res, next) => {
+  try {
+    const currentUserId = (req.user.userId || req.user._id).toString();
+    const { dayId } = req.params;
+    const isSync = req.query.sync === 'true';
+
+    const day = await Day.findById(dayId);
+    if (!day) {
+      return res.status(404).json({
+        success: false,
+        message: 'Day not found.'
+      });
+    }
+
+    if (day.ownerId.toString() !== currentUserId && req.user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Forbidden: You do not own this day.'
+      });
+    }
+
+    // 1. If resources are already ready, return them immediately
+    if (day.content?.resourcesStatus === 'ready') {
+      const data = await getDayResources(dayId, currentUserId);
+      if (data.resources && data.resources.length > 0) {
+        return res.json({
+          success: true,
+          status: 'ready',
+          resources: data.resources
+        });
+      }
+    }
+
+    // 2. Synchronous mode (testing/direct)
+    if (isSync) {
+      const resources = await getOrCurateDayResources({
+        dayId,
+        userId: currentUserId,
+        force: false
+      });
+      return res.json({
+        success: true,
+        status: 'ready',
+        resources
+      });
+    }
+
+    // 3. Check for existing active job
+    const existingJob = await Job.findOne({
+      refId: dayId,
+      type: 'resources',
+      status: { $in: ['queued', 'running'] }
+    }).sort({ createdAt: -1 });
+
+    if (existingJob) {
+      return res.status(202).json({
+        success: true,
+        status: 'generating',
+        jobId: existingJob._id.toString(),
+        message: 'Educational resources are being curated in the background.'
+      });
+    }
+
+    // 4. Create and dispatch background curation job
+    const job = await createJob({
+      userId: currentUserId,
+      type: 'resources',
+      refId: dayId,
+      stage: 'Curating multi-source educational resources'
+    });
+
+    const jobPayload = {
+      dayId,
+      userId: currentUserId,
+      jobId: job._id.toString(),
+      force: false
+    };
+
+    let queuedToBullMQ = false;
+    if (isRedisReady()) {
+      try {
+        const queues = getQueues();
+        if (queues?.resources) {
+          await queues.resources.add('curateDayResources', jobPayload, {
+            jobId: job._id.toString()
+          });
+          queuedToBullMQ = true;
+        }
+      } catch (queueErr) {
+        logger.warn({ err: queueErr.message }, 'Could not add resources job to BullMQ, falling back to background execution');
+      }
+    }
+
+    if (!queuedToBullMQ) {
+      setImmediate(async () => {
+        try {
+          await getOrCurateDayResources(jobPayload);
+        } catch (err) {
+          logger.error({ err: err.message, dayId }, 'Background resource curation failed');
+        }
+      });
+    }
+
+    return res.status(202).json({
+      success: true,
+      status: 'generating',
+      jobId: job._id.toString(),
+      message: 'Educational resources are being curated from verified sources.'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * POST /api/days/:dayId/resources/regenerate
+ * Forces a fresh re-curation of resources across all adapters.
+ */
+export const regenerateDayResourcesController = async (req, res, next) => {
+  try {
+    const currentUserId = (req.user.userId || req.user._id).toString();
+    const { dayId } = req.params;
+    const isSync = req.query.sync === 'true';
+
+    const day = await Day.findById(dayId);
+    if (!day) {
+      return res.status(404).json({
+        success: false,
+        message: 'Day not found.'
+      });
+    }
+
+    if (day.ownerId.toString() !== currentUserId && req.user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Forbidden: You do not own this day.'
+      });
+    }
+
+    if (isSync) {
+      const resources = await getOrCurateDayResources({
+        dayId,
+        userId: currentUserId,
+        force: true
+      });
+      return res.json({
+        success: true,
+        status: 'ready',
+        resources
+      });
+    }
+
+    const job = await createJob({
+      userId: currentUserId,
+      type: 'resources',
+      refId: dayId,
+      stage: 'Initiating resource re-curation'
+    });
+
+    const jobPayload = {
+      dayId,
+      userId: currentUserId,
+      jobId: job._id.toString(),
+      force: true
+    };
+
+    let queuedToBullMQ = false;
+    if (isRedisReady()) {
+      try {
+        const queues = getQueues();
+        if (queues?.resources) {
+          await queues.resources.add('curateDayResources', jobPayload, {
+            jobId: job._id.toString()
+          });
+          queuedToBullMQ = true;
+        }
+      } catch (queueErr) {
+        logger.warn({ err: queueErr.message }, 'Could not add resources job to BullMQ');
+      }
+    }
+
+    if (!queuedToBullMQ) {
+      setImmediate(async () => {
+        try {
+          await getOrCurateDayResources(jobPayload);
+        } catch (err) {
+          logger.error({ err: err.message, dayId }, 'Background resource regeneration failed');
+        }
+      });
+    }
+
+    return res.status(202).json({
+      success: true,
+      status: 'generating',
+      jobId: job._id.toString(),
+      message: 'Regenerating fresh educational resources.'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * POST /api/resources/:id/feedback
+ * Records user feedback (helpful thumbs up/down, watched) on a day resource.
+ */
+export const saveResourceFeedbackController = async (req, res, next) => {
+  try {
+    const currentUserId = (req.user.userId || req.user._id).toString();
+    const { id } = req.params;
+    const { helpful, watched } = req.body;
+
+    let dayResource = await DayResource.findById(id);
+    if (!dayResource) {
+      dayResource = await DayResource.findOne({ resourceId: id, ownerId: currentUserId });
+    }
+
+    if (!dayResource) {
+      return res.status(404).json({
+        success: false,
+        message: 'Day resource not found'
+      });
+    }
+
+    if (dayResource.ownerId.toString() !== currentUserId && req.user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Forbidden: You cannot modify this resource feedback'
+      });
+    }
+
+    const updated = await saveResourceFeedback({
+      dayResourceId: dayResource._id,
+      userId: currentUserId,
+      helpful,
+      watched
+    });
+
+    return res.json({
+      success: true,
+      message: 'Feedback saved successfully',
+      dayResource: updated
     });
   } catch (error) {
     next(error);

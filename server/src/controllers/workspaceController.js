@@ -4,6 +4,7 @@ import { Chunk } from '../models/Chunk.js';
 import { Roadmap } from '../models/Roadmap.js';
 import { Day } from '../models/Day.js';
 import { Notes } from '../models/Notes.js';
+import { DayResource } from '../models/DayResource.js';
 import { Job } from '../models/Job.js';
 import { retriever } from '../ai/retriever.js';
 import logger from '../utils/logger.js';
@@ -179,6 +180,7 @@ export const deleteWorkspace = async (req, res, next) => {
 
     await Day.deleteMany({ roadmapId: { $in: roadmapIds } });
     await Notes.deleteMany({ workspaceId: id });
+    await DayResource.deleteMany({ workspaceId: id });
     await Roadmap.deleteMany({ workspaceId: id });
     await Job.deleteMany({ workspaceId: id });
     await Material.deleteMany({ workspaceId: id });

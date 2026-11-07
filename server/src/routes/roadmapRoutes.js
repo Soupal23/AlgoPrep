@@ -9,7 +9,10 @@ import {
 import {
   getDayNotesController,
   regenerateDayNotesController,
-  markNotesReadController
+  markNotesReadController,
+  getDayResourcesController,
+  regenerateDayResourcesController,
+  saveResourceFeedbackController
 } from '../controllers/dayController.js';
 
 const router = express.Router();
@@ -26,5 +29,10 @@ router.patch('/days/:dayId/status', authenticateJWT, updateDayStatusController);
 router.get('/days/:dayId/notes', authenticateJWT, getDayNotesController);
 router.post('/days/:dayId/notes/regenerate', authenticateJWT, regenerateDayNotesController);
 router.post('/days/:dayId/notes/read', authenticateJWT, markNotesReadController);
+
+// Curated Resources Lifecycle (Phase 6)
+router.get('/days/:dayId/resources', authenticateJWT, getDayResourcesController);
+router.post('/days/:dayId/resources/regenerate', authenticateJWT, regenerateDayResourcesController);
+router.post('/resources/:id/feedback', authenticateJWT, saveResourceFeedbackController);
 
 export default router;

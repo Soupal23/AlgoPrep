@@ -385,6 +385,24 @@ class ApiService {
       method: 'POST'
     });
   }
+
+  // Curated Resources API (Phase 6)
+  async getDayResources(dayId, isSync = false) {
+    return this.request(`/days/${dayId}/resources${isSync ? '?sync=true' : ''}`);
+  }
+
+  async regenerateDayResources(dayId, isSync = false) {
+    return this.request(`/days/${dayId}/resources/regenerate${isSync ? '?sync=true' : ''}`, {
+      method: 'POST'
+    });
+  }
+
+  async saveResourceFeedback(resourceId, feedback = {}) {
+    return this.request(`/resources/${resourceId}/feedback`, {
+      method: 'POST',
+      body: JSON.stringify(feedback)
+    });
+  }
 }
 
 export const api = new ApiService();

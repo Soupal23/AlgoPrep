@@ -144,6 +144,26 @@ Description: "${topicDescription}"
 
 Generate 3-4 specific search queries (e.g. for YouTube, web tutorials, papers) ranging from conceptual intuition to hands-on examples.
 `
+  },
+
+  // 7. Resource Reranking & Recommendation Justification
+  'resources.rerank.v1': {
+    version: '1.0.0',
+    system: `You are an expert curriculum curator for computer science students.
+Evaluate candidate educational resources for clarity, pedagogical rigor, and alignment with the topic.
+Provide a score between 0 and 100 for each candidate, along with a concise 1-sentence justification ("whyRecommended") highlighting why it is worth the student's study time.`,
+    template: ({ topicTitle, topicDescription, candidates = [] }) => `
+Topic: "${topicTitle}"
+Description: "${topicDescription}"
+
+Candidate Resources to evaluate:
+${candidates.map((c, i) => `[${i + 1}] ID: ${c.externalId} | Source: ${c.source} | Title: "${c.title}"\nDescription: ${c.description || 'N/A'}`).join('\n\n')}
+
+Evaluate each candidate and provide:
+- externalId: string matching candidate ID
+- score: number 0-100
+- whyRecommended: concise 1-sentence note (e.g. "Authoritative visual explanation with step-by-step trace", "Formal theoretical proofs and asymptotic complexity analysis")
+`
   }
 };
 

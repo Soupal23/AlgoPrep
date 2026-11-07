@@ -24,7 +24,15 @@ import {
   Bookmark,
   Calendar,
   Video,
-  ClipboardList
+  ClipboardList,
+  ThumbsUp,
+  ThumbsDown,
+  CheckSquare,
+  Square,
+  PlayCircle,
+  GraduationCap,
+  Globe,
+  Book
 } from 'lucide-react';
 
 export const DayView = () => {
@@ -82,7 +90,28 @@ export const DayView = () => {
     retry: 1
   });
 
-  // 3. Mark Day Status Mutation
+  // 3. Fetch or Trigger Day Curated Resources (Phase 6)
+  const {
+    data: resourcesData,
+    isLoading: isResourcesLoading,
+    error: resourcesError,
+    refetch: refetchResources
+  } = useQuery({
+    queryKey: ['dayResources', dayId],
+    queryFn: async () => {
+      const res = await api.getDayResources(dayId);
+      if (res.status === 'generating' && res.jobId) {
+        setActiveJobId(res.jobId);
+        subscribeToJobStream(res.jobId);
+        return [];
+      }
+      return res.resources || [];
+    },
+    enabled: !!dayId && activeTab === 'resources',
+    retry: 1
+  });
+
+  // 4. Mark Day Status Mutation
   const updateStatusMutation = useMutation({
     mutationFn: ({ status }) => api.updateDayStatus(dayId, status),
     onSuccess: () => {
@@ -91,7 +120,7 @@ export const DayView = () => {
     }
   });
 
-  // 4. Mark Notes Read Mutation
+  // 5. Mark Notes Read Mutation
   const markReadMutation = useMutation({
     mutationFn: () => api.markNotesRead(dayId),
     onSuccess: () => {
@@ -101,7 +130,7 @@ export const DayView = () => {
     }
   });
 
-  // 5. Force Regenerate Notes Mutation
+  // 6. Force Regenerate Notes Mutation
   const regenerateMutation = useMutation({
     mutationFn: () => api.regenerateDayNotes(dayId),
     onSuccess: (res) => {
@@ -114,7 +143,35 @@ export const DayView = () => {
     }
   });
 
-  // 6. SSE Listener for Live Note Generation Progress
+  // 7. Force Regenerate Resources Mutation (Phase 6)
+  const regenerateResourcesMutation = useMutation({
+    mutationFn: () => api.regenerateDayResources(dayId),
+    onSuccess: (res) => {
+      if (res.jobId) {
+        setActiveJobId(res.jobId);
+        subscribeToJobStream(res.jobId);
+      } else if (res.resources) {
+        queryClient.setQueryData(['dayResources', dayId], res.resources);
+      }
+    }
+  });
+
+  // 8. Resource Feedback Mutation (Phase 6)
+  const feedbackMutation = useMutation({
+    mutationFn: ({ dayResourceId, helpful, watched }) =>
+      api.saveResourceFeedback(dayResourceId, { helpful, watched }),
+    onSuccess: (res) => {
+      queryClient.setQueryData(['dayResources', dayId], (old = []) => {
+        return old.map((item) =>
+          item._id === res.dayResource._id
+            ? { ...item, feedback: res.dayResource.feedback }
+            : item
+        );
+      });
+    }
+  });
+
+  // 9. SSE Listener for Live Generation Progress (Notes & Resources)
   const subscribeToJobStream = async (jobId) => {
     const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
     let sseUrl;
@@ -138,6 +195,7 @@ export const DayView = () => {
           setActiveJobId(null);
           setJobProgress(null);
           refetchNotes();
+          refetchResources();
           refetchDay();
         }
       } catch (err) {
@@ -536,16 +594,290 @@ export const DayView = () => {
         </div>
       )}
 
-      {/* TAB 2: CURATED RESOURCES PLACEHOLDER (Phase 6) */}
+      {/* TAB 2: CURATED RESOURCES (Phase 6) */}
       {activeTab === 'resources' && (
-        <div className="p-8 sm:p-12 rounded-3xl bg-[#14111f] border border-[#383050] shadow-xl text-center space-y-4">
-          <div className="w-14 h-14 rounded-2xl bg-purple-600/20 border border-purple-500/40 flex items-center justify-center mx-auto text-purple-400">
-            <Video className="w-7 h-7" />
+        <div className="space-y-8 animate-fadeIn">
+          {/* Header & Controls */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-3xl bg-[#14111f] border border-[#383050]">
+            <div>
+              <h2 className="text-lg font-black text-white flex items-center gap-2">
+                <Video className="w-5 h-5 text-purple-400" />
+                <span>Curated Educational Resources</span>
+              </h2>
+              <p className="text-xs text-[#9f99b0] mt-1">
+                Authoritative video walkthroughs, encyclopedic references, web docs, and academic papers ranked for Day {dayData.dayNumber}.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => regenerateResourcesMutation.mutate()}
+                disabled={regenerateResourcesMutation.isPending || activeJobId}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#1c1729] hover:bg-[#251e35] disabled:opacity-50 border border-[#383050] text-xs font-semibold text-[#9f99b0] hover:text-white transition-all cursor-pointer shadow-sm"
+              >
+                {regenerateResourcesMutation.isPending || activeJobId ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-purple-400" />
+                ) : (
+                  <RotateCcw className="w-3.5 h-3.5 text-purple-400" />
+                )}
+                <span>{regenerateResourcesMutation.isPending || activeJobId ? 'Curating...' : 'Refresh Resources'}</span>
+              </button>
+            </div>
           </div>
-          <h3 className="text-xl font-extrabold text-white">External Curated Resources</h3>
-          <p className="text-xs sm:text-sm text-[#9f99b0] max-w-lg mx-auto leading-relaxed">
-            Ranked YouTube video tutorials, interactive algorithm visualizers, Wikipedia summaries, and research papers curated specifically for Day {dayData.dayNumber} will be integrated in <strong>Phase 6</strong>.
-          </p>
+
+          {/* Progress Banner during Live Generation */}
+          {(activeJobId || isResourcesLoading) && (
+            <div className="p-8 rounded-3xl bg-purple-950/20 border border-purple-500/30 text-center space-y-4">
+              <div className="w-12 h-12 rounded-2xl bg-purple-600/20 border border-purple-500/40 flex items-center justify-center mx-auto text-purple-400">
+                <Loader2 className="w-6 h-6 animate-spin" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-base font-bold text-white">
+                  {jobProgress?.stage || 'Curating & Ranking Multi-Source Resources...'}
+                </h3>
+                <p className="text-xs text-[#9f99b0]">
+                  Querying YouTube, Wikipedia, Developer Guides, and arXiv with two-stage semantic ranking.
+                </p>
+              </div>
+
+              {jobProgress && (
+                <div className="w-full max-w-md mx-auto space-y-1">
+                  <div className="w-full bg-[#1c1729] h-2 rounded-full overflow-hidden border border-[#383050]">
+                    <div
+                      className="bg-gradient-to-r from-purple-500 to-indigo-500 h-full transition-all duration-300 rounded-full"
+                      style={{ width: `${jobProgress.progress || 20}%` }}
+                    />
+                  </div>
+                  <div className="flex justify-between text-[11px] font-mono text-[#9f99b0]">
+                    <span>{jobProgress.stage}</span>
+                    <span>{jobProgress.progress}%</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Resources List grouped by Topic */}
+          {!activeJobId && !isResourcesLoading && (
+            <>
+              {(!resourcesData || resourcesData.length === 0) ? (
+                <div className="p-12 rounded-3xl bg-[#14111f] border border-[#383050] text-center space-y-4">
+                  <div className="w-12 h-12 rounded-2xl bg-purple-600/20 border border-purple-500/40 flex items-center justify-center mx-auto text-purple-400">
+                    <Video className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-base font-bold text-white">No Curated Resources Yet</h3>
+                  <p className="text-xs text-[#9f99b0] max-w-sm mx-auto">
+                    Click below to discover and rank top YouTube tutorials, documentation, and papers for Day {dayData.dayNumber}.
+                  </p>
+                  <button
+                    onClick={() => regenerateResourcesMutation.mutate()}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow-md transition-all cursor-pointer"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    <span>Curate Resources Now</span>
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-10">
+                  {Object.entries(
+                    resourcesData.reduce((acc, curr) => {
+                      const topic = curr.topicTitle || curr.topicKey || 'General Resources';
+                      if (!acc[topic]) acc[topic] = [];
+                      acc[topic].push(curr);
+                      return acc;
+                    }, {})
+                  ).map(([topicTitle, items]) => (
+                    <div key={topicTitle} className="space-y-4">
+                      {/* Topic Section Header */}
+                      <div className="flex items-center gap-3">
+                        <div className="h-4 w-1 bg-purple-400 rounded-full" />
+                        <h3 className="text-base font-extrabold text-white">{topicTitle}</h3>
+                        <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-[#1c1729] border border-[#383050] text-[#9f99b0]">
+                          {items.length} {items.length === 1 ? 'Resource' : 'Resources'}
+                        </span>
+                      </div>
+
+                      {/* Resource Cards Grid */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {items.map((item) => {
+                          const res = item.resourceId || item;
+                          const feedback = item.feedback || {};
+
+                          const sourceConfig = {
+                            youtube: {
+                              label: 'YouTube',
+                              color: 'text-red-400 bg-red-500/10 border-red-500/30',
+                              icon: PlayCircle
+                            },
+                            wikipedia: {
+                              label: 'Wikipedia',
+                              color: 'text-sky-400 bg-sky-500/10 border-sky-500/30',
+                              icon: BookOpen
+                            },
+                            arxiv: {
+                              label: 'arXiv Paper',
+                              color: 'text-purple-400 bg-purple-500/10 border-purple-500/30',
+                              icon: GraduationCap
+                            },
+                            web: {
+                              label: 'Documentation',
+                              color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30',
+                              icon: Globe
+                            }
+                          }[res.source] || {
+                            label: 'External',
+                            color: 'text-slate-400 bg-slate-500/10 border-slate-500/30',
+                            icon: Globe
+                          };
+
+                          const SourceIcon = sourceConfig.icon;
+
+                          return (
+                            <div
+                              key={item._id}
+                              className={`p-5 rounded-3xl bg-[#14111f] border transition-all flex flex-col justify-between space-y-4 ${
+                                feedback.watched
+                                  ? 'border-emerald-500/30 bg-emerald-950/5'
+                                  : 'border-[#383050] hover:border-purple-500/40'
+                              }`}
+                            >
+                              <div className="space-y-3">
+                                {/* Card Header: Source Badge + Score */}
+                                <div className="flex items-center justify-between gap-2">
+                                  <span
+                                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border ${sourceConfig.color}`}
+                                  >
+                                    <SourceIcon className="w-3.5 h-3.5" />
+                                    <span>{sourceConfig.label}</span>
+                                  </span>
+
+                                  {item.finalScore ? (
+                                    <span className="text-[11px] font-mono font-bold text-purple-300 bg-purple-900/30 px-2 py-0.5 rounded-md border border-purple-800/40">
+                                      Match {item.finalScore}%
+                                    </span>
+                                  ) : null}
+                                </div>
+
+                                {/* Thumbnail for YouTube if available */}
+                                {res.thumbnail && (
+                                  <div className="relative aspect-video rounded-2xl overflow-hidden bg-black/40 border border-[#383050] group">
+                                    <img
+                                      src={res.thumbnail}
+                                      alt={res.title}
+                                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                      loading="lazy"
+                                    />
+                                    {res.durationSec && (
+                                      <span className="absolute bottom-2 right-2 px-2 py-0.5 rounded-md bg-black/80 backdrop-blur-sm text-[10px] font-mono text-white font-bold">
+                                        {Math.floor(res.durationSec / 60)}:
+                                        {String(res.durationSec % 60).padStart(2, '0')}
+                                      </span>
+                                    )}
+                                  </div>
+                                )}
+
+                                {/* Title & Author */}
+                                <div>
+                                  <a
+                                    href={res.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-sm font-bold text-white hover:text-purple-300 transition-colors line-clamp-2 inline-flex items-start gap-1 group"
+                                  >
+                                    <span>{res.title}</span>
+                                    <ExternalLink className="w-3.5 h-3.5 text-[#9f99b0] group-hover:text-purple-300 shrink-0 mt-0.5" />
+                                  </a>
+                                  {res.authorOrChannel && (
+                                    <p className="text-[11px] text-[#9f99b0] mt-0.5">
+                                      by <span className="text-slate-300 font-medium">{res.authorOrChannel}</span>
+                                    </p>
+                                  )}
+                                </div>
+
+                                {/* Why Recommended Callout */}
+                                {item.whyRecommended && (
+                                  <div className="p-3 rounded-2xl bg-purple-950/20 border border-purple-900/40 flex items-start gap-2 text-xs text-purple-200/90 leading-relaxed">
+                                    <Sparkles className="w-3.5 h-3.5 text-purple-400 shrink-0 mt-0.5" />
+                                    <span>{item.whyRecommended}</span>
+                                  </div>
+                                )}
+
+                                {/* Description */}
+                                {res.description && (
+                                  <p className="text-xs text-[#9f99b0] line-clamp-3 leading-relaxed">
+                                    {res.description}
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* Card Footer: Watched Checkbox + Thumbs Feedback */}
+                              <div className="pt-3 border-t border-[#252033] flex items-center justify-between text-xs">
+                                <button
+                                  onClick={() =>
+                                    feedbackMutation.mutate({
+                                      dayResourceId: item._id,
+                                      watched: !feedback.watched
+                                    })
+                                  }
+                                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl transition-all cursor-pointer font-medium ${
+                                    feedback.watched
+                                      ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/30'
+                                      : 'text-[#9f99b0] hover:text-white bg-[#1c1729] border border-[#383050]'
+                                  }`}
+                                >
+                                  {feedback.watched ? (
+                                    <CheckSquare className="w-4 h-4 text-emerald-400" />
+                                  ) : (
+                                    <Square className="w-4 h-4 text-[#9f99b0]" />
+                                  )}
+                                  <span>{feedback.watched ? 'Watched' : 'Mark as Watched'}</span>
+                                </button>
+
+                                <div className="flex items-center gap-1">
+                                  <button
+                                    onClick={() =>
+                                      feedbackMutation.mutate({
+                                        dayResourceId: item._id,
+                                        helpful: feedback.helpful === true ? null : true
+                                      })
+                                    }
+                                    title="Helpful"
+                                    className={`p-1.5 rounded-lg border transition-all cursor-pointer ${
+                                      feedback.helpful === true
+                                        ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
+                                        : 'bg-[#1c1729] border-[#383050] text-[#9f99b0] hover:text-white'
+                                    }`}
+                                  >
+                                    <ThumbsUp className="w-3.5 h-3.5" />
+                                  </button>
+                                  <button
+                                    onClick={() =>
+                                      feedbackMutation.mutate({
+                                        dayResourceId: item._id,
+                                        helpful: feedback.helpful === false ? null : false
+                                      })
+                                    }
+                                    title="Not Helpful"
+                                    className={`p-1.5 rounded-lg border transition-all cursor-pointer ${
+                                      feedback.helpful === false
+                                        ? 'bg-rose-500/20 border-rose-500/40 text-rose-300'
+                                        : 'bg-[#1c1729] border-[#383050] text-[#9f99b0] hover:text-white'
+                                    }`}
+                                  >
+                                    <ThumbsDown className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
         </div>
       )}
 
