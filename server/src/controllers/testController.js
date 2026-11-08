@@ -133,19 +133,30 @@ export const startTestAttempt = async (req, res) => {
     }
 
     if (!attempt) {
-      attempt = new Attempt({
+      // Re-check for any recent in-progress attempt created within last 10s to prevent concurrent duplicate creation
+      const tenSecondsAgo = new Date(now.getTime() - 10000);
+      attempt = await Attempt.findOne({
         userId,
         testId: id,
-        workspaceId: test.workspaceId || null,
-        dayId: test.dayId || null,
-        startedAt: now,
         status: 'in-progress',
-        lastSavedVersion: 0,
-        tabSwitches: 0,
-        penaltySeconds: 0,
-        tabSwitchEvents: []
+        startedAt: { $gte: tenSecondsAgo }
       });
-      await attempt.save();
+
+      if (!attempt) {
+        attempt = new Attempt({
+          userId,
+          testId: id,
+          workspaceId: test.workspaceId || null,
+          dayId: test.dayId || null,
+          startedAt: now,
+          status: 'in-progress',
+          lastSavedVersion: 0,
+          tabSwitches: 0,
+          penaltySeconds: 0,
+          tabSwitchEvents: []
+        });
+        await attempt.save();
+      }
     }
 
     const questions = await Question.find({ testId: id })

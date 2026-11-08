@@ -87,15 +87,39 @@ export async function deleteChatSession({ sessionId, ownerId }) {
 
 /**
  * Guardrail check: Checks if student has an active in-progress test.
+ * Automatically marks expired attempts as 'expired' so stale sessions never permanently block the student.
  */
-export async function hasActiveTestAttempt(ownerId, workspaceId) {
-  const activeAttempt = await Attempt.findOne({
+export async function hasActiveTestAttempt(ownerId, workspaceId, dayId = null) {
+  const query = {
     userId: ownerId,
-    workspaceId,
     status: 'in-progress'
-  }).lean();
+  };
+  if (workspaceId) query.workspaceId = workspaceId;
+  if (dayId) query.dayId = dayId;
 
-  return !!activeAttempt;
+  const activeAttempts = await Attempt.find(query).populate('testId').lean();
+  if (!activeAttempts || activeAttempts.length === 0) return false;
+
+  const now = Date.now();
+  let hasLiveAttempt = false;
+
+  for (const att of activeAttempts) {
+    const timeLimitMinutes = att.testId?.timeLimitMinutes || 20;
+    const elapsedMs = now - new Date(att.startedAt).getTime();
+    const maxAllowedMs = (timeLimitMinutes + 1) * 60 * 1000;
+
+    if (elapsedMs > maxAllowedMs) {
+      // Auto-expire stale attempt in background
+      await Attempt.updateOne(
+        { _id: att._id },
+        { status: 'expired', submittedAt: new Date(new Date(att.startedAt).getTime() + maxAllowedMs) }
+      ).catch(() => {});
+    } else {
+      hasLiveAttempt = true;
+    }
+  }
+
+  return hasLiveAttempt;
 }
 
 /**
@@ -177,7 +201,7 @@ export async function streamTutorChat({
     await session.save();
 
     // 2. Anti-Cheating Guardrail: verify if test is currently in-progress
-    const inExam = await hasActiveTestAttempt(ownerId, session.workspaceId);
+    const inExam = await hasActiveTestAttempt(ownerId, session.workspaceId, session.dayId);
     if (inExam) {
       const refusal = `You currently have an active diagnostic examination in progress.
 
