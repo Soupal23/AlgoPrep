@@ -60,6 +60,24 @@ export const RoadmapView = () => {
     }
   });
 
+  // 1.1 Fetch Dynamic Re-planning Changes (Phase 8)
+  const {
+    data: changesData
+  } = useQuery({
+    queryKey: ['roadmap-changes', roadmapData?._id],
+    queryFn: async () => {
+      if (!roadmapData?._id) return null;
+      try {
+        const res = await api.getRoadmapChanges(roadmapData._id);
+        return res;
+      } catch (e) {
+        return null;
+      }
+    },
+    enabled: !!roadmapData?._id,
+    retry: false
+  });
+
   // 2. Day Status Mutation
   const updateStatusMutation = useMutation({
     mutationFn: ({ dayId, status }) => api.updateDayStatus(dayId, status),
@@ -233,6 +251,60 @@ export const RoadmapView = () => {
         </div>
       </div>
 
+      {/* Plan Updated Dynamic Re-planning Banner (Phase 8) */}
+      {(roadmapData.version > 1 || (changesData?.changeLog?.length > 0)) && (
+        <div className="p-5 sm:p-6 rounded-3xl bg-indigo-950/40 border border-indigo-500/40 shadow-xl space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-indigo-600/30 border border-indigo-500/50 flex items-center justify-center text-indigo-300">
+                <Sparkles className="w-4 h-4 text-indigo-300" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-bold text-white">Dynamic Re-planning Active</h3>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-indigo-900 border border-indigo-700 text-indigo-300">
+                    Plan v{roadmapData.version || changesData?.version || 2}
+                  </span>
+                </div>
+                <p className="text-xs text-indigo-200/80 mt-0.5">
+                  Your curriculum schedule has been automatically adapted based on your diagnostic test performance.
+                </p>
+              </div>
+            </div>
+
+            {changesData?.changeLog?.length > 0 && (
+              <span className="text-[11px] font-mono text-[#9f99b0] shrink-0">
+                Last updated {new Date(changesData.changeLog[changesData.changeLog.length - 1].at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </span>
+            )}
+          </div>
+
+          {changesData?.changeLog?.length > 0 && (
+            <div className="space-y-2 pt-2 border-t border-indigo-500/20">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-300 block">
+                Recent Re-planning Log:
+              </span>
+              <div className="space-y-1.5 max-h-36 overflow-y-auto">
+                {changesData.changeLog.slice(-4).reverse().map((entry, idx) => (
+                  <div
+                    key={idx}
+                    className="p-2.5 rounded-xl bg-[#14111f]/80 border border-indigo-500/20 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-1.5"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-indigo-950 border border-indigo-800 text-indigo-300">
+                        v{entry.version}
+                      </span>
+                      <span className="text-white font-medium">{entry.change}</span>
+                    </div>
+                    <span className="text-[11px] text-[#9f99b0] italic">{entry.reason}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Days Timeline View */}
       <div className="space-y-5">
         <div className="flex items-center justify-between">
@@ -279,6 +351,12 @@ export const RoadmapView = () => {
                       <span className={`px-2.5 py-1 rounded-lg text-xs font-semibold border uppercase tracking-wider ${typeColor}`}>
                         {day.type === 'mock' ? 'Mock Exam' : day.type}
                       </span>
+                      {day.type === 'revision' && (
+                        <span className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-purple-900/60 border border-purple-500/60 text-purple-200 flex items-center gap-1">
+                          <Sparkles className="w-3 h-3 text-purple-300" />
+                          <span>Adaptive Review</span>
+                        </span>
+                      )}
                       <div className="flex items-center gap-1 text-xs text-[#9f99b0]">
                         <Clock className="w-3.5 h-3.5" />
                         <span>~{day.estMinutes} mins</span>

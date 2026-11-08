@@ -4,7 +4,8 @@ import {
   regenerateRoadmapController,
   reorderDays,
   getDayById,
-  updateDayStatusController
+  updateDayStatusController,
+  getRoadmapChangesController
 } from '../controllers/roadmapController.js';
 import {
   getDayNotesController,
@@ -20,6 +21,7 @@ import {
 const router = express.Router();
 
 // Roadmap Lifecycle
+router.get('/roadmaps/:id/changes', authenticateJWT, getRoadmapChangesController);
 router.post('/roadmaps/:id/regenerate', authenticateJWT, regenerateRoadmapController);
 router.patch('/roadmaps/:id/days/reorder', authenticateJWT, reorderDays);
 router.post('/roadmaps/:id/final-mock', authenticateJWT, generateFinalMockController);

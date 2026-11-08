@@ -9,6 +9,7 @@ import {
   getRoadmapByWorkspace,
   updateDayStatus
 } from '../services/roadmapService.js';
+import { getRoadmapChanges } from '../services/masteryService.js';
 import logger from '../utils/logger.js';
 
 export const createOrGenerateRoadmap = async (req, res, next) => {
@@ -277,6 +278,25 @@ export const updateDayStatusController = async (req, res, next) => {
       success: true,
       message: 'Day status updated successfully.',
       day: updatedDay
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * GET /api/roadmaps/:id/changes
+ * Retrieves re-planning version change history for a roadmap.
+ */
+export const getRoadmapChangesController = async (req, res, next) => {
+  try {
+    const currentUserId = (req.user.userId || req.user._id).toString();
+    const { id: roadmapId } = req.params;
+
+    const result = await getRoadmapChanges(roadmapId, currentUserId);
+    res.json({
+      success: true,
+      ...result
     });
   } catch (error) {
     next(error);

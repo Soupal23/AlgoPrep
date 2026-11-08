@@ -246,6 +246,10 @@ class ApiService {
     return this.request(`/attempts/${attemptId}/review`);
   }
 
+  async getAttemptAnalysis(attemptId) {
+    return this.request(`/attempts/${attemptId}/analysis`);
+  }
+
   async getAIRevisionPlan(attemptId) {
     return this.request(`/attempts/${attemptId}/ai-revision`);
   }
@@ -413,6 +417,14 @@ class ApiService {
 
   async getWorkspaceTests(workspaceId) {
     return this.request(`/workspaces/${workspaceId}/tests`);
+  }
+
+  async getWorkspaceMastery(workspaceId) {
+    return this.request(`/workspaces/${workspaceId}/mastery`);
+  }
+
+  async getRoadmapChanges(roadmapId) {
+    return this.request(`/roadmaps/${roadmapId}/changes`);
   }
 
   async generateFinalMock(roadmapId) {

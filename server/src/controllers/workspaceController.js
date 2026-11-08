@@ -9,6 +9,9 @@ import { Job } from '../models/Job.js';
 import { Test } from '../models/Test.js';
 import { Question } from '../models/Question.js';
 import { Attempt } from '../models/Attempt.js';
+import { ConceptMastery } from '../models/ConceptMastery.js';
+import { Analysis } from '../models/Analysis.js';
+import { getWorkspaceMastery } from '../services/masteryService.js';
 import { retriever } from '../ai/retriever.js';
 import logger from '../utils/logger.js';
 
@@ -187,6 +190,8 @@ export const deleteWorkspace = async (req, res, next) => {
     await Question.deleteMany({ testId: { $in: testIds } });
     await Attempt.deleteMany({ $or: [{ testId: { $in: testIds } }, { workspaceId: id }] });
     await Test.deleteMany({ workspaceId: id });
+    await ConceptMastery.deleteMany({ workspaceId: id });
+    await Analysis.deleteMany({ workspaceId: id });
 
     await Day.deleteMany({ roadmapId: { $in: roadmapIds } });
     await Notes.deleteMany({ workspaceId: id });
@@ -285,6 +290,40 @@ export const getWorkspaceTests = async (req, res, next) => {
     res.json({
       success: true,
       tests
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * GET /api/workspaces/:id/mastery
+ * Retrieves concept mastery records for a workspace.
+ */
+export const getWorkspaceMasteryController = async (req, res, next) => {
+  try {
+    const currentUserId = (req.user.userId || req.user._id).toString();
+    const { id } = req.params;
+
+    const workspace = await Workspace.findById(id);
+    if (!workspace) {
+      return res.status(404).json({
+        success: false,
+        message: 'Workspace not found.'
+      });
+    }
+
+    if (workspace.ownerId.toString() !== currentUserId && req.user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Forbidden: You do not have access to this workspace.'
+      });
+    }
+
+    const masteryData = await getWorkspaceMastery(id, currentUserId);
+    res.json({
+      success: true,
+      ...masteryData
     });
   } catch (error) {
     next(error);

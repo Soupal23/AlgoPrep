@@ -46,7 +46,15 @@ const roadmapSchema = new Schema(
       latencyMs: { type: Number, default: 0 }
     },
     version: { type: Number, default: 1 },
-    regenerateCount: { type: Number, default: 0 }
+    regenerateCount: { type: Number, default: 0 },
+    changeLog: [
+      {
+        version: { type: Number, required: true },
+        change: { type: String, required: true },
+        reason: { type: String, default: '' },
+        at: { type: Date, default: Date.now }
+      }
+    ]
   },
   { timestamps: true }
 );

@@ -18,8 +18,20 @@ import {
   Compass,
   FileCode,
   SlidersHorizontal,
-  ChevronRight
+  ChevronRight,
+  TrendingUp,
+  BarChart2,
+  Target
 } from 'lucide-react';
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Cell
+} from 'recharts';
 
 export const WorkspaceDetail = () => {
   const { id } = useParams();
@@ -76,6 +88,22 @@ export const WorkspaceDetail = () => {
       try {
         const res = await api.getRoadmap(id);
         return res.roadmap;
+      } catch (e) {
+        return null;
+      }
+    },
+    retry: false
+  });
+
+  // 1.2 Fetch Workspace Concept Mastery (Phase 8)
+  const {
+    data: masteryData
+  } = useQuery({
+    queryKey: ['workspace-mastery', id],
+    queryFn: async () => {
+      try {
+        const res = await api.getWorkspaceMastery(id);
+        return res;
       } catch (e) {
         return null;
       }
@@ -386,6 +414,126 @@ export const WorkspaceDetail = () => {
           </div>
         </div>
       </div>
+
+      {/* Concept Mastery Overview (Phase 8) */}
+      {masteryData?.concepts?.length > 0 && (
+        <div className="p-6 sm:p-8 rounded-3xl bg-[#14111f] border border-[#383050] space-y-6 shadow-xl">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-emerald-950/80 border border-emerald-800 flex items-center justify-center text-emerald-400">
+                  <TrendingUp className="w-4 h-4" />
+                </div>
+                <h2 className="text-lg font-bold text-white">Concept Mastery Tracking</h2>
+              </div>
+              <p className="text-xs text-[#9f99b0]">
+                Running weighted mastery across tests with SM-2 spaced repetition intervals
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-emerald-950/70 border border-emerald-800 text-emerald-400">
+                {masteryData.concepts.filter(c => c.mastery >= 0.75).length} Mastered
+              </span>
+              <span className="px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-rose-950/70 border border-rose-800 text-rose-400">
+                {masteryData.concepts.filter(c => c.mastery < 0.6).length} Needs Review
+              </span>
+            </div>
+          </div>
+
+          {/* Bar Chart Visualization */}
+          <div className="h-56 w-full pt-2">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={masteryData.concepts.map(c => ({
+                  name: c.conceptTitle || c.conceptKey,
+                  mastery: Math.round(c.mastery * 100)
+                }))}
+                margin={{ top: 10, right: 10, left: -20, bottom: 25 }}
+              >
+                <XAxis
+                  dataKey="name"
+                  stroke="#64748b"
+                  tick={{ fill: '#94a3b8', fontSize: 11 }}
+                  interval={0}
+                  angle={-15}
+                  textAnchor="end"
+                />
+                <YAxis
+                  stroke="#64748b"
+                  tick={{ fill: '#94a3b8', fontSize: 11 }}
+                  domain={[0, 100]}
+                />
+                <Tooltip
+                  content={({ active, payload }) => {
+                    if (active && payload && payload.length) {
+                      const data = payload[0];
+                      return (
+                        <div className="p-2.5 rounded-xl bg-[#1c1729] border border-[#383050] shadow-xl text-xs font-mono">
+                          <p className="font-bold text-white mb-1">{data.payload.name}</p>
+                          <p className="text-emerald-400 font-extrabold">{data.value}% Mastery</p>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
+                />
+                <Bar dataKey="mastery" radius={[6, 6, 0, 0]}>
+                  {masteryData.concepts.map((entry, index) => {
+                    const score = entry.mastery * 100;
+                    const fill = score >= 75 ? '#10b981' : score >= 60 ? '#6366f1' : '#f43f5e';
+                    return <Cell key={`cell-${index}`} fill={fill} />;
+                  })}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Detailed Concept Pills */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 pt-2">
+            {masteryData.concepts.map((c) => {
+              const pct = Math.round(c.mastery * 100);
+              const isStrong = pct >= 75;
+              const isWeak = pct < 60;
+              const nextReview = c.nextReviewAt ? new Date(c.nextReviewAt).toLocaleDateString() : null;
+
+              return (
+                <div
+                  key={c._id || c.conceptKey}
+                  className="p-3 rounded-2xl bg-[#1c1729]/70 border border-[#383050] space-y-2"
+                >
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-bold text-white truncate max-w-[70%]">
+                      {c.conceptTitle || c.conceptKey}
+                    </span>
+                    <span
+                      className={`font-mono font-bold ${
+                        isStrong ? 'text-emerald-400' : isWeak ? 'text-rose-400' : 'text-indigo-400'
+                      }`}
+                    >
+                      {pct}%
+                    </span>
+                  </div>
+
+                  <div className="w-full h-1.5 rounded-full bg-[#14111f] overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-300 ${
+                        isStrong ? 'bg-emerald-500' : isWeak ? 'bg-rose-500' : 'bg-indigo-500'
+                      }`}
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between text-[11px] text-[#9f99b0]">
+                    <span>{c.attempts || 1} attempt{c.attempts === 1 ? '' : 's'}</span>
+                    {nextReview && <span>Review: {nextReview}</span>}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Active Jobs Progress Bar Banner */}
       {Object.keys(activeJobs).length > 0 && (

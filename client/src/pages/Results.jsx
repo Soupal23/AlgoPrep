@@ -1,7 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { api } from '../services/api';
-import { Award, Clock, Sparkles, HelpCircle, Check, X, RotateCcw, ArrowLeft } from 'lucide-react';
+import {
+  Award,
+  Clock,
+  Sparkles,
+  HelpCircle,
+  Check,
+  X,
+  RotateCcw,
+  ArrowLeft,
+  TrendingUp,
+  AlertTriangle,
+  CheckCircle2,
+  Target,
+  ArrowRight,
+  Loader2,
+  Compass
+} from 'lucide-react';
 import { RevisionPlanPanel } from '../components/revision/RevisionPlanPanel';
 
 export const Results = () => {
@@ -10,17 +26,23 @@ export const Results = () => {
   const [attempt, setAttempt] = useState(null);
   const [test, setTest] = useState(null);
   const [questions, setQuestions] = useState([]);
+  const [analysis, setAnalysis] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [analysisLoading, setAnalysisLoading] = useState(false);
   const [error, setError] = useState('');
 
   const [activeTab, setActiveTab] = useState(
-    searchParams.get('tab') === 'ai-plan' ? 'ai-plan' : 'review'
-  ); // 'review' | 'ai-plan'
+    searchParams.get('tab') === 'ai-plan'
+      ? 'ai-plan'
+      : searchParams.get('tab') === 'analysis'
+      ? 'analysis'
+      : 'review'
+  ); // 'review' | 'analysis' | 'ai-plan'
   const [questionFilter, setQuestionFilter] = useState('all'); // 'all' | 'correct' | 'incorrect' | 'unattempted'
 
   useEffect(() => {
     const tabParam = searchParams.get('tab');
-    if (tabParam === 'ai-plan' || tabParam === 'review') {
+    if (tabParam === 'ai-plan' || tabParam === 'review' || tabParam === 'analysis') {
       setActiveTab(tabParam);
     }
   }, [searchParams]);
@@ -37,10 +59,27 @@ export const Results = () => {
       setAttempt(reviewRes.attempt);
       setTest(reviewRes.test);
       setQuestions(reviewRes.questions || []);
+
+      // Fetch attempt analysis asynchronously
+      fetchAnalysis();
     } catch (err) {
       setError(err.message || 'Failed to load test attempt results');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchAnalysis = async () => {
+    try {
+      setAnalysisLoading(true);
+      const res = await api.getAttemptAnalysis(id);
+      if (res?.analysis) {
+        setAnalysis(res.analysis);
+      }
+    } catch (err) {
+      console.warn('Failed to fetch attempt analysis:', err.message);
+    } finally {
+      setAnalysisLoading(false);
     }
   };
 
@@ -160,7 +199,7 @@ export const Results = () => {
       </div>
 
       {/* Tabs Navigation */}
-      <div className="flex items-center gap-4 border-b border-[#383050] pb-2">
+      <div className="flex items-center gap-3 border-b border-[#383050] pb-2">
         <button
           onClick={() => handleTabChange('review')}
           className={`px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 ${
@@ -174,10 +213,22 @@ export const Results = () => {
         </button>
 
         <button
+          onClick={() => handleTabChange('analysis')}
+          className={`px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 ${
+            activeTab === 'analysis'
+              ? 'bg-purple-600 text-white shadow-md'
+              : 'bg-[#1c1729] text-slate-400 hover:text-white'
+          }`}
+        >
+          <TrendingUp className="w-4 h-4 text-emerald-400" />
+          <span>Mastery & Analysis</span>
+        </button>
+
+        <button
           onClick={() => handleTabChange('ai-plan')}
           className={`px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 ${
             activeTab === 'ai-plan'
-              ? 'bg-purple-600 text-white shadow-md'
+              ? 'bg-indigo-600 text-white shadow-md'
               : 'bg-[#1c1729] text-slate-400 hover:text-white'
           }`}
         >
@@ -331,7 +382,217 @@ export const Results = () => {
         </div>
       )}
 
-      {/* TAB 2: AI Revision Plan */}
+      {/* TAB 2: Mastery & Performance Analysis */}
+      {activeTab === 'analysis' && (
+        <div className="space-y-6">
+          {analysisLoading && !analysis ? (
+            <div className="p-12 text-center space-y-3 glass-card rounded-3xl border border-slate-800">
+              <Loader2 className="w-8 h-8 animate-spin text-purple-400 mx-auto" />
+              <p className="text-sm text-slate-400 font-mono">Synthesizing concept mastery & dynamic signals...</p>
+            </div>
+          ) : !analysis ? (
+            <div className="p-8 text-center space-y-3 glass-card rounded-3xl border border-slate-800">
+              <p className="text-slate-400 text-sm">No concept analysis recorded for this attempt.</p>
+              <button
+                onClick={fetchAnalysis}
+                className="px-4 py-2 rounded-xl bg-purple-600 text-white text-xs font-semibold cursor-pointer"
+              >
+                Generate Analysis
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {/* Executive Summary Card */}
+              <div className="p-6 rounded-3xl bg-[#14111f] border border-[#383050] space-y-4 shadow-xl">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-xl bg-purple-950/80 border border-purple-800 flex items-center justify-center text-purple-300">
+                      <Sparkles className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h2 className="text-base font-bold text-white">Performance Diagnostic</h2>
+                      <span className="text-[11px] font-mono text-purple-400">
+                        {analysis.source === 'ai' ? 'AI Diagnostic Synthesis' : 'Signal-Weighted Analysis'}
+                      </span>
+                    </div>
+                  </div>
+                  {test?.workspaceId && (
+                    <Link
+                      to={`/workspaces/${test.workspaceId}`}
+                      className="px-3 py-1.5 rounded-xl bg-[#1c1729] hover:bg-[#251e35] text-purple-300 text-xs font-semibold border border-[#383050] flex items-center gap-1.5 transition-colors"
+                    >
+                      <span>Workspace Overview</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                  )}
+                </div>
+                <p className="text-sm text-slate-200 leading-relaxed bg-[#1c1729]/60 p-4 rounded-2xl border border-[#383050]/50">
+                  {analysis.summary}
+                </p>
+              </div>
+
+              {/* Concept Mastery Changes (Deltas) */}
+              <div className="p-6 rounded-3xl bg-[#14111f] border border-[#383050] space-y-5 shadow-xl">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-xl bg-emerald-950/80 border border-emerald-800 flex items-center justify-center text-emerald-300">
+                      <TrendingUp className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h2 className="text-base font-bold text-white">Concept Mastery Progression</h2>
+                      <p className="text-xs text-[#9f99b0]">Running weighted score updated with SM-2 spaced repetition</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {(analysis.masteryDelta || []).map((m, idx) => {
+                    const beforePct = Math.round(m.before * 100);
+                    const afterPct = Math.round(m.after * 100);
+                    const deltaPct = Math.round(m.delta * 100);
+                    const isPositive = deltaPct >= 0;
+
+                    return (
+                      <div
+                        key={idx}
+                        className="p-4 rounded-2xl bg-[#1c1729] border border-[#383050] space-y-3"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="font-bold text-sm text-white truncate">
+                            {m.conceptTitle || m.conceptKey}
+                          </span>
+                          <span
+                            className={`px-2.5 py-0.5 rounded-full text-xs font-mono font-bold ${
+                              isPositive
+                                ? 'bg-emerald-950 text-emerald-400 border border-emerald-800'
+                                : 'bg-rose-950 text-rose-400 border border-rose-800'
+                            }`}
+                          >
+                            {isPositive ? `+${deltaPct}%` : `${deltaPct}%`}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center justify-between text-xs font-mono text-[#9f99b0]">
+                          <span>Before: {beforePct}%</span>
+                          <ArrowRight className="w-3.5 h-3.5 text-slate-500" />
+                          <span className="text-white font-bold">Now: {afterPct}%</span>
+                        </div>
+
+                        <div className="w-full h-2 rounded-full bg-[#14111f] overflow-hidden">
+                          <div
+                            className={`h-full transition-all duration-500 rounded-full ${
+                              afterPct >= 75
+                                ? 'bg-emerald-500'
+                                : afterPct >= 60
+                                ? 'bg-indigo-500'
+                                : 'bg-rose-500'
+                            }`}
+                            style={{ width: `${afterPct}%` }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Weak Concepts Card */}
+              {analysis.weakConcepts?.length > 0 && (
+                <div className="p-6 rounded-3xl bg-rose-950/20 border border-rose-900/60 space-y-4 shadow-xl">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-xl bg-rose-950 border border-rose-800 flex items-center justify-center text-rose-400">
+                      <AlertTriangle className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h2 className="text-base font-bold text-rose-300">Weak Concepts Identified</h2>
+                      <p className="text-xs text-rose-400/80">
+                        Mastery is below 60%. These have been scheduled for automated revision.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    {analysis.weakConcepts.map((w, idx) => (
+                      <div
+                        key={idx}
+                        className="p-4 rounded-2xl bg-[#14111f]/80 border border-rose-900/40 flex flex-col sm:flex-row sm:items-center justify-between gap-2"
+                      >
+                        <div>
+                          <span className="font-bold text-sm text-white">{w.conceptTitle || w.conceptKey}</span>
+                          <p className="text-xs text-rose-300/80 mt-0.5">{w.reason}</p>
+                        </div>
+                        <span className="px-2.5 py-1 rounded-xl text-xs font-mono font-bold bg-rose-950 border border-rose-800 text-rose-400 shrink-0">
+                          {Math.round(w.mastery * 100)}% Mastery
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Strengths Card */}
+              {analysis.strengths?.length > 0 && (
+                <div className="p-6 rounded-3xl bg-emerald-950/20 border border-emerald-900/60 space-y-4 shadow-xl">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-xl bg-emerald-950 border border-emerald-800 flex items-center justify-center text-emerald-400">
+                      <CheckCircle2 className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h2 className="text-base font-bold text-emerald-300">Demonstrated Strengths</h2>
+                      <p className="text-xs text-emerald-400/80">Mastery is 75%+ with solid retention.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2.5">
+                    {analysis.strengths.map((s, idx) => (
+                      <span
+                        key={idx}
+                        className="px-3 py-1.5 rounded-xl bg-[#14111f] border border-emerald-900/50 text-emerald-300 text-xs font-bold flex items-center gap-2"
+                      >
+                        <span>{s.conceptTitle || s.conceptKey}</span>
+                        <span className="text-[11px] font-mono text-emerald-400/70">
+                          ({Math.round(s.mastery * 100)}%)
+                        </span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Actionable Next Steps */}
+              {analysis.nextSteps?.length > 0 && (
+                <div className="p-6 rounded-3xl bg-[#14111f] border border-[#383050] space-y-4 shadow-xl">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-xl bg-indigo-950/80 border border-indigo-800 flex items-center justify-center text-indigo-400">
+                      <Target className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h2 className="text-base font-bold text-white">Recommended Next Steps</h2>
+                      <p className="text-xs text-[#9f99b0]">Targeted recommendations for your next study block</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2.5">
+                    {analysis.nextSteps.map((step, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-start gap-3 p-3.5 rounded-2xl bg-[#1c1729] border border-[#383050] text-xs text-slate-200"
+                      >
+                        <span className="w-5 h-5 rounded-lg bg-indigo-600/30 border border-indigo-500/40 text-indigo-300 font-mono font-bold flex items-center justify-center shrink-0 mt-0.5">
+                          {idx + 1}
+                        </span>
+                        <span className="leading-relaxed">{step}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB 3: AI Revision Plan */}
       {activeTab === 'ai-plan' && (
         <RevisionPlanPanel attemptId={id} onJumpToQuestion={handleJumpToQuestion} />
       )}

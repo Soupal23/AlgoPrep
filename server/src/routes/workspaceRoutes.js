@@ -8,7 +8,8 @@ import {
   updateWorkspace,
   deleteWorkspace,
   searchWorkspace,
-  getWorkspaceTests
+  getWorkspaceTests,
+  getWorkspaceMasteryController
 } from '../controllers/workspaceController.js';
 import {
   uploadMaterials,
@@ -38,6 +39,7 @@ router.route('/:id/roadmap')
   .get(authenticateJWT, getWorkspaceRoadmap);
 
 router.get('/:id/tests', authenticateJWT, getWorkspaceTests);
+router.get('/:id/mastery', authenticateJWT, getWorkspaceMasteryController);
 
 router.post('/:id/search', authenticateJWT, searchWorkspace);
 

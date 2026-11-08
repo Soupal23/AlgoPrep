@@ -11,6 +11,7 @@ import {
   buildFallbackPlan
 } from '../services/revisionPlanService.js';
 import { selectCandidates } from '../data/resourceCatalog.js';
+import { generateAttemptAnalysis } from '../services/masteryService.js';
 import mongoose from 'mongoose';
 
 export const saveProgress = async (req, res) => {
@@ -228,6 +229,15 @@ export const submitAttempt = async (req, res) => {
     }
 
     await attempt.save();
+
+    // Trigger asynchronous mastery calculation & attempt analysis
+    setImmediate(async () => {
+      try {
+        await generateAttemptAnalysis({ attemptId: attempt._id, userId: attempt.userId });
+      } catch (analysisErr) {
+        console.error('Background mastery/analysis generation error:', analysisErr);
+      }
+    });
 
     res.json({
       message: 'Test submitted successfully',
@@ -547,5 +557,24 @@ export const regenerateAIRevisionPlan = async (req, res) => {
   } catch (err) {
     console.error('regenerateAIRevisionPlan error:', err);
     res.status(500).json({ error: 'Failed to regenerate revision plan' });
+  }
+};
+
+export const getAttemptAnalysisController = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user?.userId;
+
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const analysis = await generateAttemptAnalysis({ attemptId: id, userId });
+    res.json({ analysis });
+  } catch (err) {
+    console.error('getAttemptAnalysis error:', err);
+    const status = err.statusCode || 500;
+    res.status(status).json({ error: err.message || 'Failed to get attempt analysis' });
   }
 };

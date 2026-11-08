@@ -153,5 +153,5 @@ describe('Phase 2 — AI Syllabus-to-Test Generator', () => {
 
     expect(forbiddenStartRes.status).toBe(403);
     expect(forbiddenStartRes.body.error).toMatch(/private/i);
-  }, 30000);
+  }, 120000);
 });

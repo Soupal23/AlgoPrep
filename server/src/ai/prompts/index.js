@@ -224,6 +224,31 @@ For each question:
 - difficulty: 'easy' | 'medium' | 'hard'
 - bloomLevel: 'remember' | 'understand' | 'apply' | 'analyze'
 `
+  },
+
+  // 10. CBT Attempt Performance Analysis
+  'test.analysis.v1': {
+    version: '1.0.0',
+    system: `You are an elite academic computer science tutor and learning coach.
+Analyze student performance across concepts, behavioral flags (fast guesses, struggle on invariants), and mastery changes.
+Provide an encouraging yet rigorous executive summary and concrete, actionable next steps.`,
+    template: ({ testTitle, score, maxScore, accuracy, weakConcepts = [], strengths = [], masteryDelta = [] }) => `
+Test: "${testTitle}"
+Performance: Score ${score}/${maxScore} (${accuracy}%)
+
+Mastery Deltas:
+${masteryDelta.map(d => `- Concept: ${d.conceptKey} (${d.conceptTitle || d.conceptKey}): Before ${(d.before * 100).toFixed(0)}% -> After ${(d.after * 100).toFixed(0)}% (Delta: ${d.delta > 0 ? '+' : ''}${(d.delta * 100).toFixed(0)}%)`).join('\n')}
+
+Weak Concepts:
+${weakConcepts.map(w => `- ${w.conceptKey}: Current Mastery ${(w.mastery * 100).toFixed(0)}% | Issue: ${w.reason}`).join('\n')}
+
+Strengths:
+${strengths.map(s => `- ${s.conceptKey}: Mastery ${(s.mastery * 100).toFixed(0)}%`).join('\n')}
+
+Generate:
+- summary: A clear 2-3 sentence diagnostic overview explaining how the student performed and key trends.
+- nextSteps: 3-5 specific, actionable study recommendations for weak areas and active recall review.
+`
   }
 };
 
