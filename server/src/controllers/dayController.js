@@ -2,8 +2,10 @@ import { Day } from '../models/Day.js';
 import { Notes } from '../models/Notes.js';
 import { Job } from '../models/Job.js';
 import { DayResource } from '../models/DayResource.js';
+import { Test } from '../models/Test.js';
 import { generateDayNotes, getNotesByDayId, markNotesAsRead } from '../services/notesService.js';
 import { getDayResources, getOrCurateDayResources, saveResourceFeedback } from '../services/resourceService.js';
+import { getOrGenerateDayTest, generateFinalMock } from '../services/testGenerationService.js';
 import { createJob } from '../services/jobService.js';
 import { getQueues } from '../queue/queues.js';
 import { isRedisReady } from '../queue/connection.js';
@@ -465,6 +467,133 @@ export const saveResourceFeedbackController = async (req, res, next) => {
       success: true,
       message: 'Feedback saved successfully',
       dayResource: updated
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * POST /api/days/:dayId/test
+ * Retrieves existing CBT test for a day or generates grounded questions.
+ */
+export const getDayTestController = async (req, res, next) => {
+  try {
+    const currentUserId = (req.user.userId || req.user._id).toString();
+    const { dayId } = req.params;
+    const isSync = req.query.sync === 'true';
+
+    const day = await Day.findById(dayId);
+    if (!day) {
+      return res.status(404).json({
+        success: false,
+        message: 'Day not found.'
+      });
+    }
+
+    if (day.ownerId.toString() !== currentUserId && req.user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Forbidden: You do not own this day.'
+      });
+    }
+
+    // 1. If test already exists and ready, return it immediately
+    const existingTest = await Test.findOne({ dayId }).lean();
+    if (existingTest) {
+      return res.json({
+        success: true,
+        status: 'ready',
+        testId: existingTest._id.toString(),
+        test: existingTest
+      });
+    }
+
+    // 2. Synchronous mode (testing/direct)
+    if (isSync) {
+      const result = await getOrGenerateDayTest({
+        dayId,
+        userId: currentUserId,
+        force: false
+      });
+      return res.json({
+        success: true,
+        status: 'ready',
+        testId: result.test._id.toString(),
+        test: result.test,
+        questions: result.questions
+      });
+    }
+
+    // 3. Check for existing active job
+    const existingJob = await Job.findOne({
+      refId: dayId,
+      type: 'test_job',
+      status: { $in: ['queued', 'running'] }
+    }).sort({ createdAt: -1 });
+
+    if (existingJob) {
+      return res.status(202).json({
+        success: true,
+        status: 'generating',
+        jobId: existingJob._id.toString(),
+        message: 'Day CBT examination is being prepared in the background.'
+      });
+    }
+
+    // 4. Create tracking job & dispatch
+    const job = await createJob({
+      userId: currentUserId,
+      type: 'test_job',
+      refId: dayId,
+      stage: 'Initiating Day CBT question generation'
+    });
+
+    const jobPayload = {
+      dayId,
+      userId: currentUserId,
+      jobId: job._id.toString(),
+      force: false
+    };
+
+    setImmediate(async () => {
+      try {
+        await getOrGenerateDayTest(jobPayload);
+      } catch (err) {
+        logger.error({ err: err.message, dayId }, 'Background day test generation failed');
+      }
+    });
+
+    return res.status(202).json({
+      success: true,
+      status: 'generating',
+      jobId: job._id.toString(),
+      message: 'Generating grounded diagnostic examination for this session.'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * POST /api/roadmaps/:id/final-mock
+ * Generates or retrieves the comprehensive final mock exam for a roadmap.
+ */
+export const generateFinalMockController = async (req, res, next) => {
+  try {
+    const currentUserId = (req.user.userId || req.user._id).toString();
+    const { id: roadmapId } = req.params;
+
+    const result = await generateFinalMock({
+      roadmapId,
+      userId: currentUserId
+    });
+
+    return res.json({
+      success: true,
+      testId: result.test._id.toString(),
+      test: result.test,
+      questionsCount: result.questionsCount
     });
   } catch (error) {
     next(error);

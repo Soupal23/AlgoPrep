@@ -7,7 +7,8 @@ import {
   getWorkspaceById,
   updateWorkspace,
   deleteWorkspace,
-  searchWorkspace
+  searchWorkspace,
+  getWorkspaceTests
 } from '../controllers/workspaceController.js';
 import {
   uploadMaterials,
@@ -35,6 +36,8 @@ router.route('/:id')
 router.route('/:id/roadmap')
   .post(authenticateJWT, createOrGenerateRoadmap)
   .get(authenticateJWT, getWorkspaceRoadmap);
+
+router.get('/:id/tests', authenticateJWT, getWorkspaceTests);
 
 router.post('/:id/search', authenticateJWT, searchWorkspace);
 

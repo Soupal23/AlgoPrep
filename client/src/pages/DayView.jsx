@@ -32,7 +32,9 @@ import {
   PlayCircle,
   GraduationCap,
   Globe,
-  Book
+  Book,
+  Award,
+  Play
 } from 'lucide-react';
 
 export const DayView = () => {
@@ -109,6 +111,52 @@ export const DayView = () => {
     },
     enabled: !!dayId && activeTab === 'resources',
     retry: 1
+  });
+
+  // 4. Fetch or Trigger Day CBT Diagnostic Test (Phase 7)
+  const {
+    data: dayTestData,
+    isLoading: isTestLoading,
+    error: testError,
+    refetch: refetchTest
+  } = useQuery({
+    queryKey: ['dayTest', dayId],
+    queryFn: async () => {
+      const res = await api.getDayTest(dayId);
+      if (res.status === 'generating' && res.jobId) {
+        setActiveJobId(res.jobId);
+        subscribeToJobStream(res.jobId);
+        return null;
+      }
+      return res.test || null;
+    },
+    enabled: !!dayId && activeTab === 'test',
+    retry: 1
+  });
+
+  // Query past attempts for this test
+  const {
+    data: userAttempts = [],
+    refetch: refetchAttempts
+  } = useQuery({
+    queryKey: ['testAttempts', dayTestData?._id],
+    queryFn: async () => {
+      const res = await api.getUserAttempts();
+      const list = res?.attempts || [];
+      return list.filter((a) => (a.testId?._id || a.testId) === dayTestData?._id);
+    },
+    enabled: !!dayTestData?._id && activeTab === 'test'
+  });
+
+  // Generate / Regenerate Test Mutation (Phase 7)
+  const generateTestMutation = useMutation({
+    mutationFn: () => api.getDayTest(dayId, true),
+    onSuccess: (res) => {
+      if (res.test) {
+        queryClient.setQueryData(['dayTest', dayId], res.test);
+        queryClient.invalidateQueries({ queryKey: ['testAttempts', res.test._id] });
+      }
+    }
   });
 
   // 4. Mark Day Status Mutation
@@ -196,6 +244,8 @@ export const DayView = () => {
           setJobProgress(null);
           refetchNotes();
           refetchResources();
+          refetchTest();
+          refetchAttempts();
           refetchDay();
         }
       } catch (err) {
@@ -881,16 +931,233 @@ export const DayView = () => {
         </div>
       )}
 
-      {/* TAB 3: DAILY CBT QUIZ PLACEHOLDER (Phase 7) */}
+      {/* TAB 3: DAILY CBT DIAGNOSTIC TEST (Phase 7) */}
       {activeTab === 'test' && (
-        <div className="p-8 sm:p-12 rounded-3xl bg-[#14111f] border border-[#383050] shadow-xl text-center space-y-4">
-          <div className="w-14 h-14 rounded-2xl bg-amber-600/20 border border-amber-500/40 flex items-center justify-center mx-auto text-amber-400">
-            <ClipboardList className="w-7 h-7" />
+        <div className="space-y-8 animate-fadeIn">
+          {/* Header & Controls */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-3xl bg-[#14111f] border border-[#383050]">
+            <div>
+              <h2 className="text-lg font-black text-white flex items-center gap-2">
+                <ClipboardList className="w-5 h-5 text-amber-400" />
+                <span>Day {dayData.dayNumber} Concept Examination</span>
+              </h2>
+              <p className="text-xs text-[#9f99b0] mt-1">
+                Grounded multiple-choice diagnostic test covering today's concepts with positive and negative marking.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => generateTestMutation.mutate()}
+                disabled={generateTestMutation.isPending || activeJobId}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#1c1729] hover:bg-[#251e35] disabled:opacity-50 border border-[#383050] text-xs font-semibold text-[#9f99b0] hover:text-white transition-all cursor-pointer shadow-sm"
+              >
+                {generateTestMutation.isPending || activeJobId ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-400" />
+                ) : (
+                  <RotateCcw className="w-3.5 h-3.5 text-amber-400" />
+                )}
+                <span>{generateTestMutation.isPending || activeJobId ? 'Preparing...' : 'Re-generate Test'}</span>
+              </button>
+            </div>
           </div>
-          <h3 className="text-xl font-extrabold text-white">Day {dayData.dayNumber} Concept Examination</h3>
-          <p className="text-xs sm:text-sm text-[#9f99b0] max-w-lg mx-auto leading-relaxed">
-            Timed CBT quiz with negative marking, question bookmarks, and AI remediation tailored to Day {dayData.dayNumber} concepts will be activated in <strong>Phase 7</strong>.
-          </p>
+
+          {/* Progress Banner during Live Generation */}
+          {(activeJobId || isTestLoading) && (
+            <div className="p-8 rounded-3xl bg-amber-950/20 border border-amber-500/30 text-center space-y-4">
+              <div className="w-12 h-12 rounded-2xl bg-amber-600/20 border border-amber-500/40 flex items-center justify-center mx-auto text-amber-400">
+                <Loader2 className="w-6 h-6 animate-spin" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-base font-bold text-white">
+                  {jobProgress?.stage || 'Synthesizing Grounded CBT Questions...'}
+                </h3>
+                <p className="text-xs text-[#9f99b0]">
+                  Formulating diagnostic questions grounded in your course materials with randomized distractors.
+                </p>
+              </div>
+
+              {jobProgress && (
+                <div className="w-full max-w-md mx-auto space-y-1">
+                  <div className="w-full bg-[#1c1729] h-2 rounded-full overflow-hidden border border-[#383050]">
+                    <div
+                      className="bg-gradient-to-r from-amber-500 to-indigo-500 h-full transition-all duration-300 rounded-full"
+                      style={{ width: `${jobProgress.progress || 25}%` }}
+                    />
+                  </div>
+                  <div className="flex justify-between text-[11px] font-mono text-[#9f99b0]">
+                    <span>{jobProgress.stage}</span>
+                    <span>{jobProgress.progress}%</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Test Available & Past Attempts */}
+          {!activeJobId && !isTestLoading && dayTestData && (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+              {/* Left Column: Test Details & Start Action */}
+              <div className="lg:col-span-7 space-y-6">
+                <div className="p-6 rounded-3xl bg-[#14111f] border border-[#383050] space-y-5">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border border-amber-500/30 bg-amber-500/10 text-amber-300">
+                      <Award className="w-3.5 h-3.5" />
+                      <span>{dayTestData.mode === 'practice' ? 'Practice Examination' : 'Exam Mode'}</span>
+                    </span>
+
+                    <span className="text-xs font-mono text-[#9f99b0]">
+                      Format: Standard CBT
+                    </span>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-extrabold text-white leading-tight">
+                      {dayTestData.title}
+                    </h3>
+                    <p className="text-xs text-[#9f99b0] mt-1 leading-relaxed">
+                      {dayTestData.description}
+                    </p>
+                  </div>
+
+                  {/* Test Specs Grid */}
+                  <div className="grid grid-cols-3 gap-3 pt-2">
+                    <div className="p-3.5 rounded-2xl bg-[#1c1729] border border-[#2b243d] text-center">
+                      <div className="text-[11px] text-[#9f99b0] uppercase font-mono">Questions</div>
+                      <div className="text-lg font-mono font-extrabold text-white mt-0.5">
+                        {dayTestData.totalQuestions}
+                      </div>
+                    </div>
+                    <div className="p-3.5 rounded-2xl bg-[#1c1729] border border-[#2b243d] text-center">
+                      <div className="text-[11px] text-[#9f99b0] uppercase font-mono">Time Limit</div>
+                      <div className="text-lg font-mono font-extrabold text-amber-300 mt-0.5">
+                        {dayTestData.timeLimitMinutes}m
+                      </div>
+                    </div>
+                    <div className="p-3.5 rounded-2xl bg-[#1c1729] border border-[#2b243d] text-center">
+                      <div className="text-[11px] text-[#9f99b0] uppercase font-mono">Marking</div>
+                      <div className="text-lg font-mono font-extrabold text-emerald-400 mt-0.5">
+                        +{dayTestData.markingScheme?.correct || 4} / {dayTestData.markingScheme?.incorrect || -1}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Topics Covered */}
+                  {dayTestData.conceptKeys?.length > 0 && (
+                    <div className="space-y-2 pt-2">
+                      <span className="text-xs font-bold text-slate-300 uppercase tracking-wider block">
+                        Concepts Evaluated:
+                      </span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {dayTestData.conceptKeys.map((k) => (
+                          <span
+                            key={k}
+                            className="text-xs px-2.5 py-1 rounded-xl bg-[#1c1729] border border-[#383050] text-purple-300 font-mono"
+                          >
+                            {k}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Primary CTA */}
+                  <div className="pt-4 border-t border-[#251e35] flex flex-wrap items-center gap-3">
+                    <Link
+                      to={`/test/${dayTestData._id}`}
+                      className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-xl transition-all cursor-pointer"
+                    >
+                      <Play className="w-4 h-4 fill-white" />
+                      <span>{userAttempts.length > 0 ? 'Take Another Attempt' : 'Start Day Test'}</span>
+                    </Link>
+
+                    {userAttempts.length > 0 && (
+                      <Link
+                        to={`/test/${dayTestData._id}?retake=true`}
+                        className="inline-flex items-center gap-2 px-4 py-3 rounded-2xl bg-[#1c1729] hover:bg-[#251e35] text-purple-300 text-xs font-bold border border-[#383050] transition-all cursor-pointer"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5" />
+                        <span>Fresh Retake</span>
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column: Performance History / Attempts */}
+              <div className="lg:col-span-5 space-y-4">
+                <div className="p-6 rounded-3xl bg-[#14111f] border border-[#383050] space-y-4">
+                  <div className="flex items-center justify-between pb-3 border-b border-[#251e35]">
+                    <h4 className="text-sm font-extrabold text-white flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                      <span>Attempt History ({userAttempts.length})</span>
+                    </h4>
+                  </div>
+
+                  {userAttempts.length === 0 ? (
+                    <div className="py-8 text-center space-y-2">
+                      <HelpCircle className="w-8 h-8 text-[#9f99b0] mx-auto opacity-50" />
+                      <p className="text-xs text-[#9f99b0]">No attempts recorded yet for Day {dayData.dayNumber}.</p>
+                      <p className="text-[11px] text-slate-500">
+                        Complete your study notes, then take this diagnostic quiz to evaluate your retention.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {userAttempts.map((att, idx) => (
+                        <div
+                          key={att._id}
+                          className="p-4 rounded-2xl bg-[#1c1729] border border-[#383050] hover:border-purple-500/40 transition-all flex items-center justify-between gap-3"
+                        >
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-mono font-bold text-white">
+                                Attempt #{userAttempts.length - idx}
+                              </span>
+                              <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-800 font-bold">
+                                {att.accuracy || 0}% Accuracy
+                              </span>
+                            </div>
+                            <div className="text-[11px] text-[#9f99b0] mt-1 font-mono">
+                              Score: <span className="text-purple-300 font-bold">{att.score}</span> / {att.maxScore} pts · {Math.floor((att.timeSpentSeconds || 0) / 60)}m
+                            </div>
+                          </div>
+
+                          <Link
+                            to={`/results/${att._id}`}
+                            className="px-3 py-1.5 rounded-xl bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/40 text-purple-300 text-xs font-semibold transition-all inline-flex items-center gap-1 shrink-0"
+                          >
+                            <span>Review</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </Link>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* If no test generated yet */}
+          {!activeJobId && !isTestLoading && !dayTestData && (
+            <div className="p-12 rounded-3xl bg-[#14111f] border border-[#383050] text-center space-y-4">
+              <div className="w-12 h-12 rounded-2xl bg-amber-600/20 border border-amber-500/40 flex items-center justify-center mx-auto text-amber-400">
+                <ClipboardList className="w-6 h-6" />
+              </div>
+              <h3 className="text-base font-bold text-white">Day {dayData.dayNumber} Test Ready to Generate</h3>
+              <p className="text-xs text-[#9f99b0] max-w-sm mx-auto">
+                Generate diagnostic CBT multiple-choice questions grounded in today's topics and verified study materials.
+              </p>
+              <button
+                onClick={() => generateTestMutation.mutate()}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs shadow-md transition-all cursor-pointer"
+              >
+                <Sparkles className="w-4 h-4" />
+                <span>Generate Day Test</span>
+              </button>
+            </div>
+          )}
         </div>
       )}
 

@@ -12,7 +12,9 @@ import {
   markNotesReadController,
   getDayResourcesController,
   regenerateDayResourcesController,
-  saveResourceFeedbackController
+  saveResourceFeedbackController,
+  getDayTestController,
+  generateFinalMockController
 } from '../controllers/dayController.js';
 
 const router = express.Router();
@@ -20,6 +22,7 @@ const router = express.Router();
 // Roadmap Lifecycle
 router.post('/roadmaps/:id/regenerate', authenticateJWT, regenerateRoadmapController);
 router.patch('/roadmaps/:id/days/reorder', authenticateJWT, reorderDays);
+router.post('/roadmaps/:id/final-mock', authenticateJWT, generateFinalMockController);
 
 // Day Lifecycle
 router.get('/days/:dayId', authenticateJWT, getDayById);
@@ -34,5 +37,8 @@ router.post('/days/:dayId/notes/read', authenticateJWT, markNotesReadController)
 router.get('/days/:dayId/resources', authenticateJWT, getDayResourcesController);
 router.post('/days/:dayId/resources/regenerate', authenticateJWT, regenerateDayResourcesController);
 router.post('/resources/:id/feedback', authenticateJWT, saveResourceFeedbackController);
+
+// Day CBT Diagnostic Test Lifecycle (Phase 7)
+router.post('/days/:dayId/test', authenticateJWT, getDayTestController);
 
 export default router;

@@ -403,6 +403,23 @@ class ApiService {
       body: JSON.stringify(feedback)
     });
   }
+
+  // Day CBT Diagnostic Test API (Phase 7)
+  async getDayTest(dayId, isSync = false) {
+    return this.request(`/days/${dayId}/test${isSync ? '?sync=true' : ''}`, {
+      method: 'POST'
+    });
+  }
+
+  async getWorkspaceTests(workspaceId) {
+    return this.request(`/workspaces/${workspaceId}/tests`);
+  }
+
+  async generateFinalMock(roadmapId) {
+    return this.request(`/roadmaps/${roadmapId}/final-mock`, {
+      method: 'POST'
+    });
+  }
 }
 
 export const api = new ApiService();

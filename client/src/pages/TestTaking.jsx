@@ -107,7 +107,7 @@ export const TestTaking = () => {
       setQuestionStates(initialStates);
       setTabSwitches(res.tabSwitches || 0);
 
-      if (res.wasResumed) {
+      if (res.wasResumed && res.test?.mode !== 'practice') {
         setWarningModal({
           isOpen: true,
           title: 'Warning: Session Resumed!',
@@ -242,7 +242,7 @@ export const TestTaking = () => {
 
   const triggerViolation = useCallback(
     (reason, title, message) => {
-      if (submittedRef.current || !attemptIdRef.current) return;
+      if (submittedRef.current || !attemptIdRef.current || test?.mode === 'practice') return;
 
       const now = Date.now();
       // Throttle rapid consecutive events (e.g. window blur immediately before visibilitychange)
@@ -311,6 +311,7 @@ export const TestTaking = () => {
   };
 
   useEffect(() => {
+    if (test?.mode === 'practice') return;
     // 1. Trap Browser Back/Forward navigation by pushing a dummy state onto history
     try {
       window.history.pushState({ examLocked: true }, '', window.location.href);
@@ -594,6 +595,15 @@ export const TestTaking = () => {
             <span className="text-xs px-2 py-0.5 rounded-full bg-[#1c1729] text-purple-400 border border-[#383050] font-mono">
               {test.topic}
             </span>
+            {test.mode === 'practice' ? (
+              <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-950/60 text-emerald-400 border border-emerald-800/40 font-mono font-bold">
+                Practice Mode
+              </span>
+            ) : (
+              <span className="text-xs px-2.5 py-0.5 rounded-full bg-amber-950/60 text-amber-400 border border-amber-800/40 font-mono font-bold">
+                Exam Mode
+              </span>
+            )}
           </h1>
           <p className="text-xs text-slate-400 mt-1">
             Marking Scheme: <span className="font-mono text-emerald-400 font-bold">+{test.markingScheme.correct}</span> /{' '}

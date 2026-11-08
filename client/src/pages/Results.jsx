@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { api } from '../services/api';
-import { Award, Clock, Sparkles, HelpCircle, Check, X, RotateCcw } from 'lucide-react';
+import { Award, Clock, Sparkles, HelpCircle, Check, X, RotateCcw, ArrowLeft } from 'lucide-react';
 import { RevisionPlanPanel } from '../components/revision/RevisionPlanPanel';
 
 export const Results = () => {
@@ -108,6 +108,15 @@ export const Results = () => {
           </div>
 
           <div className="flex items-center gap-2">
+            {test?.dayId && (
+              <Link
+                to={`/workspaces/${test.workspaceId || attempt?.workspaceId}/days/${test.dayId}`}
+                className="px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-all shadow-md flex items-center gap-2"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span>Return to Day Session</span>
+              </Link>
+            )}
             <Link
               to={`/test/${test?._id}?retake=true`}
               className="px-4 py-2.5 rounded-xl bg-[#1c1729] hover:bg-[#251e35] text-purple-300 text-xs font-semibold border border-[#383050] transition-colors flex items-center gap-2"
@@ -234,9 +243,21 @@ export const Results = () => {
                   }`}
                 >
                   <div className="flex items-center justify-between gap-2 pb-3 mb-4 border-b border-slate-800/80">
-                    <span className="text-xs font-mono font-bold text-cyan-400">
-                      Question {q.order}
-                    </span>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-xs font-mono font-bold text-cyan-400">
+                        Question {q.order}
+                      </span>
+                      {q.conceptKey && (
+                        <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-purple-950/80 text-purple-300 border border-purple-800/40">
+                          {q.conceptKey}
+                        </span>
+                      )}
+                      {q.bloomLevel && (
+                        <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-indigo-950/80 text-indigo-300 border border-indigo-800/40">
+                          {q.bloomLevel}
+                        </span>
+                      )}
+                    </div>
 
                     <span
                       className={`inline-flex items-center gap-1 px-3 py-0.5 rounded-full text-xs font-semibold ${

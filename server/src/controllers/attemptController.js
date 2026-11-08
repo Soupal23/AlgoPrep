@@ -110,8 +110,8 @@ export const saveProgress = async (req, res) => {
 
     if (tabSwitchEvent) {
       attempt.tabSwitches += 1;
-      // Fixed 600s (10 min) server penalty to prevent client-side manipulation
-      const penalty = 600;
+      // In practice mode, record event without deducting test time. In exam mode, apply 600s server penalty.
+      const penalty = test.mode === 'practice' ? 0 : 600;
       attempt.penaltySeconds = (attempt.penaltySeconds || 0) + penalty;
       attempt.tabSwitchEvents.push({
         timestamp: new Date(tabSwitchEvent.timestamp || Date.now()),
@@ -221,6 +221,8 @@ export const submitAttempt = async (req, res) => {
     attempt.timeSpentSeconds = actualTimeSpent;
     attempt.status = 'submitted';
     attempt.submittedAt = now;
+    if (test.workspaceId) attempt.workspaceId = test.workspaceId;
+    if (test.dayId) attempt.dayId = test.dayId;
     if (typeof version === 'number') {
       attempt.lastSavedVersion = version;
     }
@@ -345,6 +347,9 @@ export const getAttemptReview = async (req, res) => {
         timeSpent,
         isMarked,
         concept: q.concept || null,
+        conceptKey: q.conceptKey || null,
+        bloomLevel: q.bloomLevel || null,
+        sourceChunkIds: q.sourceChunkIds || [],
         difficulty: q.difficulty || null
       };
     });

@@ -25,6 +25,16 @@ const testSchema = new Schema(
     },
     ownerId: { type: Schema.Types.ObjectId, ref: 'User', default: null, index: true },
     createdBy: { type: Schema.Types.ObjectId, ref: 'User', default: null },
+    workspaceId: { type: Schema.Types.ObjectId, ref: 'Workspace', default: null, index: true },
+    roadmapId: { type: Schema.Types.ObjectId, ref: 'Roadmap', default: null, index: true },
+    dayId: { type: Schema.Types.ObjectId, ref: 'Day', default: null, index: true },
+    conceptKeys: [{ type: String }],
+    generation: {
+      status: { type: String, default: null },
+      promptVersion: { type: String, default: null },
+      model: { type: String, default: null },
+      tokens: { type: Number, default: 0 }
+    },
     conceptTagging: {
       status: {
         type: String,

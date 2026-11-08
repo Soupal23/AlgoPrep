@@ -136,6 +136,8 @@ export const startTestAttempt = async (req, res) => {
       attempt = new Attempt({
         userId,
         testId: id,
+        workspaceId: test.workspaceId || null,
+        dayId: test.dayId || null,
         startedAt: now,
         status: 'in-progress',
         lastSavedVersion: 0,
