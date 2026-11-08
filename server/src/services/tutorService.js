@@ -293,7 +293,15 @@ Please complete and submit your test first—once submitted, we can review every
       .skip(1) // skip the user message just saved
       .limit(8)
       .lean();
-    const recentMessages = recentHistory.reverse();
+    const rawRecentMessages = recentHistory.reverse();
+
+    // Filter out anti-cheating refusal messages from LLM history so they never poison future responses
+    const recentMessages = rawRecentMessages.filter(
+      (m) =>
+        !m.content?.toLowerCase().includes('diagnostic examination') &&
+        !m.content?.toLowerCase().includes('complete and submit your test') &&
+        !m.content?.toLowerCase().includes('test timer is running')
+    );
 
     // 7. Assemble Prompt
     const promptDef = PROMPTS['tutor.chat.v1'];
