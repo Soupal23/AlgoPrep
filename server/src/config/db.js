@@ -1,21 +1,45 @@
+import dns from 'dns';
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { config } from './env.js';
+
+// Configure reliable DNS servers for MongoDB Atlas SRV lookups on Windows
+try {
+  dns.setServers(['8.8.8.8', '1.1.1.1']);
+} catch {
+  // Ignore if custom DNS assignment is restricted
+}
 
 let mongoMemoryServer = null;
 
 export const connectDB = async () => {
   try {
     await mongoose.connect(config.mongoUri, {
-      serverSelectionTimeoutMS: 3000,
+      serverSelectionTimeoutMS: 5000,
     });
-    console.log(`Connected to MongoDB at ${config.mongoUri}`);
+    console.log(`Connected to MongoDB at ${config.mongoUri.replace(/:[^:]*@/, ':***@')}`);
   } catch (err) {
     if (config.nodeEnv === 'production') {
       console.error('Fatal: Failed to connect to MongoDB in production environment:', err);
       process.exit(1);
     }
-    console.warn(`Local MongoDB connection failed. Falling back to mongodb-memory-server...`);
+
+    // Try fallback MongoDB Atlas cluster if primary failed due to IP whitelist
+    const fallbackAtlasUri = 'mongodb+srv://soupalpurkayastha_db_user:zZBj5nZvqdNlXHPc@algoprep.nm8i51j.mongodb.net/algoprep?appName=algoprep';
+    if (config.mongoUri !== fallbackAtlasUri) {
+      try {
+        console.warn(`Primary MongoDB connection failed (${err.message}). Trying backup Atlas cluster...`);
+        await mongoose.connect(fallbackAtlasUri, {
+          serverSelectionTimeoutMS: 5000,
+        });
+        console.log(`Connected to Backup MongoDB Atlas at ${fallbackAtlasUri.replace(/:[^:]*@/, ':***@')}`);
+        return;
+      } catch (fallbackAtlasErr) {
+        console.warn(`Backup Atlas cluster also failed (${fallbackAtlasErr.message}).`);
+      }
+    }
+
+    console.warn(`MongoDB Atlas connection failed. Falling back to mongodb-memory-server...`);
     try {
       mongoMemoryServer = await MongoMemoryServer.create();
       const uri = mongoMemoryServer.getUri();

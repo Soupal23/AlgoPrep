@@ -27,7 +27,11 @@ export const ingestMaterial = async ({
   try {
     const material = await Material.findById(materialId);
     if (!material) {
-      throw new Error(`Material ${materialId} not found`);
+      logger.warn({ materialId }, 'Material record not found (deleted or from a previous database instance). Skipping ingestion.');
+      if (jobId) {
+        await failJob(jobId, new Error(`Material ${materialId} not found`)).catch(() => {});
+      }
+      return { skipped: true };
     }
 
     material.status = 'processing';

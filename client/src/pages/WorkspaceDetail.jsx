@@ -238,6 +238,15 @@ export const WorkspaceDetail = () => {
 
     eventSource.onerror = () => {
       eventSource.close();
+      queryClient.invalidateQueries({ queryKey: ['workspace', id] });
+      queryClient.invalidateQueries({ queryKey: ['workspaces'] });
+      setTimeout(() => {
+        setActiveJobs((prev) => {
+          const copy = { ...prev };
+          delete copy[jobId];
+          return copy;
+        });
+      }, 3000);
     };
   };
 
@@ -270,6 +279,10 @@ export const WorkspaceDetail = () => {
 
     eventSource.onerror = () => {
       eventSource.close();
+      refetchRoadmap();
+      setTimeout(() => {
+        setRoadmapJobProgress(null);
+      }, 3000);
     };
   };
 
