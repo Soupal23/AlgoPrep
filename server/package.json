@@ -8,7 +8,8 @@
     "start": "node src/server.js",
     "seed": "node src/seeds/seed.js",
     "backfill:concepts": "node src/scripts/backfillConcepts.js",
-    "test": "vitest run"
+    "test": "vitest run",
+    "eval": "node src/evals/evalRunner.js"
   },
   "dependencies": {
     "@google/genai": "latest",

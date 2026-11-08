@@ -1,6 +1,7 @@
 import express from 'express';
 import { authenticateJWT } from '../middleware/auth.js';
 import { uploadMaterialsMiddleware } from '../middleware/materialUpload.js';
+import { uploadLimiter } from '../middleware/rateLimits.js';
 import {
   createWorkspace,
   getWorkspaces,
@@ -45,7 +46,7 @@ router.post('/:id/search', authenticateJWT, searchWorkspace);
 
 // Materials Management
 router.route('/:id/materials')
-  .post(authenticateJWT, uploadMaterialsMiddleware.array('files', 10), uploadMaterials)
+  .post(authenticateJWT, uploadLimiter, uploadMaterialsMiddleware.array('files', 10), uploadMaterials)
   .get(authenticateJWT, getMaterials);
 
 router.route('/:id/materials/:materialId')

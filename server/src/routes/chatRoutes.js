@@ -1,5 +1,6 @@
 import express from 'express';
 import { authenticateJWT } from '../middleware/auth.js';
+import { chatLimiter } from '../middleware/rateLimits.js';
 import {
   createSessionController,
   getSessionsController,
@@ -16,7 +17,7 @@ router.get('/workspaces/:workspaceId/chat/sessions', authenticateJWT, getSession
 
 // Session Messages & Streaming
 router.get('/chat/sessions/:sessionId/messages', authenticateJWT, getSessionMessagesController);
-router.post('/chat/sessions/:sessionId/messages', authenticateJWT, postMessageStreamController);
+router.post('/chat/sessions/:sessionId/messages', authenticateJWT, chatLimiter, postMessageStreamController);
 router.delete('/chat/sessions/:sessionId', authenticateJWT, deleteSessionController);
 
 export default router;

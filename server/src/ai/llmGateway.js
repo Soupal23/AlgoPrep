@@ -2,6 +2,7 @@ import { GoogleGenAI } from '@google/genai';
 import pRetry from 'p-retry';
 import { config } from '../config/env.js';
 import logger from '../utils/logger.js';
+import { observability } from '../utils/observability.js';
 
 export class LLMValidationError extends Error {
   constructor(message, errors, rawText) {
@@ -118,6 +119,15 @@ class LLMGateway {
         'LLM generateText completed'
       );
 
+      observability.recordLLMCall({
+        task,
+        model,
+        latencyMs,
+        promptTokens: usage.promptTokenCount || 0,
+        completionTokens: usage.candidatesTokenCount || 0,
+        success: true
+      });
+
       return {
         text,
         model,
@@ -130,6 +140,13 @@ class LLMGateway {
       };
     } catch (err) {
       logger.error({ task, model, err: err.message }, 'LLM generateText failed');
+      observability.recordLLMCall({
+        task,
+        model,
+        latencyMs: Date.now() - startTime,
+        success: false,
+        error: err.message
+      });
       throw err;
     }
   }
@@ -250,6 +267,13 @@ class LLMGateway {
       const latencyMs = Date.now() - startTime;
       logger.info({ task, model, latencyMs }, 'LLM generateObject completed');
 
+      observability.recordLLMCall({
+        task,
+        model,
+        latencyMs,
+        success: true
+      });
+
       return {
         data: parsedJson,
         model,
@@ -257,6 +281,13 @@ class LLMGateway {
       };
     } catch (err) {
       logger.error({ task, model, err: err.message, rawText }, 'LLM generateObject failed');
+      observability.recordLLMCall({
+        task,
+        model,
+        latencyMs: Date.now() - startTime,
+        success: false,
+        error: err.message
+      });
       throw err;
     }
   }
@@ -276,16 +307,35 @@ class LLMGateway {
       ...(systemPrompt ? { systemInstruction: systemPrompt } : {})
     };
 
-    const responseStream = await ai.models.generateContentStream({
-      model,
-      contents: prompt,
-      config: reqConfig
-    });
+    const startTime = Date.now();
+    try {
+      const responseStream = await ai.models.generateContentStream({
+        model,
+        contents: prompt,
+        config: reqConfig
+      });
 
-    for await (const chunk of responseStream) {
-      if (chunk.text) {
-        yield chunk.text;
+      for await (const chunk of responseStream) {
+        if (chunk.text) {
+          yield chunk.text;
+        }
       }
+
+      observability.recordLLMCall({
+        task,
+        model,
+        latencyMs: Date.now() - startTime,
+        success: true
+      });
+    } catch (err) {
+      observability.recordLLMCall({
+        task,
+        model,
+        latencyMs: Date.now() - startTime,
+        success: false,
+        error: err.message
+      });
+      throw err;
     }
   }
 }
