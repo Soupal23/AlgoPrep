@@ -66,14 +66,18 @@ class Embedder {
       return results;
     }
 
-    // Embed in batches of 32
-    const BATCH_SIZE = 32;
+    // Embed in paced batches of 16 to respect Gemini token-per-minute limits
+    const BATCH_SIZE = 16;
     for (let i = 0; i < toFetchTexts.length; i += BATCH_SIZE) {
+      if (i > 0) {
+        // Inter-batch throttle delay
+        await new Promise((resolve) => setTimeout(resolve, 600));
+      }
+
       const chunk = toFetchTexts.slice(i, i + BATCH_SIZE);
       const chunkIndices = toFetchIndices.slice(i, i + BATCH_SIZE);
 
       const callFn = async () => {
-        // Modern GenAI embedContent supports array or singular contents
         const embedPromises = chunk.map(content =>
           ai.models.embedContent({
             model,
@@ -107,8 +111,22 @@ class Embedder {
           this.cache.set(this.hash(chunk[resIdx]), vector);
         });
       } catch (err) {
-        logger.error({ model, err: err.message }, 'Failed to generate embeddings batch');
-        throw err;
+        if (err?.message?.includes('RESOURCE_EXHAUSTED') || err?.message?.includes('429')) {
+          logger.warn(
+            { model, batchIndex: i, totalChunks: toFetchTexts.length },
+            'Gemini free-tier embedding rate limit reached. Storing partial embeddings and continuing with keyword index.'
+          );
+          break; // Stop querying Gemini, retain vectors collected so far
+        }
+        logger.warn({ model, err: err.message }, 'Failed to generate embeddings batch');
+        break;
+      }
+    }
+
+    // Default any non-embedded chunk slots to empty array
+    for (let j = 0; j < results.length; j++) {
+      if (!Array.isArray(results[j])) {
+        results[j] = [];
       }
     }
 

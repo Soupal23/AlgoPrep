@@ -256,18 +256,27 @@ export async function generateAttemptAnalysis({ attemptId, userId }) {
   }
 
   // 5. Save Analysis Document
-  const analysisDoc = await Analysis.create({
-    attemptId: attempt._id,
-    ownerId: attempt.userId,
-    workspaceId: test.workspaceId || attempt.workspaceId || null,
-    dayId: test.dayId || attempt.dayId || null,
-    summary,
-    weakConcepts,
-    strengths,
-    nextSteps,
-    masteryDelta,
-    source
-  });
+  let analysisDoc;
+  try {
+    analysisDoc = await Analysis.create({
+      attemptId: attempt._id,
+      ownerId: attempt.userId,
+      workspaceId: test.workspaceId || attempt.workspaceId || null,
+      dayId: test.dayId || attempt.dayId || null,
+      summary,
+      weakConcepts,
+      strengths,
+      nextSteps,
+      masteryDelta,
+      source
+    });
+  } catch (err) {
+    if (err.code === 11000) {
+      const existingDoc = await Analysis.findOne({ attemptId: attempt._id });
+      if (existingDoc) return existingDoc;
+    }
+    throw err;
+  }
 
   // 6. Trigger Dynamic Re-planning if roadmap and weak concepts exist
   let roadmapId = test.roadmapId;

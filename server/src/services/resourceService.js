@@ -13,15 +13,21 @@ import { PROMPTS } from '../ai/prompts/index.js';
 import { updateJobProgress, completeJob, failJob } from './jobService.js';
 import logger from '../utils/logger.js';
 
-const rerankResponseSchema = z.object({
-  rankings: z.array(
-    z.object({
-      externalId: z.string(),
-      score: z.number().min(0).max(100),
-      whyRecommended: z.string()
-    })
-  )
+const singleRankingItem = z.object({
+  externalId: z.string(),
+  score: z.number().min(0).max(100),
+  whyRecommended: z.string().optional().default('')
 });
+
+const rerankResponseSchema = z.union([
+  z.object({
+    rankings: z.array(singleRankingItem)
+  }),
+  z.object({
+    evaluations: z.array(singleRankingItem)
+  }),
+  z.array(singleRankingItem)
+]);
 
 /**
  * Computes heuristic lexical relevance between topic query and resource title/description.
@@ -247,7 +253,10 @@ export const getOrCurateDayResources = async ({ dayId, userId, force = false, jo
               temperature: 0.2
             });
 
-            const rankings = response?.data?.rankings || response?.object?.rankings;
+            const raw = response?.data || response?.object;
+            const rankings = Array.isArray(raw)
+              ? raw
+              : (raw?.rankings || raw?.evaluations || []);
             if (Array.isArray(rankings)) {
               for (const r of rankings) {
                 if (candidateScores.has(r.externalId)) {
