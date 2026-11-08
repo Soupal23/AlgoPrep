@@ -230,7 +230,10 @@ export const generateDayNotes = async ({
           temperature: 0.3
         });
 
-        sectionMarkdown = llmResponse.text || '';
+        sectionMarkdown = (llmResponse.text || '')
+          .replace(/\|\s*\|\s*/g, '|\n| ')
+          .replace(/\n\s*\|/g, '\n|')
+          .replace(/\|\s*\n/g, '|\n');
         if (sectionMarkdown.toLowerCase().includes('beyond your materials') || isBeyondMaterials) {
           isBeyondMaterials = true;
         }

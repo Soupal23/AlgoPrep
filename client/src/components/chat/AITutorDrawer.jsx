@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { api } from '../../services/api';
 import {
   Sparkles,
@@ -308,7 +309,9 @@ export const AITutorDrawer = ({ workspaceId, dayId = null, dayTitle = null }) =>
                       <p className="whitespace-pre-wrap">{msg.content}</p>
                     ) : (
                       <div className="prose prose-invert prose-xs max-w-none space-y-2">
-                        <ReactMarkdown>{msg.content}</ReactMarkdown>
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {msg.content ? msg.content.replace(/\|\s*\|\s*/g, '|\n| ') : ''}
+                        </ReactMarkdown>
                       </div>
                     )}
                   </div>
@@ -339,7 +342,9 @@ export const AITutorDrawer = ({ workspaceId, dayId = null, dayTitle = null }) =>
               <div className="flex flex-col items-start space-y-1.5">
                 <div className="max-w-[88%] p-3.5 rounded-2xl text-xs leading-relaxed bg-[#1c1729] text-slate-200 border border-indigo-500/40 rounded-tl-none shadow-sm space-y-2">
                   <div className="prose prose-invert prose-xs max-w-none">
-                    <ReactMarkdown>{streamingReply || 'Thinking...'}</ReactMarkdown>
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {streamingReply ? streamingReply.replace(/\|\s*\|\s*/g, '|\n| ') : 'Thinking...'}
+                    </ReactMarkdown>
                   </div>
                   <span className="inline-block w-2 h-3.5 bg-indigo-400 animate-pulse align-middle ml-1" />
                 </div>

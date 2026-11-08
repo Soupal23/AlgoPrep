@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { api } from '../services/api';
 import { AITutorDrawer } from '../components/chat/AITutorDrawer';
 import {
@@ -492,6 +493,7 @@ export const DayView = () => {
                     {/* Markdown Body */}
                     <div className="prose prose-invert prose-indigo max-w-none text-xs sm:text-sm text-slate-300 leading-relaxed space-y-4">
                       <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
                         components={{
                           h1: ({ children }) => <h1 className="text-xl font-bold text-white mt-4 mb-2">{children}</h1>,
                           h2: ({ children }) => <h2 className="text-lg font-bold text-indigo-200 mt-4 mb-2">{children}</h2>,
@@ -500,6 +502,16 @@ export const DayView = () => {
                           ul: ({ children }) => <ul className="list-disc pl-5 space-y-1 mb-3">{children}</ul>,
                           ol: ({ children }) => <ol className="list-decimal pl-5 space-y-1 mb-3">{children}</ol>,
                           li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+                          table: ({ children }) => (
+                            <div className="overflow-x-auto my-5 rounded-2xl border border-[#383050] bg-[#14111f] shadow-xl">
+                              <table className="w-full text-left text-xs border-collapse divide-y divide-[#251e35]">{children}</table>
+                            </div>
+                          ),
+                          thead: ({ children }) => <thead className="bg-[#1c1729] text-indigo-300 font-mono text-[11px] uppercase tracking-wider">{children}</thead>,
+                          tbody: ({ children }) => <tbody className="divide-y divide-[#251e35] bg-[#14111f]/60">{children}</tbody>,
+                          tr: ({ children }) => <tr className="hover:bg-white/[0.02] transition-colors">{children}</tr>,
+                          th: ({ children }) => <th className="px-4 py-3 font-bold border-b border-[#383050] text-indigo-200">{children}</th>,
+                          td: ({ children }) => <td className="px-4 py-3 text-slate-300 leading-relaxed align-top">{children}</td>,
                           code: ({ inline, children }) =>
                             inline ? (
                               <code className="px-1.5 py-0.5 rounded bg-[#1c1729] border border-[#383050] font-mono text-indigo-300 text-[12px]">
@@ -517,7 +529,12 @@ export const DayView = () => {
                           )
                         }}
                       >
-                        {section.markdown}
+                        {section.markdown
+                          ? section.markdown
+                              .replace(/\|\s*\|\s*/g, '|\n| ')
+                              .replace(/\n\s*\|/g, '\n|')
+                              .replace(/\|\s*\n/g, '|\n')
+                          : ''}
                       </ReactMarkdown>
                     </div>
 
