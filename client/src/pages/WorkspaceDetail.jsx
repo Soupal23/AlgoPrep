@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../services/api';
+import { AITutorDrawer } from '../components/chat/AITutorDrawer';
 import {
   Layers,
   ArrowLeft,
@@ -940,6 +941,9 @@ export const WorkspaceDetail = () => {
           </div>
         </div>
       )}
+
+      {/* Floating AI Tutor Drawer (Phase 9) */}
+      <AITutorDrawer workspaceId={id} dayTitle={workspace?.title} />
     </div>
   );
 };

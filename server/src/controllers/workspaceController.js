@@ -11,6 +11,8 @@ import { Question } from '../models/Question.js';
 import { Attempt } from '../models/Attempt.js';
 import { ConceptMastery } from '../models/ConceptMastery.js';
 import { Analysis } from '../models/Analysis.js';
+import { ChatSession } from '../models/ChatSession.js';
+import { ChatMessage } from '../models/ChatMessage.js';
 import { getWorkspaceMastery } from '../services/masteryService.js';
 import { retriever } from '../ai/retriever.js';
 import logger from '../utils/logger.js';
@@ -192,6 +194,8 @@ export const deleteWorkspace = async (req, res, next) => {
     await Test.deleteMany({ workspaceId: id });
     await ConceptMastery.deleteMany({ workspaceId: id });
     await Analysis.deleteMany({ workspaceId: id });
+    await ChatSession.deleteMany({ workspaceId: id });
+    await ChatMessage.deleteMany({ workspaceId: id });
 
     await Day.deleteMany({ roadmapId: { $in: roadmapIds } });
     await Notes.deleteMany({ workspaceId: id });

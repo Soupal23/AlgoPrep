@@ -11,6 +11,7 @@ import userRoutes from './routes/userRoutes.js';
 import jobRoutes from './routes/jobRoutes.js';
 import workspaceRoutes from './routes/workspaceRoutes.js';
 import roadmapRoutes from './routes/roadmapRoutes.js';
+import chatRoutes from './routes/chatRoutes.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 import path from 'path';
@@ -51,6 +52,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/workspaces', workspaceRoutes);
 app.use('/api', roadmapRoutes);
+app.use('/api', chatRoutes);
 
 app.use(errorHandler);
 

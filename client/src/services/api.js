@@ -432,6 +432,96 @@ class ApiService {
       method: 'POST'
     });
   }
+
+  // AI Tutor Chat API (Phase 9)
+  async createChatSession(workspaceId, payload = {}) {
+    return this.request(`/workspaces/${workspaceId}/chat/sessions`, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  }
+
+  async getChatSessions(workspaceId) {
+    return this.request(`/workspaces/${workspaceId}/chat/sessions`);
+  }
+
+  async getChatMessages(sessionId) {
+    return this.request(`/chat/sessions/${sessionId}/messages`);
+  }
+
+  async deleteChatSession(sessionId) {
+    return this.request(`/chat/sessions/${sessionId}`, {
+      method: 'DELETE'
+    });
+  }
+
+  async streamChatMessage(sessionId, message, { onMeta, onChunk, onDone, onError, signal } = {}) {
+    try {
+      const response = await fetch(`${API_BASE}/chat/sessions/${sessionId}/messages`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(this.accessToken ? { Authorization: `Bearer ${this.accessToken}` } : {})
+        },
+        body: JSON.stringify({ message }),
+        signal
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Stream failed with status ${response.status}`);
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder('utf-8');
+      let buffer = '';
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const events = buffer.split('\n\n');
+        buffer = events.pop() || '';
+
+        for (const eventBlock of events) {
+          if (!eventBlock.trim() || eventBlock.startsWith(':')) continue;
+
+          let eventType = 'message';
+          let dataStr = '';
+
+          const lines = eventBlock.split('\n');
+          for (const line of lines) {
+            if (line.startsWith('event:')) {
+              eventType = line.slice(6).trim();
+            } else if (line.startsWith('data:')) {
+              dataStr += line.slice(5).trim();
+            }
+          }
+
+          if (!dataStr) continue;
+
+          try {
+            const data = JSON.parse(dataStr);
+            if (eventType === 'meta') {
+              if (onMeta) onMeta(data);
+            } else if (eventType === 'chunk') {
+              if (onChunk) onChunk(data.text);
+            } else if (eventType === 'done') {
+              if (onDone) onDone(data);
+            } else if (eventType === 'error') {
+              if (onError) onError(new Error(data.error || 'Chat stream error'));
+            }
+          } catch (jsonErr) {
+            console.warn('Failed to parse SSE data:', dataStr);
+          }
+        }
+      }
+    } catch (err) {
+      if (onError) onError(err);
+      else throw err;
+    }
+  }
 }
 
 export const api = new ApiService();

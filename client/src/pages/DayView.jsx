@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import ReactMarkdown from 'react-markdown';
 import { api } from '../services/api';
+import { AITutorDrawer } from '../components/chat/AITutorDrawer';
 import {
   BookOpen,
   FileText,
@@ -1220,6 +1221,9 @@ export const DayView = () => {
           </div>
         </div>
       )}
+
+      {/* Floating AI Tutor Drawer (Phase 9) */}
+      <AITutorDrawer workspaceId={workspaceId} dayId={dayId} dayTitle={day?.title} />
     </div>
   );
 };
