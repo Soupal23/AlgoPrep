@@ -19,7 +19,8 @@ export async function parseDocument(buffer, mimeType = '', originalName = '') {
   // 1. PDF Documents
   if (mimeType.includes('pdf') || extension === 'pdf') {
     try {
-      const { totalPages, text } = await extractText(buffer, { mergePages: false });
+      const uint8 = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
+      const { totalPages, text } = await extractText(uint8, { mergePages: false });
       if (Array.isArray(text) && text.length > 0) {
         const sections = text.map((pageText, idx) => ({
           page: idx + 1,

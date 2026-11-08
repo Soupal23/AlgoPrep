@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Navbar } from './components/Navbar';
 import { RoleRoute } from './components/RoleRoute';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 // Core Pages
 import { Landing } from './pages/Landing';
@@ -46,7 +47,8 @@ export const AppContent = () => {
     <div className="min-h-screen bg-[#0a0a0f] text-[#f0eef5] flex flex-col font-sans">
       {!isTestRoute && <Navbar />}
       <main className={`flex-1 ${isSidebarVisible ? 'md:ml-64' : ''}`}>
-        <Routes>
+        <ErrorBoundary>
+          <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
           <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
@@ -145,6 +147,7 @@ export const AppContent = () => {
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        </ErrorBoundary>
       </main>
     </div>
   );

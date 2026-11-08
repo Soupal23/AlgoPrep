@@ -573,7 +573,7 @@ export const DayView = () => {
                       {isFlipped ? 'Answer / Invariant:' : 'Question (Click to reveal):'}
                     </span>
                     <p className="text-base sm:text-lg font-bold text-white max-w-xl leading-relaxed">
-                      {isFlipped ? flashcards[currentCardIdx].back : flashcards[currentCardIdx].front}
+                      {isFlipped ? (flashcards[currentCardIdx]?.back || '') : (flashcards[currentCardIdx]?.front || '')}
                     </p>
                     <span className="text-[11px] text-[#9f99b0] italic">
                       {isFlipped ? 'Click again to view question' : 'Click card to flip'}
@@ -1223,7 +1223,7 @@ export const DayView = () => {
       )}
 
       {/* Floating AI Tutor Drawer (Phase 9) */}
-      <AITutorDrawer workspaceId={workspaceId} dayId={dayId} dayTitle={day?.title} />
+      <AITutorDrawer workspaceId={workspaceId} dayId={dayId} dayTitle={dayData?.title} />
     </div>
   );
 };

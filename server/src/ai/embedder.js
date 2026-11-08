@@ -41,7 +41,10 @@ class Embedder {
     }
 
     const ai = this.getClient();
-    const model = config.geminiEmbedModel || 'text-embedding-004';
+    let model = config.geminiEmbedModel || 'gemini-embedding-001';
+    if (model === 'text-embedding-004') {
+      model = 'gemini-embedding-001';
+    }
     const outputDimensionality = config.embedDimensions || 768;
 
     const results = new Array(texts.length);
@@ -93,7 +96,7 @@ class Embedder {
 
         responses.forEach((res, resIdx) => {
           const originalIdx = chunkIndices[resIdx];
-          const vector = res.embedding?.values || [];
+          const vector = res.embedding?.values || res.embeddings?.[0]?.values || [];
           results[originalIdx] = vector;
 
           // Store in cache

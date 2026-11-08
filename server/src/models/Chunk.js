@@ -22,7 +22,7 @@ const chunkSchema = new Schema(
       default: 'ready',
       index: true
     },
-    embeddingModel: { type: String, default: 'text-embedding-004' },
+    embeddingModel: { type: String, default: 'gemini-embedding-001' },
     embeddingDim: { type: Number, default: 768 },
     hash: { type: String, required: true, index: true }
   },

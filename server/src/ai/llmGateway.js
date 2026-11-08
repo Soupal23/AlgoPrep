@@ -29,15 +29,25 @@ class LLMGateway {
   }
 
   resolveModel(tier = 'default') {
+    let chosen;
     switch (tier) {
       case 'fast':
-        return config.geminiModelFast || 'gemini-2.5-flash-lite';
+        chosen = config.geminiModelFast || 'gemini-3.5-flash-lite';
+        break;
       case 'reasoning':
-        return config.geminiModelReasoning || 'gemini-2.5-pro';
+        chosen = config.geminiModelReasoning || 'gemini-3.5-flash';
+        break;
       case 'default':
       default:
-        return config.geminiModelDefault || 'gemini-2.5-flash';
+        chosen = config.geminiModelDefault || 'gemini-3.5-flash';
+        break;
     }
+
+    // Auto-map deprecated or discontinued models
+    if (chosen.includes('gemini-2.5-flash-lite')) return 'gemini-3.5-flash-lite';
+    if (chosen.includes('gemini-2.5-flash')) return 'gemini-3.5-flash';
+    if (chosen.includes('gemini-2.5-pro')) return 'gemini-3.5-flash';
+    return chosen;
   }
 
   async generateText({
@@ -65,14 +75,28 @@ class LLMGateway {
       });
 
       try {
-        const result = await Promise.race([
-          ai.models.generateContent({
-            model,
-            contents: prompt,
-            config: reqConfig
-          }),
-          timeoutPromise
-        ]);
+        let result;
+        try {
+          result = await Promise.race([
+            ai.models.generateContent({
+              model,
+              contents: prompt,
+              config: reqConfig
+            }),
+            timeoutPromise
+          ]);
+        } catch (callErr) {
+          if ((callErr.message?.includes('503') || callErr.message?.includes('404')) && model !== 'gemini-3.5-flash-lite') {
+            logger.warn({ fromModel: model, toModel: 'gemini-3.5-flash-lite' }, 'Primary model unavailable, falling back to gemini-3.5-flash-lite');
+            result = await ai.models.generateContent({
+              model: 'gemini-3.5-flash-lite',
+              contents: prompt,
+              config: reqConfig
+            });
+          } else {
+            throw callErr;
+          }
+        }
         return result;
       } finally {
         clearTimeout(timeoutId);
@@ -179,14 +203,28 @@ class LLMGateway {
         });
 
         try {
-          const result = await Promise.race([
-            ai.models.generateContent({
-              model,
-              contents: userPrompt,
-              config: reqConfig
-            }),
-            timeoutPromise
-          ]);
+          let result;
+          try {
+            result = await Promise.race([
+              ai.models.generateContent({
+                model,
+                contents: userPrompt,
+                config: reqConfig
+              }),
+              timeoutPromise
+            ]);
+          } catch (callErr) {
+            if ((callErr.message?.includes('503') || callErr.message?.includes('404')) && model !== 'gemini-3.5-flash-lite') {
+              logger.warn({ fromModel: model, toModel: 'gemini-3.5-flash-lite' }, 'Primary model unavailable for structured output, falling back to gemini-3.5-flash-lite');
+              result = await ai.models.generateContent({
+                model: 'gemini-3.5-flash-lite',
+                contents: userPrompt,
+                config: reqConfig
+              });
+            } else {
+              throw callErr;
+            }
+          }
           return result;
         } finally {
           clearTimeout(timeoutId);
@@ -308,12 +346,28 @@ class LLMGateway {
     };
 
     const startTime = Date.now();
+    let activeModel = model;
     try {
-      const responseStream = await ai.models.generateContentStream({
-        model,
-        contents: prompt,
-        config: reqConfig
-      });
+      let responseStream;
+      try {
+        responseStream = await ai.models.generateContentStream({
+          model: activeModel,
+          contents: prompt,
+          config: reqConfig
+        });
+      } catch (streamErr) {
+        if ((streamErr.message?.includes('503') || streamErr.message?.includes('404')) && activeModel !== 'gemini-3.5-flash-lite') {
+          logger.warn({ fromModel: activeModel, toModel: 'gemini-3.5-flash-lite' }, 'Primary model unavailable for streaming, falling back to gemini-3.5-flash-lite');
+          activeModel = 'gemini-3.5-flash-lite';
+          responseStream = await ai.models.generateContentStream({
+            model: activeModel,
+            contents: prompt,
+            config: reqConfig
+          });
+        } else {
+          throw streamErr;
+        }
+      }
 
       for await (const chunk of responseStream) {
         if (chunk.text) {

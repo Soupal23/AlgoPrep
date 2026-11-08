@@ -4,6 +4,7 @@ import { Chunk } from '../models/Chunk.js';
 import { parseDocument } from '../parsing/index.js';
 import { chunkSections } from '../parsing/chunker.js';
 import { embedder } from '../ai/embedder.js';
+import { config } from '../config/env.js';
 import { updateJobProgress, completeJob, failJob } from './jobService.js';
 import logger from '../utils/logger.js';
 
@@ -120,7 +121,7 @@ export const ingestMaterial = async ({
           location: chunk.location,
           embedding: hasEmbedding ? embeddings[index] : [],
           embeddingStatus: hasEmbedding ? 'ready' : 'failed',
-          embeddingModel: 'text-embedding-004',
+          embeddingModel: config.geminiEmbedModel || 'gemini-embedding-001',
           embeddingDim: 768,
           hash: chunk.hash
         };
