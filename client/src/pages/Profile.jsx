@@ -108,11 +108,11 @@ export const Profile = () => {
       )}
 
       {/* Profile Header & Edit Form */}
-      <div className="bg-[#121215] rounded-2xl p-6 sm:p-8 border border-[#27272a] space-y-6 shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-6 pb-6 border-b border-[#27272a]">
+      <div className="bg-[#121215] rounded-2xl p-6 sm:p-8 border border-zinc-700 space-y-6 shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-6 pb-6 border-b border-zinc-700">
           <div className="flex items-center gap-5">
             <div className="relative group">
-              <div className="w-16 h-16 rounded-full overflow-hidden bg-[#18181b] border border-[#27272a] flex items-center justify-center text-white text-xl font-bold shadow-sm">
+              <div className="w-16 h-16 rounded-full overflow-hidden bg-[#18181b] border border-zinc-700 flex items-center justify-center text-white text-xl font-bold shadow-sm">
                 {user?.avatarUrl ? (
                   <img
                     src={resolveFileUrl(user.avatarUrl)}
@@ -146,7 +146,7 @@ export const Profile = () => {
             <div>
               <h1 className="text-xl font-bold text-white">{user?.name || 'User Profile'}</h1>
               <p className="text-xs font-mono text-zinc-400 mt-0.5">{user?.email}</p>
-              <span className="inline-block mt-2 text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-[#18181b] text-zinc-300 border border-[#27272a] uppercase font-medium">
+              <span className="inline-block mt-2 text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-[#18181b] text-zinc-300 border border-zinc-700 uppercase font-medium">
                 {user?.role || 'student'}
               </span>
             </div>
@@ -156,14 +156,14 @@ export const Profile = () => {
             <div className="flex items-center gap-3 text-center text-xs font-mono">
               <Link
                 to="/dashboard?filter=attempted"
-                className="bg-[#18181b] hover:bg-[#27272a] px-4 py-2.5 rounded-xl border border-[#27272a] transition-colors"
+                className="bg-[#18181b] hover:bg-[#27272a] px-4 py-2.5 rounded-xl border border-zinc-700 transition-colors"
               >
                 <span className="text-zinc-400 block text-[10px] uppercase font-mono">Attempts</span>
                 <span className="text-base font-bold text-white mt-0.5">{attempts.length}</span>
               </Link>
-              <div className="bg-[#18181b] px-4 py-2.5 rounded-xl border border-[#27272a]">
+              <div className="bg-[#18181b] px-4 py-2.5 rounded-xl border border-zinc-700">
                 <span className="text-zinc-400 block text-[10px] uppercase font-mono">Avg Accuracy</span>
-                <span className="text-base font-bold text-white mt-0.5">{avgAccuracy}%</span>
+                <span className="text-base font-bold text-emerald-400 mt-0.5">{avgAccuracy}%</span>
               </div>
             </div>
           )}
@@ -178,7 +178,7 @@ export const Profile = () => {
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-3.5 py-2 rounded-xl bg-[#18181b] border border-[#27272a] text-white text-xs font-mono focus:outline-none focus:border-zinc-500"
+                className="w-full px-3.5 py-2 rounded-xl bg-[#18181b] border border-zinc-700 text-white text-xs font-mono focus:outline-none focus:border-zinc-500"
                 required
               />
             </div>
@@ -190,7 +190,7 @@ export const Profile = () => {
                 value={formData.subjectFocus}
                 onChange={(e) => setFormData({ ...formData, subjectFocus: e.target.value })}
                 placeholder="e.g. Data Structures, Algorithms, Systems"
-                className="w-full px-3.5 py-2 rounded-xl bg-[#18181b] border border-[#27272a] text-white text-xs font-mono focus:outline-none focus:border-zinc-500"
+                className="w-full px-3.5 py-2 rounded-xl bg-[#18181b] border border-zinc-700 text-white text-xs font-mono focus:outline-none focus:border-zinc-500"
               />
             </div>
           </div>
@@ -202,14 +202,14 @@ export const Profile = () => {
               value={formData.bio}
               onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
               placeholder="Study focus or goals..."
-              className="w-full px-3.5 py-2 rounded-xl bg-[#18181b] border border-[#27272a] text-white text-xs font-mono focus:outline-none focus:border-zinc-500 resize-none"
+              className="w-full px-3.5 py-2 rounded-xl bg-[#18181b] border border-zinc-700 text-white text-xs font-mono focus:outline-none focus:border-zinc-500 resize-none"
             />
           </div>
 
           <button
             type="submit"
             disabled={saving}
-            className="px-5 py-2.5 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold font-mono text-xs shadow-sm transition-colors flex items-center gap-2 cursor-pointer"
+            className="px-5 py-2.5 rounded-full bg-amber-500 hover:bg-amber-400 text-black font-semibold font-mono text-xs shadow-[0_0_15px_rgba(245,158,11,0.25)] transition-all flex items-center gap-2 cursor-pointer"
           >
             <Save className="w-3.5 h-3.5" />
             <span>{saving ? 'Saving...' : 'Save Profile'}</span>

@@ -76,7 +76,7 @@ export const Workspaces = () => {
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
       {/* Header Banner */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#27272a] pb-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-zinc-700 pb-6">
         <div>
           <h1 className="text-2xl font-bold text-white tracking-tight">
             Workspaces
@@ -85,7 +85,7 @@ export const Workspaces = () => {
 
         <button
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 px-5 py-2 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs transition-colors shrink-0 cursor-pointer shadow-sm"
+          className="flex items-center gap-2 px-5 py-2 rounded-full bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs transition-all shrink-0 cursor-pointer shadow-[0_0_15px_rgba(245,158,11,0.25)]"
         >
           <Plus className="w-4 h-4" />
           <span>New Workspace</span>
@@ -103,14 +103,14 @@ export const Workspaces = () => {
           Failed to load workspaces. Please check your connection and try again.
         </div>
       ) : workspaces.length === 0 ? (
-        <div className="p-10 rounded-2xl bg-[#121215] border border-[#27272a] text-center max-w-xl mx-auto space-y-4">
-          <div className="w-12 h-12 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto text-zinc-400">
+        <div className="p-10 rounded-2xl bg-[#121215] border border-zinc-700 text-center max-w-xl mx-auto space-y-4">
+          <div className="w-12 h-12 rounded-full bg-zinc-900 border border-zinc-700 flex items-center justify-center mx-auto text-zinc-400">
             <FolderOpen className="w-6 h-6" />
           </div>
           <h2 className="text-base font-bold text-white">No Workspaces Found</h2>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs transition-colors shadow-sm cursor-pointer"
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs transition-all shadow-[0_0_15px_rgba(245,158,11,0.25)] cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Create Workspace</span>
@@ -123,11 +123,11 @@ export const Workspaces = () => {
             <Link
               key={ws._id}
               to={`/workspaces/${ws._id}`}
-              className="group relative flex flex-col justify-between p-6 rounded-2xl bg-[#121215] border border-[#27272a] hover:border-zinc-700 hover:bg-[#161619] transition-all duration-200"
+              className="group relative flex flex-col justify-between p-6 rounded-2xl bg-[#121215] border border-zinc-700 hover:border-zinc-500 hover:bg-[#161619] shadow-sm transition-all duration-200"
             >
               <div className="space-y-3">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="px-2.5 py-0.5 rounded text-[11px] font-mono font-medium bg-zinc-900 border border-zinc-800 text-zinc-400 uppercase">
+                  <span className="px-2.5 py-0.5 rounded text-[11px] font-mono font-medium bg-zinc-900 border border-zinc-700 text-zinc-400 uppercase">
                     {ws.subject}
                   </span>
                   <button
@@ -150,7 +150,7 @@ export const Workspaces = () => {
                 )}
               </div>
 
-              <div className="mt-5 pt-3.5 border-t border-[#27272a] flex items-center justify-between text-xs font-mono text-zinc-500">
+              <div className="mt-5 pt-3.5 border-t border-zinc-700 flex items-center justify-between text-xs font-mono text-zinc-500">
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-1.5" title="Uploaded Materials">
                     <FileText className="w-3.5 h-3.5 text-zinc-400" />
@@ -176,10 +176,10 @@ export const Workspaces = () => {
       {/* New Workspace Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="w-full max-w-lg rounded-2xl bg-[#121215] border border-[#27272a] p-6 space-y-5 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-[#27272a] pb-4">
+          <div className="w-full max-w-lg rounded-2xl bg-[#121215] border border-zinc-700 p-6 space-y-5 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-zinc-700 pb-4">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-white">
+                <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-700 flex items-center justify-center text-white">
                   <Layers className="w-4 h-4" />
                 </div>
                 <h2 className="text-base font-bold text-white">Create Workspace</h2>
@@ -208,7 +208,7 @@ export const Workspaces = () => {
                   placeholder="e.g. Operating Systems & Architecture"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-500"
+                  className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-500"
                   required
                 />
               </div>
@@ -222,7 +222,7 @@ export const Workspaces = () => {
                   placeholder="e.g. Computer Science, GATE, Algorithms"
                   value={formData.subject}
                   onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-500"
+                  className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-500"
                   required
                 />
               </div>
@@ -236,7 +236,7 @@ export const Workspaces = () => {
                   placeholder="e.g. Focusing on Virtual Memory, Scheduling algorithms, and deadlocks."
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-500 resize-none"
+                  className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-500 resize-none"
                 />
               </div>
 
@@ -248,7 +248,7 @@ export const Workspaces = () => {
                   type="date"
                   value={formData.examDate}
                   onChange={(e) => setFormData({ ...formData, examDate: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-500"
+                  className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-500"
                 />
               </div>
 
@@ -256,14 +256,14 @@ export const Workspaces = () => {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-full text-xs font-medium text-zinc-400 hover:text-white bg-zinc-900 border border-zinc-800 transition-colors cursor-pointer"
+                  className="px-4 py-2 rounded-full text-xs font-medium text-zinc-400 hover:text-white bg-zinc-900 border border-zinc-700 transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={createMutation.isPending}
-                  className="flex items-center gap-2 px-5 py-2 rounded-full text-xs font-semibold text-black bg-white hover:bg-zinc-200 disabled:opacity-50 transition-colors cursor-pointer shadow-sm"
+                  className="flex items-center gap-2 px-5 py-2 rounded-full text-xs font-semibold text-black bg-amber-500 hover:bg-amber-400 disabled:opacity-50 transition-all cursor-pointer shadow-[0_0_15px_rgba(245,158,11,0.25)]"
                 >
                   {createMutation.isPending ? (
                     <>

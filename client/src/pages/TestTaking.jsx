@@ -568,7 +568,7 @@ export const TestTaking = () => {
 
   if (error || !test || questions.length === 0) {
     return (
-      <div className="max-w-xl mx-auto my-12 p-8 bg-[#121215] rounded-2xl border border-[#27272a] text-center space-y-4">
+      <div className="max-w-xl mx-auto my-12 p-8 bg-[#121215] rounded-2xl border border-zinc-700 text-center space-y-4">
         <p className="text-zinc-300 font-semibold">{error || 'Test not found'}</p>
         <button
           onClick={() => navigate('/')}
@@ -587,16 +587,16 @@ export const TestTaking = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-      <div className="bg-[#121215] rounded-2xl p-5 border border-[#27272a] space-y-4 shadow-sm">
+      <div className="bg-[#121215] rounded-2xl p-5 border border-zinc-700 space-y-4 shadow-sm">
         {/* Top Header Row: Test Title & Marking Scheme */}
         <div>
           <h1 className="text-lg sm:text-xl font-bold text-white flex flex-wrap items-center gap-2">
             <span>{test.title}</span>
-            <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#18181b] text-zinc-400 border border-[#27272a] font-mono">
+            <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#18181b] text-zinc-400 border border-zinc-700 font-mono">
               {test.topic}
             </span>
             {test.mode === 'practice' ? (
-              <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#18181b] text-zinc-300 border border-[#27272a] font-mono font-medium">
+              <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#18181b] text-zinc-300 border border-zinc-700 font-mono font-medium">
                 Practice Mode
               </span>
             ) : (
@@ -606,15 +606,15 @@ export const TestTaking = () => {
             )}
           </h1>
           <p className="text-xs text-zinc-400 font-mono mt-1">
-            Scheme: <span className="text-white font-semibold">+{test.markingScheme.correct}</span> /{' '}
-            <span className="text-zinc-400 font-semibold">{test.markingScheme.incorrect}</span> points per question
+            Scheme: <span className="text-emerald-400 font-semibold">+{test.markingScheme.correct}</span> /{' '}
+            <span className="text-rose-400 font-semibold">{test.markingScheme.incorrect}</span> points per question
           </p>
         </div>
 
         {/* Action Controls Bar: Auto-save on LEFT, Remaining Buttons on RIGHT */}
-        <div className="pt-3 border-t border-[#27272a] flex flex-wrap items-center justify-between gap-3 sm:gap-4">
+        <div className="pt-3 border-t border-zinc-700 flex flex-wrap items-center justify-between gap-3 sm:gap-4">
           {/* LEFT: Static Micro-Dot & Text (VS Code / JetBrains Status Bar Style - Zero motion/pulse) */}
-          <div className="flex items-center gap-2 text-[11px] font-mono text-zinc-400 bg-[#18181b] px-3 py-1.5 rounded-full border border-[#27272a] select-none">
+          <div className="flex items-center gap-2 text-[11px] font-mono text-zinc-400 bg-[#18181b] px-3 py-1.5 rounded-full border border-zinc-700 select-none">
             <span
               className={`w-1.5 h-1.5 rounded-full shrink-0 ${
                 savingStatus === 'saving'
@@ -640,7 +640,7 @@ export const TestTaking = () => {
           {/* RIGHT: Remaining Controls stuck to the right */}
           <div className="flex items-center gap-3 sm:gap-4 ml-auto">
             {tabSwitches > 0 && (
-              <div className="flex items-center gap-1.5 text-xs text-zinc-300 font-mono bg-[#18181b] px-3 py-1.5 rounded-full border border-[#27272a]">
+              <div className="flex items-center gap-1.5 text-xs text-zinc-300 font-mono bg-[#18181b] px-3 py-1.5 rounded-full border border-zinc-700">
                 <ShieldAlert className="w-3.5 h-3.5" />
                 <span>Warnings: {tabSwitches}</span>
               </div>
@@ -649,7 +649,7 @@ export const TestTaking = () => {
             <button
               onClick={toggleFullscreen}
               title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen (Recommended)'}
-              className="flex items-center gap-1.5 text-xs text-zinc-300 font-mono bg-[#18181b] hover:bg-[#27272a] px-3.5 py-1.5 rounded-full border border-[#27272a] transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 text-xs text-zinc-300 font-mono bg-[#18181b] hover:bg-[#27272a] px-3.5 py-1.5 rounded-full border border-zinc-700 transition-colors cursor-pointer"
             >
               {isFullscreen ? (
                 <Minimize className="w-3.5 h-3.5 text-zinc-300" />
@@ -667,7 +667,7 @@ export const TestTaking = () => {
 
             <button
               onClick={() => setShowSubmitModal(true)}
-              className="px-5 py-1.5 rounded-full text-xs font-semibold bg-white hover:bg-zinc-200 text-black shadow-sm transition-colors flex items-center gap-1.5 cursor-pointer font-mono"
+              className="px-5 py-1.5 rounded-full text-xs font-semibold bg-amber-500 hover:bg-amber-400 text-black shadow-[0_0_15px_rgba(245,158,11,0.25)] transition-all flex items-center gap-1.5 cursor-pointer font-mono"
             >
               <span>Submit</span>
               <Send className="w-3.5 h-3.5" />
@@ -678,14 +678,14 @@ export const TestTaking = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         <div className="lg:col-span-8 space-y-6">
-          <div className="bg-[#121215] rounded-2xl p-6 sm:p-8 border border-[#27272a] min-h-[420px] flex flex-col justify-between shadow-sm">
+          <div className="bg-[#121215] rounded-2xl p-6 sm:p-8 border border-zinc-700 min-h-[420px] flex flex-col justify-between shadow-sm">
             <div>
-              <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#27272a]">
+              <div className="flex items-center justify-between pb-4 mb-6 border-b border-zinc-700">
                 <span className="text-xs font-mono font-medium text-zinc-400 uppercase tracking-wider">
                   Question {currentIndex + 1} of {questions.length}
                 </span>
                 {isMarked && (
-                  <span className="inline-flex items-center gap-1 px-3 py-0.5 rounded-full text-xs font-medium bg-[#18181b] border border-[#27272a] text-zinc-300 font-mono">
+                  <span className="inline-flex items-center gap-1 px-3 py-0.5 rounded-full text-xs font-medium bg-amber-500/10 border border-amber-500/40 text-amber-300 font-mono">
                     <Bookmark className="w-3 h-3 text-zinc-400" />
                     Marked for Review
                   </span>
@@ -706,13 +706,13 @@ export const TestTaking = () => {
                       onClick={() => handleSelectOption(optIdx)}
                       className={`w-full p-4 rounded-xl text-left text-sm font-medium transition-all flex items-start gap-3 border cursor-pointer ${
                         isSelected
-                          ? 'bg-white border-white text-black font-semibold shadow-sm'
-                          : 'bg-[#18181b] border-[#27272a] text-zinc-300 hover:border-zinc-500'
+                          ? 'bg-amber-500/10 border-amber-500 ring-1 ring-amber-500/60 text-white font-medium shadow-sm'
+                          : 'bg-[#18181b] border-zinc-700 text-zinc-300 hover:border-zinc-500'
                       }`}
                     >
                       <span
                         className={`w-6 h-6 rounded-md flex items-center justify-center text-xs font-mono shrink-0 transition-colors ${
-                          isSelected ? 'bg-black text-white font-bold' : 'bg-zinc-800 text-zinc-400 border border-zinc-700'
+                          isSelected ? 'bg-amber-500 text-black font-bold' : 'bg-zinc-800 text-zinc-400 border border-zinc-700'
                         }`}
                       >
                         {String.fromCharCode(65 + optIdx)}
@@ -724,12 +724,12 @@ export const TestTaking = () => {
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-6 mt-8 border-t border-[#27272a]">
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-6 mt-8 border-t border-zinc-700">
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleClearAnswer}
                   disabled={currentSelectedOption === undefined}
-                  className="px-3.5 py-2 rounded-full text-xs font-medium text-zinc-400 hover:text-white hover:bg-[#18181b] border border-transparent hover:border-[#27272a] transition-colors flex items-center gap-1.5 disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-zinc-500 cursor-pointer"
+                  className="px-3.5 py-2 rounded-full text-xs font-medium text-zinc-400 hover:text-white hover:bg-[#18181b] border border-transparent hover:border-zinc-700 transition-colors flex items-center gap-1.5 disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-zinc-500 cursor-pointer"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
                   <span>Clear Response</span>
@@ -739,8 +739,8 @@ export const TestTaking = () => {
                   onClick={handleToggleMarkForReview}
                   className={`px-4 py-2 rounded-full text-xs font-semibold border transition-colors flex items-center gap-1.5 cursor-pointer ${
                     isMarked
-                      ? 'bg-white text-black border-white'
-                      : 'bg-[#18181b] border-[#27272a] text-zinc-300 hover:bg-[#27272a]'
+                      ? 'bg-amber-500/20 text-amber-300 border-amber-500/60'
+                      : 'bg-[#18181b] border-zinc-700 text-zinc-300 hover:bg-[#27272a]'
                   }`}
                 >
                   <Bookmark className="w-3.5 h-3.5" />
@@ -752,7 +752,7 @@ export const TestTaking = () => {
                 <button
                   onClick={handlePrev}
                   disabled={currentIndex === 0}
-                  className="px-4 py-2 rounded-full text-xs font-semibold bg-[#18181b] border border-[#27272a] text-zinc-300 hover:bg-[#27272a] disabled:opacity-40 transition-colors flex items-center gap-1 cursor-pointer font-mono"
+                  className="px-4 py-2 rounded-full text-xs font-semibold bg-[#18181b] border border-zinc-700 text-zinc-300 hover:bg-[#27272a] disabled:opacity-40 transition-colors flex items-center gap-1 cursor-pointer font-mono"
                 >
                   <ChevronLeft className="w-4 h-4" />
                   <span>Previous</span>
@@ -761,7 +761,7 @@ export const TestTaking = () => {
                 <button
                   onClick={handleNext}
                   disabled={currentIndex === questions.length - 1}
-                  className="px-5 py-2 rounded-full text-xs font-semibold bg-white hover:bg-zinc-200 text-black disabled:opacity-40 transition-colors flex items-center gap-1 shadow-sm cursor-pointer font-mono"
+                  className="px-5 py-2 rounded-full text-xs font-semibold bg-amber-500 hover:bg-amber-400 text-black disabled:opacity-40 transition-all flex items-center gap-1 shadow-[0_0_15px_rgba(245,158,11,0.25)] cursor-pointer font-mono"
                 >
                   <span>Next</span>
                   <ChevronRight className="w-4 h-4" />

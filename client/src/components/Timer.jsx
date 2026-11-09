@@ -52,7 +52,7 @@ export const Timer = ({ endTimeIso, initialRemainingSeconds, onTimeUp }) => {
   const hours = Math.floor(secondsLeft / 3600);
   const minutes = Math.floor((secondsLeft % 3600) / 60);
   const secs = secondsLeft % 60;
-  const isWarning = secondsLeft < 120;
+  const isWarning = secondsLeft < 300; // Warning under 5 minutes
 
   const formattedTime = hours > 0
     ? `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
@@ -60,16 +60,16 @@ export const Timer = ({ endTimeIso, initialRemainingSeconds, onTimeUp }) => {
 
   return (
     <div
-      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full font-mono text-xs font-bold border transition-colors shadow-sm ${
+      className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full font-mono text-xs font-bold border transition-all shadow-sm ${
         isWarning
-          ? 'bg-zinc-900 border-rose-900 text-rose-400'
-          : 'bg-zinc-900 border-zinc-800 text-white'
+          ? 'bg-rose-950/80 border-rose-500 text-rose-300 shadow-[0_0_15px_rgba(244,63,94,0.35)]'
+          : 'bg-[#18181b] border-zinc-700 text-white'
       }`}
     >
       {isWarning ? (
         <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
       ) : (
-        <Clock className="w-3.5 h-3.5 text-zinc-400" />
+        <Clock className="w-3.5 h-3.5 text-[#ffa116]" />
       )}
       <span>{formattedTime}</span>
     </div>

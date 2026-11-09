@@ -100,11 +100,11 @@ export const Landing = () => {
         </div>
 
         {/* Auth Card */}
-        <div className="w-full max-w-md rounded-2xl bg-[#121215] border border-[#27272a] shadow-xl p-6 sm:p-8">
+        <div className="w-full max-w-md rounded-2xl bg-[#121215] border border-zinc-700 shadow-xl p-6 sm:p-8">
           {user ? (
             /* Logged-In User Quick Access */
             <div className="text-center space-y-5">
-              <div className="w-16 h-16 rounded-full overflow-hidden bg-[#18181b] border border-[#27272a] flex items-center justify-center text-white text-xl font-bold mx-auto shadow-sm">
+              <div className="w-16 h-16 rounded-full overflow-hidden bg-[#18181b] border border-zinc-700 flex items-center justify-center text-white text-xl font-bold mx-auto shadow-sm">
                 {user?.avatarUrl ? (
                   <img src={resolveFileUrl(user.avatarUrl)} alt={user.name} className="w-full h-full object-cover" />
                 ) : (
@@ -115,14 +115,14 @@ export const Landing = () => {
               <div className="space-y-1">
                 <h3 className="text-base font-bold text-white">Welcome back, {user?.name || 'User'}</h3>
                 <p className="text-xs font-mono text-zinc-400">{user?.email}</p>
-                <span className="inline-block mt-2 text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-[#18181b] text-zinc-300 border border-[#27272a] uppercase font-medium">
+                <span className="inline-block mt-2 text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-[#18181b] text-zinc-300 border border-zinc-700 uppercase font-medium">
                   {user?.role || 'student'}
                 </span>
               </div>
 
               <Link
                 to={user?.role === 'admin' ? '/admin' : '/dashboard'}
-                className="w-full py-2.5 rounded-full font-semibold bg-white hover:bg-zinc-200 text-black shadow-sm transition-colors flex items-center justify-center gap-2 text-xs"
+                className="w-full py-2.5 rounded-full font-semibold bg-amber-500 hover:bg-amber-400 text-black shadow-[0_0_15px_rgba(245,158,11,0.25)] transition-all flex items-center justify-center gap-2 text-xs"
               >
                 <span>Go to Workspace</span>
                 <ArrowRight className="w-4 h-4" />
@@ -132,13 +132,13 @@ export const Landing = () => {
             /* Auth Form (Sign In / Register) */
             <div className="space-y-5">
               {/* Top Auth Mode Tabs */}
-              <div className="grid grid-cols-2 gap-1.5 p-1 rounded-full bg-[#18181b] border border-[#27272a]">
+              <div className="grid grid-cols-2 gap-1.5 p-1 rounded-full bg-[#18181b] border border-zinc-700">
                 <button
                   type="button"
                   onClick={() => { setAuthMode('login'); setError(''); }}
                   className={`py-1.5 rounded-full text-xs font-semibold transition-all flex items-center justify-center gap-2 ${
                     authMode === 'login'
-                      ? 'bg-white text-black shadow-sm'
+                      ? 'bg-amber-500 text-black font-semibold shadow-[0_0_15px_rgba(245,158,11,0.25)]'
                       : 'text-zinc-400 hover:text-white'
                   }`}
                 >
@@ -151,7 +151,7 @@ export const Landing = () => {
                   onClick={() => { setAuthMode('register'); setError(''); }}
                   className={`py-1.5 rounded-full text-xs font-semibold transition-all flex items-center justify-center gap-2 ${
                     authMode === 'register'
-                      ? 'bg-white text-black shadow-sm'
+                      ? 'bg-amber-500 text-black font-semibold shadow-[0_0_15px_rgba(245,158,11,0.25)]'
                       : 'text-zinc-400 hover:text-white'
                   }`}
                 >
@@ -162,7 +162,7 @@ export const Landing = () => {
 
               {/* Error Banner */}
               {error && (
-                <div className="p-3 rounded-xl bg-[#18181b] border border-[#27272a] text-zinc-300 text-xs text-center leading-relaxed font-mono">
+                <div className="p-3 rounded-xl bg-[#18181b] border border-zinc-700 text-zinc-300 text-xs text-center leading-relaxed font-mono">
                   {error}
                 </div>
               )}
@@ -172,7 +172,7 @@ export const Landing = () => {
                 <form onSubmit={handleLoginSubmit} className="space-y-4">
                   {/* Role Selector */}
                   <div className="space-y-1.5">
-                    <div className="grid grid-cols-2 gap-1.5 p-1 rounded-full bg-[#18181b] border border-[#27272a]">
+                    <div className="grid grid-cols-2 gap-1.5 p-1 rounded-full bg-[#18181b] border border-zinc-700">
                       <button
                         type="button"
                         onClick={() => setLoginRole('student')}
@@ -211,7 +211,7 @@ export const Landing = () => {
                         value={loginEmail}
                         onChange={(e) => setLoginEmail(e.target.value)}
                         placeholder={loginRole === 'admin' ? 'admin@algoprep.com' : 'student@algoprep.com'}
-                        className="w-full pl-10 pr-4 py-2 rounded-xl bg-[#18181b] border border-[#27272a] text-white text-xs focus:outline-none focus:border-zinc-500 transition-colors"
+                        className="w-full pl-10 pr-4 py-2 rounded-xl bg-[#18181b] border border-zinc-700 text-white text-xs focus:outline-none focus:border-zinc-500 transition-colors"
                       />
                     </div>
                   </div>
@@ -229,7 +229,7 @@ export const Landing = () => {
                         value={loginPassword}
                         onChange={(e) => setLoginPassword(e.target.value)}
                         placeholder="••••••••"
-                        className="w-full pl-10 pr-4 py-2 rounded-xl bg-[#18181b] border border-[#27272a] text-white text-xs focus:outline-none focus:border-zinc-500 transition-colors"
+                        className="w-full pl-10 pr-4 py-2 rounded-xl bg-[#18181b] border border-zinc-700 text-white text-xs focus:outline-none focus:border-zinc-500 transition-colors"
                       />
                     </div>
                   </div>
@@ -238,7 +238,7 @@ export const Landing = () => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full py-2.5 rounded-full font-semibold bg-white hover:bg-zinc-200 text-black shadow-sm transition-colors flex items-center justify-center gap-2 text-xs cursor-pointer"
+                    className="w-full py-2.5 rounded-full font-semibold bg-amber-500 hover:bg-amber-400 text-black shadow-[0_0_15px_rgba(245,158,11,0.25)] transition-all flex items-center justify-center gap-2 text-xs cursor-pointer"
                   >
                     {loading ? 'Signing in...' : `Sign In to ${loginRole === 'admin' ? 'Admin Panel' : 'Workspace'}`}
                     <ArrowRight className="w-4 h-4" />
@@ -246,12 +246,12 @@ export const Landing = () => {
 
                   {/* Demo Login CTA */}
                   {loginRole === 'student' && (
-                    <div className="pt-2 border-t border-[#27272a]">
+                    <div className="pt-2 border-t border-zinc-700">
                       <button
                         type="button"
                         onClick={handleDemoLogin}
                         disabled={loading}
-                        className="w-full py-2 rounded-full text-xs font-mono text-zinc-300 bg-[#18181b] border border-[#27272a] hover:bg-[#27272a] transition-colors cursor-pointer"
+                        className="w-full py-2 rounded-full text-xs font-mono text-zinc-300 bg-[#18181b] border border-zinc-700 hover:bg-[#27272a] transition-colors cursor-pointer"
                       >
                         Demo Student Login
                       </button>
@@ -276,7 +276,7 @@ export const Landing = () => {
                         value={regName}
                         onChange={(e) => setRegName(e.target.value)}
                         placeholder="Alex Student"
-                        className="w-full pl-10 pr-4 py-2 rounded-xl bg-[#18181b] border border-[#27272a] text-white text-xs focus:outline-none focus:border-zinc-500 transition-colors"
+                        className="w-full pl-10 pr-4 py-2 rounded-xl bg-[#18181b] border border-zinc-700 text-white text-xs focus:outline-none focus:border-zinc-500 transition-colors"
                       />
                     </div>
                   </div>
@@ -294,7 +294,7 @@ export const Landing = () => {
                         value={regEmail}
                         onChange={(e) => setRegEmail(e.target.value)}
                         placeholder="alex@example.com"
-                        className="w-full pl-10 pr-4 py-2 rounded-xl bg-[#18181b] border border-[#27272a] text-white text-xs focus:outline-none focus:border-zinc-500 transition-colors"
+                        className="w-full pl-10 pr-4 py-2 rounded-xl bg-[#18181b] border border-zinc-700 text-white text-xs focus:outline-none focus:border-zinc-500 transition-colors"
                       />
                     </div>
                   </div>
@@ -312,7 +312,7 @@ export const Landing = () => {
                         value={regPassword}
                         onChange={(e) => setRegPassword(e.target.value)}
                         placeholder="At least 6 characters"
-                        className="w-full pl-10 pr-4 py-2 rounded-xl bg-[#18181b] border border-[#27272a] text-white text-xs focus:outline-none focus:border-zinc-500 transition-colors"
+                        className="w-full pl-10 pr-4 py-2 rounded-xl bg-[#18181b] border border-zinc-700 text-white text-xs focus:outline-none focus:border-zinc-500 transition-colors"
                       />
                     </div>
                   </div>
@@ -321,7 +321,7 @@ export const Landing = () => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full py-2.5 rounded-full font-semibold bg-white hover:bg-zinc-200 text-black shadow-sm transition-colors flex items-center justify-center gap-2 text-xs cursor-pointer"
+                    className="w-full py-2.5 rounded-full font-semibold bg-amber-500 hover:bg-amber-400 text-black shadow-[0_0_15px_rgba(245,158,11,0.25)] transition-all flex items-center justify-center gap-2 text-xs cursor-pointer"
                   >
                     {loading ? 'Creating Account...' : 'Register Student Account'}
                     <ArrowRight className="w-4 h-4" />
@@ -334,7 +334,7 @@ export const Landing = () => {
       </div>
 
       {/* Footer */}
-      <footer className="pt-6 border-t border-[#27272a] text-center text-xs text-zinc-400 font-mono">
+      <footer className="pt-6 border-t border-zinc-700 text-center text-xs text-zinc-400 font-mono">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <Terminal className="w-4 h-4 text-zinc-400" />

@@ -310,14 +310,14 @@ export const DayView = () => {
         {/* Status Actions */}
         <div className="flex items-center gap-2.5">
           {isCompleted ? (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-zinc-900 border border-zinc-800 text-zinc-300">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-zinc-900 border border-zinc-700 text-zinc-300">
               <CheckCircle2 className="w-4 h-4 text-white" /> Completed
             </span>
           ) : (
             <button
               onClick={() => updateStatusMutation.mutate({ status: 'completed' })}
               disabled={updateStatusMutation.isPending}
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs transition-colors cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-colors cursor-pointer"
             >
               <Check className="w-3.5 h-3.5" />
               <span>Mark Completed</span>
@@ -328,7 +328,7 @@ export const DayView = () => {
             onClick={() => regenerateMutation.mutate()}
             disabled={regenerateMutation.isPending || !!activeJobId}
             title="Regenerate Grounded Notes"
-            className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 hover:text-white text-xs font-medium transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-300 hover:text-white text-xs font-medium transition-colors cursor-pointer"
           >
             <RotateCcw className={`w-3.5 h-3.5 text-zinc-400 ${regenerateMutation.isPending ? 'animate-spin' : ''}`} />
             <span className="hidden sm:inline">Regenerate</span>
@@ -337,12 +337,12 @@ export const DayView = () => {
       </div>
 
       {/* Main Day Header Banner */}
-      <div className="p-6 sm:p-8 rounded-2xl border border-[#27272a] bg-[#121215] space-y-4">
+      <div className="p-6 sm:p-8 rounded-2xl border border-zinc-700 bg-[#121215] space-y-4">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="px-2.5 py-1 rounded text-xs font-mono font-bold bg-zinc-900 border border-zinc-800 text-white">
+          <span className="px-2.5 py-1 rounded text-xs font-mono font-bold bg-zinc-900 border border-zinc-700 text-white">
             DAY {dayData.dayNumber}
           </span>
-          <span className="px-2.5 py-1 rounded text-xs font-mono uppercase tracking-wider bg-zinc-900 border border-zinc-800 text-zinc-400">
+          <span className="px-2.5 py-1 rounded text-xs font-mono uppercase tracking-wider bg-zinc-900 border border-zinc-700 text-zinc-400">
             {dayData.type}
           </span>
           <div className="flex items-center gap-1 text-xs text-zinc-500 font-mono ml-auto">
@@ -357,13 +357,13 @@ export const DayView = () => {
 
         {/* Objectives Checklist */}
         {dayData.objectives?.length > 0 && (
-          <div className="pt-2 border-t border-[#27272a] space-y-2">
+          <div className="pt-2 border-t border-zinc-700 space-y-2">
             <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400 font-semibold">
               Target Objectives
             </span>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs text-zinc-300">
               {dayData.objectives.map((obj, i) => (
-                <div key={i} className="flex items-start gap-2 bg-[#18181b] p-2.5 rounded-lg border border-[#27272a]">
+                <div key={i} className="flex items-start gap-2 bg-[#18181b] p-2.5 rounded-lg border border-zinc-700">
                   <CheckCircle2 className="w-3.5 h-3.5 text-zinc-400 shrink-0 mt-0.5" />
                   <span className="leading-relaxed">{obj}</span>
                 </div>
@@ -374,12 +374,12 @@ export const DayView = () => {
       </div>
 
       {/* Interactive Tabs Header (Notes | Resources | Test) */}
-      <div className="flex items-center gap-1 p-1 rounded-full bg-[#121215] border border-[#27272a] max-w-md">
+      <div className="flex items-center gap-1 p-1 rounded-full bg-[#121215] border border-zinc-700 max-w-md">
         <button
           onClick={() => setActiveTab('notes')}
           className={`flex-1 py-1.5 rounded-full text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${
             activeTab === 'notes'
-              ? 'bg-white text-black shadow-sm'
+              ? 'bg-amber-500 text-black font-semibold shadow-[0_0_15px_rgba(245,158,11,0.25)]'
               : 'text-zinc-400 hover:text-white'
           }`}
         >
@@ -391,7 +391,7 @@ export const DayView = () => {
           onClick={() => setActiveTab('resources')}
           className={`flex-1 py-1.5 rounded-full text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${
             activeTab === 'resources'
-              ? 'bg-white text-black shadow-sm'
+              ? 'bg-amber-500 text-black font-semibold shadow-[0_0_15px_rgba(245,158,11,0.25)]'
               : 'text-zinc-400 hover:text-white'
           }`}
         >
@@ -403,7 +403,7 @@ export const DayView = () => {
           onClick={() => setActiveTab('test')}
           className={`flex-1 py-1.5 rounded-full text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${
             activeTab === 'test'
-              ? 'bg-white text-black shadow-sm'
+              ? 'bg-amber-500 text-black font-semibold shadow-[0_0_15px_rgba(245,158,11,0.25)]'
               : 'text-zinc-400 hover:text-white'
           }`}
         >
@@ -417,7 +417,7 @@ export const DayView = () => {
         <div className="space-y-8">
           {/* Generation Progress Banner */}
           {isGenerating && (
-            <div className="p-6 rounded-2xl bg-[#121215] border border-[#27272a] space-y-4">
+            <div className="p-6 rounded-2xl bg-[#121215] border border-zinc-700 space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-sm font-semibold text-white">
                   <Loader2 className="w-4 h-4 animate-spin text-white" />
@@ -442,14 +442,14 @@ export const DayView = () => {
             <>
               {/* Quick Summary / Key Takeaways Callout */}
               {notesData.keyPoints?.length > 0 && (
-                <div className="p-6 rounded-2xl bg-[#121215] border border-[#27272a] space-y-3">
+                <div className="p-6 rounded-2xl bg-[#121215] border border-zinc-700 space-y-3">
                   <h3 className="text-xs font-mono uppercase tracking-wider text-zinc-400 flex items-center gap-2">
                     <Lightbulb className="w-4 h-4 text-white" />
                     <span>Key Takeaways</span>
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-zinc-300">
                     {notesData.keyPoints.map((point, idx) => (
-                      <div key={idx} className="flex items-start gap-2 bg-[#18181b] p-3 rounded-xl border border-[#27272a]">
+                      <div key={idx} className="flex items-start gap-2 bg-[#18181b] p-3 rounded-xl border border-zinc-700">
                         <Check className="w-4 h-4 text-white shrink-0 mt-0.5" />
                         <span className="leading-relaxed">{point}</span>
                       </div>
@@ -463,10 +463,10 @@ export const DayView = () => {
                 {notesData.sections?.map((section, idx) => (
                   <article
                     key={idx}
-                    className="p-6 sm:p-8 rounded-2xl bg-[#121215] border border-[#27272a] space-y-5"
+                    className="p-6 sm:p-8 rounded-2xl bg-[#121215] border border-zinc-700 space-y-5"
                   >
                     {/* Section Top Header & Beyond Materials Alert */}
-                    <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#27272a]">
+                    <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-zinc-700">
                       <div className="space-y-1">
                         <span className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">
                           Module {idx + 1}
@@ -477,7 +477,7 @@ export const DayView = () => {
                       </div>
 
                       {section.isBeyondMaterials && (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-mono bg-zinc-900 border border-zinc-800 text-zinc-400">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-mono bg-zinc-900 border border-zinc-700 text-zinc-400">
                           <AlertCircle className="w-3.5 h-3.5" />
                           <span>Supplemented Theory</span>
                         </span>
@@ -497,22 +497,22 @@ export const DayView = () => {
                           ol: ({ children }) => <ol className="list-decimal pl-5 space-y-1 mb-3">{children}</ol>,
                           li: ({ children }) => <li className="leading-relaxed">{children}</li>,
                           table: ({ children }) => (
-                            <div className="overflow-x-auto my-5 rounded-xl border border-[#27272a] bg-[#09090b]">
+                            <div className="overflow-x-auto my-5 rounded-xl border border-zinc-700 bg-[#09090b]">
                               <table className="w-full text-left text-xs border-collapse divide-y divide-[#27272a]">{children}</table>
                             </div>
                           ),
                           thead: ({ children }) => <thead className="bg-[#121215] text-zinc-300 font-mono text-[11px] uppercase tracking-wider">{children}</thead>,
                           tbody: ({ children }) => <tbody className="divide-y divide-[#27272a] bg-[#09090b]">{children}</tbody>,
                           tr: ({ children }) => <tr className="hover:bg-zinc-900/40 transition-colors">{children}</tr>,
-                          th: ({ children }) => <th className="px-4 py-3 font-semibold border-b border-[#27272a] text-zinc-300">{children}</th>,
+                          th: ({ children }) => <th className="px-4 py-3 font-semibold border-b border-zinc-700 text-zinc-300">{children}</th>,
                           td: ({ children }) => <td className="px-4 py-3 text-zinc-300 leading-relaxed align-top">{children}</td>,
                           code: ({ inline, children }) =>
                             inline ? (
-                              <code className="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 font-mono text-zinc-200 text-[12px]">
+                              <code className="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-700 font-mono text-zinc-200 text-[12px]">
                                 {children}
                               </code>
                             ) : (
-                              <pre className="p-4 rounded-xl bg-[#09090b] border border-zinc-800 overflow-x-auto text-[12px] font-mono text-zinc-200">
+                              <pre className="p-4 rounded-xl bg-[#09090b] border border-zinc-700 overflow-x-auto text-[12px] font-mono text-zinc-200">
                                 <code>{children}</code>
                               </pre>
                             ),
@@ -534,7 +534,7 @@ export const DayView = () => {
 
                     {/* Verified Course Citations Chips */}
                     {section.citations?.length > 0 && (
-                      <div className="pt-4 border-t border-[#27272a] space-y-2">
+                      <div className="pt-4 border-t border-zinc-700 space-y-2">
                         <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
                           <ShieldCheck className="w-3.5 h-3.5 text-white" />
                           <span>Grounded Source Citations:</span>
@@ -544,7 +544,7 @@ export const DayView = () => {
                             <button
                               key={cIdx}
                               onClick={() => setActiveCitation(cite)}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 text-zinc-300 transition-colors cursor-pointer"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 hover:border-zinc-700 text-zinc-300 transition-colors cursor-pointer"
                             >
                               <span className="text-white font-bold">[{cite.citationId}]</span>
                               <span>{cite.materialName}</span>
@@ -564,7 +564,7 @@ export const DayView = () => {
 
               {/* Active Recall Flashcards Deck */}
               {flashcards.length > 0 && (
-                <div className="p-6 sm:p-8 rounded-2xl bg-[#121215] border border-[#27272a] space-y-4">
+                <div className="p-6 sm:p-8 rounded-2xl bg-[#121215] border border-zinc-700 space-y-4">
                   <div className="flex items-center justify-between">
                     <h3 className="text-sm font-bold text-white flex items-center gap-2">
                       <Layers className="w-4 h-4 text-zinc-400" />
@@ -578,7 +578,7 @@ export const DayView = () => {
                   {/* Card Surface */}
                   <div
                     onClick={() => setIsFlipped(!isFlipped)}
-                    className="min-h-[160px] p-8 rounded-xl bg-[#18181b] border border-[#27272a] hover:border-zinc-700 transition-colors flex flex-col items-center justify-center text-center cursor-pointer space-y-3"
+                    className="min-h-[160px] p-8 rounded-xl bg-[#18181b] border border-zinc-700 hover:border-zinc-700 transition-colors flex flex-col items-center justify-center text-center cursor-pointer space-y-3"
                   >
                     <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400 font-medium">
                       {isFlipped ? 'Answer:' : 'Question (Click to reveal):'}
@@ -596,7 +596,7 @@ export const DayView = () => {
                         setCurrentCardIdx((prev) => Math.max(0, prev - 1));
                       }}
                       disabled={currentCardIdx === 0}
-                      className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-zinc-900 hover:bg-zinc-800 disabled:opacity-40 border border-zinc-800 text-xs font-medium text-white transition-colors cursor-pointer"
+                      className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-zinc-900 hover:bg-zinc-800 disabled:opacity-40 border border-zinc-700 text-xs font-medium text-white transition-colors cursor-pointer"
                     >
                       <ChevronLeft className="w-4 h-4" /> Previous
                     </button>
@@ -618,7 +618,7 @@ export const DayView = () => {
                         setCurrentCardIdx((prev) => Math.min(flashcards.length - 1, prev + 1));
                       }}
                       disabled={currentCardIdx === flashcards.length - 1}
-                      className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-zinc-900 hover:bg-zinc-800 disabled:opacity-40 border border-zinc-800 text-xs font-medium text-white transition-colors cursor-pointer"
+                      className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-zinc-900 hover:bg-zinc-800 disabled:opacity-40 border border-zinc-700 text-xs font-medium text-white transition-colors cursor-pointer"
                     >
                       Next <ChevronRight className="w-4 h-4" />
                     </button>
@@ -627,7 +627,7 @@ export const DayView = () => {
               )}
 
               {/* Bottom Actions: Mark Notes Read */}
-              <div className="flex flex-wrap items-center justify-between gap-4 p-6 rounded-2xl bg-[#121215] border border-[#27272a]">
+              <div className="flex flex-wrap items-center justify-between gap-4 p-6 rounded-2xl bg-[#121215] border border-zinc-700">
                 <h4 className="text-sm font-bold text-white">Finished reading today's notes?</h4>
 
                 <button
@@ -635,7 +635,7 @@ export const DayView = () => {
                   disabled={markReadMutation.isPending || notesData.readStatus}
                   className={`flex items-center gap-2 px-5 py-2 rounded-full font-semibold text-xs transition-colors cursor-pointer ${
                     notesData.readStatus
-                      ? 'bg-zinc-900 border border-zinc-800 text-zinc-300'
+                      ? 'bg-zinc-900 border border-zinc-700 text-zinc-300'
                       : 'bg-white hover:bg-zinc-200 text-black'
                   }`}
                 >
@@ -652,7 +652,7 @@ export const DayView = () => {
       {activeTab === 'resources' && (
         <div className="space-y-6">
           {/* Header & Controls */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-2xl bg-[#121215] border border-[#27272a]">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-2xl bg-[#121215] border border-zinc-700">
             <div>
               <h2 className="text-base font-bold text-white flex items-center gap-2">
                 <Video className="w-4 h-4 text-zinc-400" />
@@ -664,7 +664,7 @@ export const DayView = () => {
               <button
                 onClick={() => regenerateResourcesMutation.mutate()}
                 disabled={regenerateResourcesMutation.isPending || activeJobId}
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-900 hover:bg-zinc-800 disabled:opacity-50 border border-zinc-800 text-xs font-medium text-zinc-300 hover:text-white transition-colors cursor-pointer"
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-900 hover:bg-zinc-800 disabled:opacity-50 border border-zinc-700 text-xs font-medium text-zinc-300 hover:text-white transition-colors cursor-pointer"
               >
                 {regenerateResourcesMutation.isPending || activeJobId ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
@@ -678,8 +678,8 @@ export const DayView = () => {
 
           {/* Progress Banner during Live Generation */}
           {(activeJobId || isResourcesLoading) && (
-            <div className="p-8 rounded-2xl bg-[#121215] border border-[#27272a] text-center space-y-4">
-              <div className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto text-white">
+            <div className="p-8 rounded-2xl bg-[#121215] border border-zinc-700 text-center space-y-4">
+              <div className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-700 flex items-center justify-center mx-auto text-white">
                 <Loader2 className="w-5 h-5 animate-spin" />
               </div>
               <div className="space-y-1">
@@ -709,14 +709,14 @@ export const DayView = () => {
           {!activeJobId && !isResourcesLoading && (
             <>
               {(!resourcesData || resourcesData.length === 0) ? (
-                <div className="p-10 rounded-2xl bg-[#121215] border border-[#27272a] text-center space-y-4">
-                  <div className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto text-zinc-400">
+                <div className="p-10 rounded-2xl bg-[#121215] border border-zinc-700 text-center space-y-4">
+                  <div className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-700 flex items-center justify-center mx-auto text-zinc-400">
                     <Video className="w-5 h-5" />
                   </div>
                   <h3 className="text-base font-bold text-white">No Resources Curated Yet</h3>
                   <button
                     onClick={() => regenerateResourcesMutation.mutate()}
-                    className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-colors cursor-pointer"
                   >
                     <Sparkles className="w-4 h-4" />
                     <span>Curate Resources Now</span>
@@ -736,7 +736,7 @@ export const DayView = () => {
                       {/* Topic Section Header */}
                       <div className="flex items-center gap-2">
                         <h3 className="text-sm font-bold text-white">{topicTitle}</h3>
-                        <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-500">
+                        <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-zinc-900 border border-zinc-700 text-zinc-500">
                           {items.length} {items.length === 1 ? 'Resource' : 'Resources'}
                         </span>
                       </div>
@@ -750,27 +750,27 @@ export const DayView = () => {
                           const sourceConfig = {
                             youtube: {
                               label: 'YouTube',
-                              color: 'text-zinc-200 bg-zinc-900 border-zinc-800',
+                              color: 'text-zinc-200 bg-zinc-900 border-zinc-700',
                               icon: PlayCircle
                             },
                             wikipedia: {
                               label: 'Wikipedia',
-                              color: 'text-zinc-200 bg-zinc-900 border-zinc-800',
+                              color: 'text-zinc-200 bg-zinc-900 border-zinc-700',
                               icon: BookOpen
                             },
                             arxiv: {
                               label: 'arXiv Paper',
-                              color: 'text-zinc-200 bg-zinc-900 border-zinc-800',
+                              color: 'text-zinc-200 bg-zinc-900 border-zinc-700',
                               icon: GraduationCap
                             },
                             web: {
                               label: 'Documentation',
-                              color: 'text-zinc-200 bg-zinc-900 border-zinc-800',
+                              color: 'text-zinc-200 bg-zinc-900 border-zinc-700',
                               icon: Globe
                             }
                           }[res.source] || {
                             label: 'External',
-                            color: 'text-zinc-400 bg-zinc-900 border-zinc-800',
+                            color: 'text-zinc-400 bg-zinc-900 border-zinc-700',
                             icon: Globe
                           };
 
@@ -782,7 +782,7 @@ export const DayView = () => {
                               className={`p-5 rounded-2xl bg-[#121215] border transition-all flex flex-col justify-between space-y-4 ${
                                 feedback.watched
                                   ? 'border-zinc-700 bg-[#151519]'
-                                  : 'border-[#27272a] hover:border-zinc-700'
+                                  : 'border-zinc-700 hover:border-zinc-700'
                               }`}
                             >
                               <div className="space-y-3">
@@ -796,7 +796,7 @@ export const DayView = () => {
                                   </span>
 
                                   {item.finalScore ? (
-                                    <span className="text-[11px] font-mono font-medium text-zinc-400 bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800">
+                                    <span className="text-[11px] font-mono font-medium text-zinc-400 bg-zinc-900 px-2 py-0.5 rounded border border-zinc-700">
                                       {item.finalScore}%
                                     </span>
                                   ) : null}
@@ -804,7 +804,7 @@ export const DayView = () => {
 
                                 {/* Thumbnail for YouTube if available */}
                                 {res.thumbnail && (
-                                  <div className="relative aspect-video rounded-xl overflow-hidden bg-black border border-[#27272a] group">
+                                  <div className="relative aspect-video rounded-xl overflow-hidden bg-black border border-zinc-700 group">
                                     <img
                                       src={res.thumbnail}
                                       alt={res.title}
@@ -840,7 +840,7 @@ export const DayView = () => {
 
                                 {/* Why Recommended Callout */}
                                 {item.whyRecommended && (
-                                  <div className="p-3 rounded-xl bg-[#18181b] border border-[#27272a] flex items-start gap-2 text-xs text-zinc-300 leading-relaxed">
+                                  <div className="p-3 rounded-xl bg-[#18181b] border border-zinc-700 flex items-start gap-2 text-xs text-zinc-300 leading-relaxed">
                                     <Sparkles className="w-3.5 h-3.5 text-zinc-400 shrink-0 mt-0.5" />
                                     <span>{item.whyRecommended}</span>
                                   </div>
@@ -855,7 +855,7 @@ export const DayView = () => {
                               </div>
 
                               {/* Card Footer: Watched Checkbox + Thumbs Feedback */}
-                              <div className="pt-3 border-t border-[#27272a] flex items-center justify-between text-xs">
+                              <div className="pt-3 border-t border-zinc-700 flex items-center justify-between text-xs">
                                 <button
                                   onClick={() =>
                                     feedbackMutation.mutate({
@@ -866,7 +866,7 @@ export const DayView = () => {
                                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-colors cursor-pointer text-xs font-medium ${
                                     feedback.watched
                                       ? 'text-white bg-zinc-800 border border-zinc-700'
-                                      : 'text-zinc-400 hover:text-white bg-zinc-900 border border-zinc-800'
+                                      : 'text-zinc-400 hover:text-white bg-zinc-900 border border-zinc-700'
                                   }`}
                                 >
                                   {feedback.watched ? (
@@ -889,7 +889,7 @@ export const DayView = () => {
                                     className={`p-1.5 rounded-md border transition-colors cursor-pointer ${
                                       feedback.helpful === true
                                         ? 'bg-white text-black border-white'
-                                        : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white'
+                                        : 'bg-zinc-900 border-zinc-700 text-zinc-400 hover:text-white'
                                     }`}
                                   >
                                     <ThumbsUp className="w-3.5 h-3.5" />
@@ -905,7 +905,7 @@ export const DayView = () => {
                                     className={`p-1.5 rounded-md border transition-colors cursor-pointer ${
                                       feedback.helpful === false
                                         ? 'bg-zinc-800 text-white border-zinc-700'
-                                        : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white'
+                                        : 'bg-zinc-900 border-zinc-700 text-zinc-400 hover:text-white'
                                     }`}
                                   >
                                     <ThumbsDown className="w-3.5 h-3.5" />
@@ -929,7 +929,7 @@ export const DayView = () => {
       {activeTab === 'test' && (
         <div className="space-y-6">
           {/* Header & Controls */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-2xl bg-[#121215] border border-[#27272a]">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-2xl bg-[#121215] border border-zinc-700">
             <div>
               <h2 className="text-base font-bold text-white flex items-center gap-2">
                 <ClipboardList className="w-4 h-4 text-zinc-400" />
@@ -941,7 +941,7 @@ export const DayView = () => {
               <button
                 onClick={() => generateTestMutation.mutate()}
                 disabled={generateTestMutation.isPending || activeJobId}
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-900 hover:bg-zinc-800 disabled:opacity-50 border border-zinc-800 text-xs font-medium text-zinc-300 hover:text-white transition-colors cursor-pointer"
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-900 hover:bg-zinc-800 disabled:opacity-50 border border-zinc-700 text-xs font-medium text-zinc-300 hover:text-white transition-colors cursor-pointer"
               >
                 {generateTestMutation.isPending || activeJobId ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
@@ -955,8 +955,8 @@ export const DayView = () => {
 
           {/* Progress Banner during Live Generation */}
           {(activeJobId || isTestLoading) && (
-            <div className="p-8 rounded-2xl bg-[#121215] border border-[#27272a] text-center space-y-4">
-              <div className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto text-white">
+            <div className="p-8 rounded-2xl bg-[#121215] border border-zinc-700 text-center space-y-4">
+              <div className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-700 flex items-center justify-center mx-auto text-white">
                 <Loader2 className="w-5 h-5 animate-spin" />
               </div>
               <h3 className="text-sm font-bold text-white">
@@ -985,9 +985,9 @@ export const DayView = () => {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
               {/* Left Column: Test Details & Start Action */}
               <div className="lg:col-span-7 space-y-6">
-                <div className="p-6 rounded-2xl bg-[#121215] border border-[#27272a] space-y-5">
+                <div className="p-6 rounded-2xl bg-[#121215] border border-zinc-700 space-y-5">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-xs font-mono font-medium border border-zinc-800 bg-zinc-900 text-zinc-300">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-xs font-mono font-medium border border-zinc-700 bg-zinc-900 text-zinc-300">
                       <Award className="w-3.5 h-3.5" />
                       <span>{dayTestData.mode === 'practice' ? 'Practice' : 'Exam'}</span>
                     </span>
@@ -1005,19 +1005,19 @@ export const DayView = () => {
 
                   {/* Test Specs Grid */}
                   <div className="grid grid-cols-3 gap-3 pt-2">
-                    <div className="p-3 rounded-xl bg-[#18181b] border border-[#27272a] text-center">
+                    <div className="p-3 rounded-xl bg-[#18181b] border border-zinc-700 text-center">
                       <div className="text-[11px] text-zinc-500 uppercase font-mono">Questions</div>
                       <div className="text-base font-mono font-bold text-white mt-0.5">
                         {dayTestData.totalQuestions}
                       </div>
                     </div>
-                    <div className="p-3 rounded-xl bg-[#18181b] border border-[#27272a] text-center">
+                    <div className="p-3 rounded-xl bg-[#18181b] border border-zinc-700 text-center">
                       <div className="text-[11px] text-zinc-500 uppercase font-mono">Time Limit</div>
                       <div className="text-base font-mono font-bold text-white mt-0.5">
                         {dayTestData.timeLimitMinutes}m
                       </div>
                     </div>
-                    <div className="p-3 rounded-xl bg-[#18181b] border border-[#27272a] text-center">
+                    <div className="p-3 rounded-xl bg-[#18181b] border border-zinc-700 text-center">
                       <div className="text-[11px] text-zinc-500 uppercase font-mono">Marking</div>
                       <div className="text-base font-mono font-bold text-white mt-0.5">
                         +{dayTestData.markingScheme?.correct || 4} / {dayTestData.markingScheme?.incorrect || -1}
@@ -1035,7 +1035,7 @@ export const DayView = () => {
                         {dayTestData.conceptKeys.map((k) => (
                           <span
                             key={k}
-                            className="text-xs px-2.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-300 font-mono"
+                            className="text-xs px-2.5 py-0.5 rounded bg-zinc-900 border border-zinc-700 text-zinc-300 font-mono"
                           >
                             {k}
                           </span>
@@ -1045,10 +1045,10 @@ export const DayView = () => {
                   )}
 
                   {/* Primary CTA */}
-                  <div className="pt-4 border-t border-[#27272a] flex flex-wrap items-center gap-3">
+                  <div className="pt-4 border-t border-zinc-700 flex flex-wrap items-center gap-3">
                     <Link
                       to={`/test/${dayTestData._id}`}
-                      className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs transition-colors cursor-pointer"
+                      className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-colors cursor-pointer"
                     >
                       <Play className="w-3.5 h-3.5 fill-current" />
                       <span>{userAttempts.length > 0 ? 'Take Another Attempt' : 'Start Test'}</span>
@@ -1057,7 +1057,7 @@ export const DayView = () => {
                     {userAttempts.length > 0 && (
                       <Link
                         to={`/test/${dayTestData._id}?retake=true`}
-                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-zinc-900 hover:bg-zinc-800 text-zinc-300 text-xs font-medium border border-zinc-800 transition-colors cursor-pointer"
+                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-zinc-900 hover:bg-zinc-800 text-zinc-300 text-xs font-medium border border-zinc-700 transition-colors cursor-pointer"
                       >
                         <RotateCcw className="w-3.5 h-3.5" />
                         <span>Retake</span>
@@ -1069,8 +1069,8 @@ export const DayView = () => {
 
               {/* Right Column: Performance History / Attempts */}
               <div className="lg:col-span-5 space-y-4">
-                <div className="p-6 rounded-2xl bg-[#121215] border border-[#27272a] space-y-4">
-                  <div className="flex items-center justify-between pb-3 border-b border-[#27272a]">
+                <div className="p-6 rounded-2xl bg-[#121215] border border-zinc-700 space-y-4">
+                  <div className="flex items-center justify-between pb-3 border-b border-zinc-700">
                     <h4 className="text-sm font-bold text-white flex items-center gap-2">
                       <CheckCircle2 className="w-4 h-4 text-zinc-400" />
                       <span>Attempt History ({userAttempts.length})</span>
@@ -1087,14 +1087,14 @@ export const DayView = () => {
                       {userAttempts.map((att, idx) => (
                         <div
                           key={att._id}
-                          className="p-3.5 rounded-xl bg-[#18181b] border border-[#27272a] hover:border-zinc-700 transition-colors flex items-center justify-between gap-3"
+                          className="p-3.5 rounded-xl bg-[#18181b] border border-zinc-700 hover:border-zinc-700 transition-colors flex items-center justify-between gap-3"
                         >
                           <div>
                             <div className="flex items-center gap-2">
                               <span className="text-xs font-mono font-bold text-white">
                                 #{userAttempts.length - idx}
                               </span>
-                              <span className="text-[10px] px-2 py-0.5 rounded bg-zinc-900 text-zinc-300 border border-zinc-800 font-mono">
+                              <span className="text-[10px] px-2 py-0.5 rounded bg-zinc-900 text-zinc-300 border border-zinc-700 font-mono">
                                 {att.accuracy || 0}% Accuracy
                               </span>
                             </div>
@@ -1121,14 +1121,14 @@ export const DayView = () => {
 
           {/* If no test generated yet */}
           {!activeJobId && !isTestLoading && !dayTestData && (
-            <div className="p-10 rounded-2xl bg-[#121215] border border-[#27272a] text-center space-y-4">
-              <div className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto text-zinc-400">
+            <div className="p-10 rounded-2xl bg-[#121215] border border-zinc-700 text-center space-y-4">
+              <div className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-700 flex items-center justify-center mx-auto text-zinc-400">
                 <ClipboardList className="w-5 h-5" />
               </div>
               <h3 className="text-base font-bold text-white">Day {dayData.dayNumber} Test Ready</h3>
               <button
                 onClick={() => generateTestMutation.mutate()}
-                className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs transition-colors cursor-pointer"
+                className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-colors cursor-pointer"
               >
                 <Sparkles className="w-4 h-4" />
                 <span>Generate Test</span>
@@ -1141,10 +1141,10 @@ export const DayView = () => {
       {/* Citation Inspection Drawer / Modal */}
       {activeCitation && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="max-w-lg w-full rounded-2xl p-6 border border-[#27272a] bg-[#121215] shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-[#27272a]">
+          <div className="max-w-lg w-full rounded-2xl p-6 border border-zinc-700 bg-[#121215] shadow-2xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-zinc-700">
               <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 rounded text-xs font-mono font-bold bg-zinc-900 border border-zinc-800 text-white">
+                <span className="px-2 py-0.5 rounded text-xs font-mono font-bold bg-zinc-900 border border-zinc-700 text-white">
                   {activeCitation.citationId}
                 </span>
                 <span className="text-sm font-bold text-white">Reference Citation</span>
@@ -1158,7 +1158,7 @@ export const DayView = () => {
             </div>
 
             <div className="space-y-3">
-              <div className="p-3 rounded-xl bg-[#18181b] border border-[#27272a] space-y-1.5">
+              <div className="p-3 rounded-xl bg-[#18181b] border border-zinc-700 space-y-1.5">
                 <div className="text-[11px] font-mono text-zinc-500 uppercase">Document:</div>
                 <div className="text-sm font-bold text-white flex items-center gap-2">
                   <FileText className="w-4 h-4 text-zinc-400" />
@@ -1178,7 +1178,7 @@ export const DayView = () => {
               {activeCitation.snippet && (
                 <div className="space-y-1">
                   <span className="text-[11px] font-mono text-zinc-500 uppercase">Excerpt:</span>
-                  <div className="p-4 rounded-xl bg-[#09090b] border border-zinc-800 text-xs text-zinc-300 italic leading-relaxed">
+                  <div className="p-4 rounded-xl bg-[#09090b] border border-zinc-700 text-xs text-zinc-300 italic leading-relaxed">
                     "{activeCitation.snippet}..."
                   </div>
                 </div>
@@ -1188,7 +1188,7 @@ export const DayView = () => {
             <div className="pt-2 flex justify-end">
               <button
                 onClick={() => setActiveCitation(null)}
-                className="px-4 py-2 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs transition-colors cursor-pointer"
+                className="px-4 py-2 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-colors cursor-pointer"
               >
                 Close
               </button>

@@ -8,14 +8,14 @@ export const PlanSummaryCard = ({ summary, stats }) => {
     switch (level) {
       case 'mastery':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white text-black shadow-sm">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
             <CheckCircle2 className="w-3.5 h-3.5" />
             Mastery Level
           </span>
         );
       case 'intermediate':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#18181b] text-zinc-300 border border-[#27272a]">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30">
             <Sparkles className="w-3.5 h-3.5" />
             Intermediate
           </span>
@@ -23,8 +23,8 @@ export const PlanSummaryCard = ({ summary, stats }) => {
       case 'needs_revision':
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#18181b] text-zinc-400 border border-[#27272a]">
-            <Award className="w-3.5 h-3.5" />
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#18181b] text-zinc-400 border border-zinc-700">
+            <Award className="w-3.5 h-3.5 text-zinc-500" />
             Needs Revision
           </span>
         );
@@ -36,8 +36,8 @@ export const PlanSummaryCard = ({ summary, stats }) => {
   const accDiff = prev ? stats.accuracy - prev.accuracy : null;
 
   return (
-    <div className="bg-[#121215] rounded-2xl p-6 sm:p-7 border border-[#27272a] shadow-sm space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#27272a]">
+    <div className="bg-[#121215] rounded-2xl p-6 sm:p-7 border border-zinc-700 shadow-sm space-y-5">
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-zinc-700">
         <div>
           <h2 className="text-lg sm:text-xl font-bold text-white leading-snug">
             {summary.verdict}
@@ -52,10 +52,10 @@ export const PlanSummaryCard = ({ summary, stats }) => {
 
       {/* Metric Tiles */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
-        <div className="bg-[#18181b] rounded-xl p-3.5 border border-[#27272a] text-center">
+        <div className="bg-[#18181b] rounded-xl p-3.5 border border-zinc-700 text-center">
           <div className="text-[10px] uppercase font-mono text-zinc-400 mb-0.5">Est. Study Time</div>
           <div className="text-xl font-mono font-bold text-white flex items-center justify-center gap-1">
-            <Clock className="w-4 h-4 text-zinc-400" />
+            <Clock className="w-4 h-4 text-amber-400" />
             <span>
               {summary.estimatedStudyMinutes >= 60
                 ? `${Math.floor(summary.estimatedStudyMinutes / 60)}h ${summary.estimatedStudyMinutes % 60}m`
@@ -64,25 +64,27 @@ export const PlanSummaryCard = ({ summary, stats }) => {
           </div>
         </div>
 
-        <div className="bg-[#18181b] rounded-xl p-3.5 border border-[#27272a] text-center">
+        <div className="bg-[#18181b] rounded-xl p-3.5 border border-zinc-700 text-center">
           <div className="text-[10px] uppercase font-mono text-zinc-400 mb-0.5">Pace / Question</div>
           <div className="text-xl font-mono font-bold text-white">
             {stats.avgSecondsPerQuestion > 0 ? `${stats.avgSecondsPerQuestion}s` : 'N/A'}
           </div>
         </div>
 
-        <div className="bg-[#18181b] rounded-xl p-3.5 border border-[#27272a] text-center">
+        <div className="bg-[#18181b] rounded-xl p-3.5 border border-zinc-700 text-center">
           <div className="text-[10px] uppercase font-mono text-zinc-400 mb-0.5">Accuracy</div>
-          <div className="text-xl font-mono font-bold text-white">
+          <div className={`text-xl font-mono font-bold ${
+            stats.accuracy >= 70 ? 'text-emerald-400' : stats.accuracy >= 40 ? 'text-amber-400' : 'text-zinc-200'
+          }`}>
             {stats.accuracy}%
           </div>
         </div>
 
-        <div className="bg-[#18181b] rounded-xl p-3.5 border border-[#27272a] text-center">
+        <div className="bg-[#18181b] rounded-xl p-3.5 border border-zinc-700 text-center">
           <div className="text-[10px] uppercase font-mono text-zinc-400 mb-0.5">Attempt Delta</div>
           {prev ? (
             <div className="text-sm font-mono font-bold text-white flex items-center justify-center gap-1">
-              <span>
+              <span className={scoreDiff >= 0 ? 'text-emerald-400' : 'text-rose-400'}>
                 {scoreDiff > 0 ? `+${scoreDiff}` : scoreDiff} pts ({accDiff > 0 ? `+${accDiff}` : accDiff}%)
               </span>
             </div>

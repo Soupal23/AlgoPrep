@@ -153,8 +153,8 @@ export const RoadmapView = () => {
         <Link to={`/workspaces/${workspaceId}`} className="inline-flex items-center gap-1.5 text-xs text-zinc-400 hover:text-white transition-colors">
           <ArrowLeft className="w-4 h-4" /> Back to Workspace
         </Link>
-        <div className="p-8 rounded-2xl bg-[#121215] border border-[#27272a] text-center space-y-4">
-          <div className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto text-zinc-300">
+        <div className="p-8 rounded-2xl bg-[#121215] border border-zinc-700 text-center space-y-4">
+          <div className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-700 flex items-center justify-center mx-auto text-zinc-300">
             <Compass className="w-5 h-5" />
           </div>
           <h2 className="text-lg font-bold text-white">No Roadmap Found</h2>
@@ -190,17 +190,17 @@ export const RoadmapView = () => {
       </div>
 
       {/* Top Header Card */}
-      <div className="p-6 sm:p-8 rounded-2xl bg-[#121215] border border-[#27272a] space-y-6">
+      <div className="p-6 sm:p-8 rounded-2xl bg-[#121215] border border-zinc-700 space-y-6">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="px-2.5 py-1 rounded-md text-[11px] font-mono font-medium bg-zinc-900 border border-zinc-800 text-zinc-300 uppercase">
+              <span className="px-2.5 py-1 rounded-md text-[11px] font-mono font-medium bg-zinc-900 border border-zinc-700 text-zinc-300 uppercase">
                 {workspaceData?.subject || 'Curriculum Plan'}
               </span>
-              <span className="px-2.5 py-1 rounded-md text-[11px] font-mono text-zinc-400 bg-zinc-900 border border-zinc-800">
+              <span className="px-2.5 py-1 rounded-md text-[11px] font-mono text-zinc-400 bg-zinc-900 border border-zinc-700">
                 {days.length} Days
               </span>
-              <span className="px-2.5 py-1 rounded-md text-[11px] font-mono text-zinc-400 bg-zinc-900 border border-zinc-800 capitalize">
+              <span className="px-2.5 py-1 rounded-md text-[11px] font-mono text-zinc-400 bg-zinc-900 border border-zinc-700 capitalize">
                 {roadmapData.settings?.level || 'Intermediate'}
               </span>
             </div>
@@ -214,7 +214,7 @@ export const RoadmapView = () => {
           <div className="flex flex-wrap items-center gap-3 shrink-0">
             <button
               onClick={() => setIsRegenModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 hover:text-white font-medium text-xs transition-colors cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-300 hover:text-white font-medium text-xs transition-colors cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span>Re-plan ({regensLeft} left)</span>
@@ -223,7 +223,7 @@ export const RoadmapView = () => {
         </div>
 
         {/* Progress Bar & Summary Stats */}
-        <div className="pt-4 border-t border-[#27272a] space-y-3">
+        <div className="pt-4 border-t border-zinc-700 space-y-3">
           <div className="flex items-center justify-between text-xs">
             <div className="flex items-center gap-2 text-zinc-400">
               <Award className="w-4 h-4 text-white" />
@@ -235,7 +235,7 @@ export const RoadmapView = () => {
 
           <div className="w-full h-1.5 rounded-full bg-zinc-900 overflow-hidden">
             <div
-              className="h-full bg-white transition-all duration-500 rounded-full"
+              className="h-full bg-gradient-to-r from-amber-500 to-yellow-400 transition-all duration-500 rounded-full"
               style={{ width: `${progressPct}%` }}
             />
           </div>
@@ -244,15 +244,15 @@ export const RoadmapView = () => {
 
       {/* Plan Updated Dynamic Re-planning Banner (Phase 8) */}
       {(roadmapData.version > 1 || (changesData?.changeLog?.length > 0)) && (
-        <div className="p-5 sm:p-6 rounded-2xl bg-[#121215] border border-[#27272a] space-y-4">
+        <div className="p-5 sm:p-6 rounded-2xl bg-[#121215] border border-zinc-700 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-white">
+              <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-700 flex items-center justify-center text-white">
                 <Sparkles className="w-4 h-4" />
               </div>
               <div className="flex items-center gap-2">
                 <h3 className="text-sm font-bold text-white">Dynamic Re-planning Active</h3>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-zinc-900 border border-zinc-800 text-zinc-300">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-zinc-900 border border-zinc-700 text-zinc-300">
                   Plan v{roadmapData.version || changesData?.version || 2}
                 </span>
               </div>
@@ -266,7 +266,7 @@ export const RoadmapView = () => {
           </div>
 
           {changesData?.changeLog?.length > 0 && (
-            <div className="space-y-2 pt-2 border-t border-[#27272a]">
+            <div className="space-y-2 pt-2 border-t border-zinc-700">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 block">
                 Recent Re-planning Log
               </span>
@@ -274,7 +274,7 @@ export const RoadmapView = () => {
                 {changesData.changeLog.slice(-4).reverse().map((entry, idx) => (
                   <div
                     key={idx}
-                    className="p-2.5 rounded-xl bg-zinc-900/60 border border-zinc-800 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-1.5"
+                    className="p-2.5 rounded-xl bg-zinc-900/60 border border-zinc-700 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-1.5"
                   >
                     <div className="flex items-center gap-2">
                       <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-200">
@@ -311,7 +311,7 @@ export const RoadmapView = () => {
                 key={day._id}
                 className={`p-5 sm:p-6 rounded-2xl border transition-all duration-200 ${
                   isCompleted
-                    ? 'bg-[#121215] border-[#27272a]'
+                    ? 'bg-[#121215] border-zinc-700'
                     : isAvailable
                     ? 'bg-[#18181b] border-zinc-700'
                     : 'bg-[#0d0d0f] border-zinc-900/80 opacity-60'
@@ -321,14 +321,14 @@ export const RoadmapView = () => {
                   {/* Left: Day Badge & Info */}
                   <div className="space-y-2.5 min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-zinc-900 border border-zinc-800 text-white">
+                      <span className="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-zinc-900 border border-zinc-700 text-white">
                         Day {day.dayNumber}
                       </span>
-                      <span className="px-2 py-0.5 rounded text-[11px] font-mono border border-zinc-800 text-zinc-400 uppercase">
+                      <span className="px-2 py-0.5 rounded text-[11px] font-mono border border-zinc-700 text-zinc-400 uppercase">
                         {day.type === 'mock' ? 'Mock Exam' : day.type}
                       </span>
                       {day.type === 'revision' && (
-                        <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-zinc-900 border border-zinc-800 text-zinc-300">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-zinc-900 border border-zinc-700 text-zinc-300">
                           Adaptive Review
                         </span>
                       )}
@@ -362,7 +362,7 @@ export const RoadmapView = () => {
                           return (
                             <span
                               key={i}
-                              className="px-2 py-0.5 rounded text-[11px] font-mono bg-zinc-900 border border-zinc-800 text-zinc-400 flex items-center gap-1.5"
+                              className="px-2 py-0.5 rounded text-[11px] font-mono bg-zinc-900 border border-zinc-700 text-zinc-400 flex items-center gap-1.5"
                             >
                               <span>{topicMeta?.title || key}</span>
                               {topicMeta?.difficulty && (
@@ -385,7 +385,7 @@ export const RoadmapView = () => {
                           to={`/workspaces/${workspaceId}/days/${day._id}`}
                           className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-200 transition-colors"
                         >
-                          <CheckCircle2 className="w-3.5 h-3.5 text-zinc-400" />
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                           <span>Review Notes</span>
                         </Link>
                         <button
@@ -399,21 +399,21 @@ export const RoadmapView = () => {
                       <div className="flex items-center gap-2">
                         <Link
                           to={`/workspaces/${workspaceId}/days/${day._id}`}
-                          className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs transition-colors cursor-pointer"
+                          className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs transition-all cursor-pointer shadow-[0_0_15px_rgba(245,158,11,0.25)]"
                         >
                           <Play className="w-3 h-3 fill-current" />
                           <span>Study Day</span>
                         </Link>
                         <button
                           onClick={() => updateStatusMutation.mutate({ dayId: day._id, status: 'completed' })}
-                          className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 hover:text-white font-medium text-xs transition-colors cursor-pointer"
+                          className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-300 hover:text-white font-medium text-xs transition-colors cursor-pointer"
                         >
                           <CheckCircle2 className="w-3.5 h-3.5" />
                           <span>Mark Done</span>
                         </button>
                       </div>
                     ) : (
-                      <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-zinc-900 border border-zinc-800 text-zinc-600">
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-zinc-900 border border-zinc-700 text-zinc-600">
                         <Lock className="w-3.5 h-3.5" />
                         <span>Locked</span>
                       </div>
@@ -429,10 +429,10 @@ export const RoadmapView = () => {
       {/* Regeneration Modal */}
       {isRegenModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-2xl bg-[#121215] border border-[#27272a] p-6 space-y-6 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-[#27272a] pb-4">
+          <div className="w-full max-w-md rounded-2xl bg-[#121215] border border-zinc-700 p-6 space-y-6 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-zinc-700 pb-4">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-white">
+                <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-700 flex items-center justify-center text-white">
                   <RotateCcw className="w-4 h-4" />
                 </div>
                 <h2 className="text-base font-bold text-white">Re-plan Study Roadmap</h2>
@@ -477,7 +477,7 @@ export const RoadmapView = () => {
                   <select
                     value={regenSettings.days}
                     onChange={(e) => setRegenSettings({ ...regenSettings, days: Number(e.target.value) })}
-                    className="w-full px-3.5 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-white focus:outline-none focus:border-zinc-500"
+                    className="w-full px-3.5 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-xs text-white focus:outline-none focus:border-zinc-500"
                   >
                     <option value={5}>5 Days</option>
                     <option value={7}>7 Days</option>
@@ -494,7 +494,7 @@ export const RoadmapView = () => {
                   <select
                     value={regenSettings.hoursPerDay}
                     onChange={(e) => setRegenSettings({ ...regenSettings, hoursPerDay: Number(e.target.value) })}
-                    className="w-full px-3.5 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-white focus:outline-none focus:border-zinc-500"
+                    className="w-full px-3.5 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-xs text-white focus:outline-none focus:border-zinc-500"
                   >
                     <option value={1}>1 hour / day</option>
                     <option value={2}>2 hours / day</option>
@@ -510,7 +510,7 @@ export const RoadmapView = () => {
                   <select
                     value={regenSettings.level}
                     onChange={(e) => setRegenSettings({ ...regenSettings, level: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-white focus:outline-none focus:border-zinc-500"
+                    className="w-full px-3.5 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-xs text-white focus:outline-none focus:border-zinc-500"
                   >
                     <option value="beginner">Beginner</option>
                     <option value="intermediate">Intermediate</option>
@@ -522,7 +522,7 @@ export const RoadmapView = () => {
                   <button
                     type="button"
                     onClick={() => setIsRegenModalOpen(false)}
-                    className="px-4 py-2 rounded-full text-xs font-medium text-zinc-400 hover:text-white bg-zinc-900 border border-zinc-800 transition-colors"
+                    className="px-4 py-2 rounded-full text-xs font-medium text-zinc-400 hover:text-white bg-zinc-900 border border-zinc-700 transition-colors"
                   >
                     Cancel
                   </button>

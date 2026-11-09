@@ -332,7 +332,7 @@ export const WorkspaceDetail = () => {
         <Link to="/workspaces" className="inline-flex items-center gap-1.5 text-xs text-zinc-400 hover:text-white transition-colors">
           <ArrowLeft className="w-4 h-4" /> Back to Workspaces
         </Link>
-        <div className="p-6 rounded-2xl bg-[#121215] border border-[#27272a] text-center space-y-3">
+        <div className="p-6 rounded-2xl bg-[#121215] border border-zinc-700 text-center space-y-3">
           <AlertCircle className="w-8 h-8 text-rose-400 mx-auto" />
           <h2 className="text-sm font-bold text-white">Workspace Not Found</h2>
         </div>
@@ -354,15 +354,15 @@ export const WorkspaceDetail = () => {
       </div>
 
       {/* Workspace Header Card */}
-      <div className="p-6 sm:p-8 rounded-2xl bg-[#121215] border border-[#27272a] space-y-6">
+      <div className="p-6 sm:p-8 rounded-2xl bg-[#121215] border border-zinc-700 space-y-6">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded text-[11px] font-mono font-medium bg-zinc-900 border border-zinc-800 text-zinc-300 uppercase">
+              <span className="px-2.5 py-0.5 rounded text-[11px] font-mono font-medium bg-zinc-900 border border-zinc-700 text-zinc-300 uppercase">
                 {workspace.subject}
               </span>
               {workspace.examDate && (
-                <div className="flex items-center gap-1.5 text-xs font-mono text-zinc-400 bg-zinc-900 border border-zinc-800 px-2.5 py-0.5 rounded">
+                <div className="flex items-center gap-1.5 text-xs font-mono text-zinc-400 bg-zinc-900 border border-zinc-700 px-2.5 py-0.5 rounded">
                   <Calendar className="w-3.5 h-3.5" />
                   <span>Exam: {new Date(workspace.examDate).toLocaleDateString()}</span>
                 </div>
@@ -385,7 +385,7 @@ export const WorkspaceDetail = () => {
             {existingRoadmap ? (
               <Link
                 to={`/workspaces/${id}/roadmap`}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs transition-colors cursor-pointer shadow-sm"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs transition-all cursor-pointer shadow-[0_0_15px_rgba(245,158,11,0.25)]"
               >
                 <Compass className="w-4 h-4" />
                 <span>View Study Roadmap</span>
@@ -394,7 +394,7 @@ export const WorkspaceDetail = () => {
             ) : (
               <button
                 onClick={() => setIsRoadmapModalOpen(true)}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs transition-colors cursor-pointer shadow-sm"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs transition-all cursor-pointer shadow-[0_0_15px_rgba(245,158,11,0.25)]"
               >
                 <Compass className="w-4 h-4" />
                 <span>Generate Study Roadmap</span>
@@ -404,22 +404,22 @@ export const WorkspaceDetail = () => {
         </div>
 
         {/* Workspace Quick Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-[#27272a] text-xs font-mono">
-          <div className="p-3 rounded-xl bg-[#18181b] border border-[#27272a]">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-zinc-700 text-xs font-mono">
+          <div className="p-3 rounded-xl bg-[#18181b] border border-zinc-700">
             <span className="text-zinc-500 block text-[10px] uppercase">Documents</span>
             <span className="text-base font-bold text-white mt-0.5">{materials.length}</span>
           </div>
-          <div className="p-3 rounded-xl bg-[#18181b] border border-[#27272a]">
+          <div className="p-3 rounded-xl bg-[#18181b] border border-zinc-700">
             <span className="text-zinc-500 block text-[10px] uppercase">Knowledge Chunks</span>
             <span className="text-base font-bold text-white mt-0.5">{workspace.chunkCount || 0}</span>
           </div>
-          <div className="p-3 rounded-xl bg-[#18181b] border border-[#27272a]">
+          <div className="p-3 rounded-xl bg-[#18181b] border border-zinc-700">
             <span className="text-zinc-500 block text-[10px] uppercase">Syllabus Uploaded</span>
             <span className="text-base font-bold text-white mt-0.5">
               {materials.some(m => m.kind === 'syllabus') ? 'Yes' : 'No'}
             </span>
           </div>
-          <div className="p-3 rounded-xl bg-[#18181b] border border-[#27272a]">
+          <div className="p-3 rounded-xl bg-[#18181b] border border-zinc-700">
             <span className="text-zinc-500 block text-[10px] uppercase">RAG Engine</span>
             <span className="text-base font-bold text-white mt-0.5">
               {workspace.chunkCount > 0 ? 'Active' : 'Pending'}
@@ -430,20 +430,20 @@ export const WorkspaceDetail = () => {
 
       {/* Concept Mastery Overview (Phase 8) */}
       {masteryData?.concepts?.length > 0 && (
-        <div className="p-6 rounded-2xl bg-[#121215] border border-[#27272a] space-y-5">
+        <div className="p-6 rounded-2xl bg-[#121215] border border-zinc-700 space-y-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-white">
+              <div className="w-7 h-7 rounded-lg bg-zinc-900 border border-zinc-700 flex items-center justify-center text-white">
                 <TrendingUp className="w-4 h-4" />
               </div>
               <h2 className="text-sm font-bold text-white">Concept Mastery</h2>
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="px-2.5 py-1 rounded text-xs font-mono font-medium bg-zinc-900 border border-zinc-800 text-white">
+              <span className="px-2.5 py-1 rounded text-xs font-mono font-medium bg-zinc-900 border border-zinc-700 text-white">
                 {masteryData.concepts.filter(c => c.mastery >= 0.75).length} Mastered
               </span>
-              <span className="px-2.5 py-1 rounded text-xs font-mono font-medium bg-zinc-900 border border-zinc-800 text-zinc-400">
+              <span className="px-2.5 py-1 rounded text-xs font-mono font-medium bg-zinc-900 border border-zinc-700 text-zinc-400">
                 {masteryData.concepts.filter(c => c.mastery < 0.6).length} Needs Review
               </span>
             </div>
@@ -477,7 +477,7 @@ export const WorkspaceDetail = () => {
                     if (active && payload && payload.length) {
                       const data = payload[0];
                       return (
-                        <div className="p-2.5 rounded-lg bg-[#09090b] border border-[#27272a] shadow-xl text-xs font-mono">
+                        <div className="p-2.5 rounded-lg bg-[#09090b] border border-zinc-700 shadow-xl text-xs font-mono">
                           <p className="font-bold text-white mb-1">{data.payload.name}</p>
                           <p className="text-white font-bold">{data.value}% Mastery</p>
                         </div>
@@ -489,7 +489,7 @@ export const WorkspaceDetail = () => {
                 <Bar dataKey="mastery" radius={[4, 4, 0, 0]}>
                   {masteryData.concepts.map((entry, index) => {
                     const score = entry.mastery * 100;
-                    const fill = score >= 75 ? '#ffffff' : score >= 60 ? '#a1a1aa' : '#52525b';
+                    const fill = score >= 75 ? '#10b981' : score >= 60 ? '#f59e0b' : '#71717a';
                     return <Cell key={`cell-${index}`} fill={fill} />;
                   })}
                 </Bar>
@@ -505,7 +505,7 @@ export const WorkspaceDetail = () => {
               return (
                 <div
                   key={c._id || c.conceptKey}
-                  className="p-3 rounded-xl bg-[#18181b] border border-[#27272a] space-y-2 font-mono"
+                  className="p-3 rounded-xl bg-[#18181b] border border-zinc-700 space-y-2 font-mono"
                 >
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-bold text-white truncate max-w-[70%]">
@@ -546,7 +546,7 @@ export const WorkspaceDetail = () => {
             {Object.entries(activeJobs).map(([jobId, job]) => (
               <div
                 key={jobId}
-                className="p-4 rounded-xl bg-[#121215] border border-[#27272a] space-y-2 shadow-sm"
+                className="p-4 rounded-xl bg-[#121215] border border-zinc-700 space-y-2 shadow-sm"
               >
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-semibold text-white truncate max-w-[70%]">
@@ -572,9 +572,9 @@ export const WorkspaceDetail = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Upload Form (Left Column, 1 col) */}
         <div className="lg:col-span-1 space-y-6">
-          <div className="p-5 rounded-2xl bg-[#121215] border border-[#27272a] space-y-4">
+          <div className="p-5 rounded-2xl bg-[#121215] border border-zinc-700 space-y-4">
             <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-white">
+              <div className="w-7 h-7 rounded-lg bg-zinc-900 border border-zinc-700 flex items-center justify-center text-white">
                 <UploadCloud className="w-4 h-4" />
               </div>
               <h2 className="text-xs font-bold uppercase tracking-wider text-white">Upload Material</h2>
@@ -595,7 +595,7 @@ export const WorkspaceDetail = () => {
                 <select
                   value={materialKind}
                   onChange={(e) => setMaterialKind(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-white focus:outline-none focus:border-zinc-500"
+                  className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-xs text-white focus:outline-none focus:border-zinc-500"
                 >
                   <option value="syllabus">Syllabus / Curriculum</option>
                   <option value="notes">Lecture Notes / Summary</option>
@@ -608,7 +608,7 @@ export const WorkspaceDetail = () => {
               {/* Dropzone Box */}
               <div
                 onClick={() => fileInputRef.current?.click()}
-                className="border border-dashed border-[#27272a] hover:border-zinc-500 rounded-xl p-5 text-center cursor-pointer transition-colors bg-[#09090b] space-y-2"
+                className="border border-dashed border-zinc-700 hover:border-zinc-500 rounded-xl p-5 text-center cursor-pointer transition-colors bg-[#09090b] space-y-2"
               >
                 <input
                   ref={fileInputRef}
@@ -618,7 +618,7 @@ export const WorkspaceDetail = () => {
                   onChange={handleFileChange}
                   className="hidden"
                 />
-                <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto text-zinc-400">
+                <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-700 flex items-center justify-center mx-auto text-zinc-400">
                   <UploadCloud className="w-4 h-4" />
                 </div>
                 <div>
@@ -640,7 +640,7 @@ export const WorkspaceDetail = () => {
                     {selectedFiles.map((f, i) => (
                       <div
                         key={i}
-                        className="px-2.5 py-1 rounded-md bg-[#0d1117] border border-[#30363d] text-slate-300 truncate"
+                        className="px-2.5 py-1 rounded-md bg-[#0d1117] border border-zinc-700 text-slate-300 truncate"
                       >
                         {f.name} ({(f.size / 1024 / 1024).toFixed(1)} MB)
                       </div>
@@ -667,9 +667,9 @@ export const WorkspaceDetail = () => {
           </div>
 
           {/* Semantic Search Inspector (RAG Testing) */}
-          <div className="p-5 rounded-2xl bg-[#121215] border border-[#27272a] space-y-3.5">
+          <div className="p-5 rounded-2xl bg-[#121215] border border-zinc-700 space-y-3.5">
             <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-white">
+              <div className="w-7 h-7 rounded-lg bg-zinc-900 border border-zinc-700 flex items-center justify-center text-white">
                 <Search className="w-4 h-4" />
               </div>
               <h2 className="text-xs font-bold uppercase tracking-wider text-white">RAG Search Test</h2>
@@ -681,7 +681,7 @@ export const WorkspaceDetail = () => {
                 placeholder="Search notes..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1 px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-500"
+                className="flex-1 px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-700 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-500"
               />
               <button
                 type="submit"
@@ -693,7 +693,7 @@ export const WorkspaceDetail = () => {
             </form>
 
             {searchResults && (
-              <div className="space-y-2 pt-2 border-t border-[#27272a] max-h-60 overflow-y-auto">
+              <div className="space-y-2 pt-2 border-t border-zinc-700 max-h-60 overflow-y-auto">
                 <span className="text-[10px] font-mono font-bold uppercase text-zinc-400">
                   Matches ({searchResults.length}):
                 </span>
@@ -703,7 +703,7 @@ export const WorkspaceDetail = () => {
                   searchResults.map((result, idx) => (
                     <div
                       key={idx}
-                      className="p-2.5 rounded-lg bg-[#18181b] border border-[#27272a] text-[11px] font-mono space-y-1"
+                      className="p-2.5 rounded-lg bg-[#18181b] border border-zinc-700 text-[11px] font-mono space-y-1"
                     >
                       <div className="flex items-center justify-between text-[10px] text-zinc-400">
                         <span>
@@ -738,8 +738,8 @@ export const WorkspaceDetail = () => {
           </div>
 
           {materials.length === 0 ? (
-            <div className="p-10 rounded-2xl bg-[#121215] border border-[#27272a] text-center space-y-3 font-mono">
-              <div className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto text-zinc-500">
+            <div className="p-10 rounded-2xl bg-[#121215] border border-zinc-700 text-center space-y-3 font-mono">
+              <div className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-700 flex items-center justify-center mx-auto text-zinc-500">
                 <FileText className="w-5 h-5" />
               </div>
               <h3 className="text-sm font-bold text-white">No materials uploaded yet</h3>
@@ -749,10 +749,10 @@ export const WorkspaceDetail = () => {
               {materials.map((m) => (
                 <div
                   key={m._id}
-                  className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl bg-[#121215] border border-[#27272a] hover:border-zinc-700 transition-colors"
+                  className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl bg-[#121215] border border-zinc-700 hover:border-zinc-700 transition-colors"
                 >
                   <div className="flex items-start gap-3 min-w-0">
-                    <div className="w-9 h-9 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300 shrink-0 mt-0.5">
+                    <div className="w-9 h-9 rounded-lg bg-zinc-900 border border-zinc-700 flex items-center justify-center text-zinc-300 shrink-0 mt-0.5">
                       <FileText className="w-4.5 h-4.5" />
                     </div>
                     <div className="space-y-1 min-w-0">
@@ -760,7 +760,7 @@ export const WorkspaceDetail = () => {
                         <span className="font-bold text-xs sm:text-sm text-white truncate max-w-xs font-mono">
                           {m.fileName}
                         </span>
-                        <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase bg-zinc-900 border border-zinc-800 text-zinc-400">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase bg-zinc-900 border border-zinc-700 text-zinc-400">
                           {m.kind}
                         </span>
                       </div>
@@ -779,11 +779,11 @@ export const WorkspaceDetail = () => {
                   <div className="flex items-center gap-2.5 self-end sm:self-center shrink-0">
                     {/* Status Badge */}
                     {m.status === 'ready' ? (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-mono font-bold bg-zinc-900 border border-zinc-800 text-white">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-mono font-bold bg-zinc-900 border border-zinc-700 text-white">
                         <CheckCircle2 className="w-3 h-3" /> Ready
                       </span>
                     ) : m.status === 'processing' ? (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-mono font-bold bg-zinc-900 border border-zinc-800 text-zinc-400">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-mono font-bold bg-zinc-900 border border-zinc-700 text-zinc-400">
                         <Loader2 className="w-3 h-3 animate-spin" /> Ingesting
                       </span>
                     ) : m.status === 'failed' ? (
@@ -791,7 +791,7 @@ export const WorkspaceDetail = () => {
                         <AlertCircle className="w-3 h-3" /> Failed
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-mono font-bold bg-zinc-900 border border-zinc-800 text-zinc-500">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-mono font-bold bg-zinc-900 border border-zinc-700 text-zinc-500">
                         Pending
                       </span>
                     )}
@@ -818,10 +818,10 @@ export const WorkspaceDetail = () => {
       {/* Roadmap Setup Modal */}
       {isRoadmapModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-2xl bg-[#121215] border border-[#27272a] p-6 space-y-5 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-[#27272a] pb-4">
+          <div className="w-full max-w-md rounded-2xl bg-[#121215] border border-zinc-700 p-6 space-y-5 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-zinc-700 pb-4">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-white">
+                <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-700 flex items-center justify-center text-white">
                   <Compass className="w-4 h-4" />
                 </div>
                 <h2 className="text-sm font-bold text-white">Generate Study Roadmap</h2>
@@ -866,7 +866,7 @@ export const WorkspaceDetail = () => {
                   <select
                     value={roadmapSettings.days}
                     onChange={(e) => setRoadmapSettings({ ...roadmapSettings, days: Number(e.target.value) })}
-                    className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-white focus:outline-none focus:border-zinc-500"
+                    className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-xs text-white focus:outline-none focus:border-zinc-500"
                   >
                     <option value={5}>5 Days</option>
                     <option value={7}>7 Days</option>
@@ -883,7 +883,7 @@ export const WorkspaceDetail = () => {
                   <select
                     value={roadmapSettings.hoursPerDay}
                     onChange={(e) => setRoadmapSettings({ ...roadmapSettings, hoursPerDay: Number(e.target.value) })}
-                    className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-white focus:outline-none focus:border-zinc-500"
+                    className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-xs text-white focus:outline-none focus:border-zinc-500"
                   >
                     <option value={1}>1 hour / day</option>
                     <option value={2}>2 hours / day</option>
@@ -899,7 +899,7 @@ export const WorkspaceDetail = () => {
                   <select
                     value={roadmapSettings.level}
                     onChange={(e) => setRoadmapSettings({ ...roadmapSettings, level: e.target.value })}
-                    className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-white focus:outline-none focus:border-zinc-500"
+                    className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-xs text-white focus:outline-none focus:border-zinc-500"
                   >
                     <option value="beginner">Beginner</option>
                     <option value="intermediate">Intermediate</option>
@@ -911,7 +911,7 @@ export const WorkspaceDetail = () => {
                   <button
                     type="button"
                     onClick={() => setIsRoadmapModalOpen(false)}
-                    className="px-4 py-2 rounded-full text-xs font-medium text-zinc-400 hover:text-white bg-zinc-900 border border-zinc-800 transition-colors cursor-pointer"
+                    className="px-4 py-2 rounded-full text-xs font-medium text-zinc-400 hover:text-white bg-zinc-900 border border-zinc-700 transition-colors cursor-pointer"
                   >
                     Cancel
                   </button>

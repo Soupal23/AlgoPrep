@@ -13,8 +13,8 @@ export const TabSwitchWarning = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-      <div className="max-w-md w-full rounded-2xl p-6 border border-[#27272a] shadow-2xl bg-[#121215]">
-        <div className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center mb-4 mx-auto">
+      <div className="max-w-md w-full rounded-2xl p-6 border border-rose-500/80 shadow-[0_0_30px_rgba(244,63,94,0.25)] bg-[#121215]">
+        <div className="w-10 h-10 rounded-full bg-rose-500 text-black flex items-center justify-center mb-4 mx-auto shadow-md">
           <ShieldAlert className="w-5 h-5" />
         </div>
 
@@ -27,15 +27,15 @@ export const TabSwitchWarning = ({
         </p>
 
         <div className="grid grid-cols-2 gap-3 mb-6">
-          <div className="bg-[#18181b] rounded-xl p-3 border border-[#27272a] text-center">
-            <span className="block text-[10px] font-mono uppercase text-zinc-400 mb-0.5">Time Penalty</span>
-            <span className="text-sm font-mono font-bold text-white">
+          <div className="bg-rose-950/30 rounded-xl p-3 border border-rose-900/60 text-center">
+            <span className="block text-[10px] font-mono uppercase text-rose-400/80 mb-0.5">Time Penalty</span>
+            <span className="text-sm font-mono font-bold text-rose-300">
               -{penaltyMinutes} Mins
             </span>
           </div>
-          <div className="bg-[#18181b] rounded-xl p-3 border border-[#27272a] text-center">
+          <div className="bg-[#18181b] rounded-xl p-3 border border-zinc-700 text-center">
             <span className="block text-[10px] font-mono uppercase text-zinc-400 mb-0.5">Warnings</span>
-            <span className="text-sm font-mono font-bold text-white">{switchCount}</span>
+            <span className="text-sm font-mono font-bold text-amber-400">{switchCount}</span>
           </div>
         </div>
 

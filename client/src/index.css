@@ -8,15 +8,15 @@
   }
 }
 
-/* Refero-style Monochromatic Obsidian Panels */
+/* LeetCode Studio Dark Panels with Crisp Visible Borders */
 .glass-panel {
   background: #121215;
-  border: 1px solid #27272a;
+  border: 1px solid #3f3f46;
 }
 
 .glass-card {
   background: #121215;
-  border: 1px solid #27272a;
+  border: 1px solid #3f3f46;
 }
 
 /* Custom Scrollbars - Minimalist Charcoal */

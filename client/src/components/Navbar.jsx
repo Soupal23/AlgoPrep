@@ -28,7 +28,7 @@ export const Navbar = () => {
   const navLinkClass = (path) =>
     `relative h-full flex items-center px-3.5 text-xs sm:text-sm transition-colors cursor-pointer select-none ${
       isActive(path)
-        ? 'text-white font-medium after:absolute after:bottom-0 after:left-3.5 after:right-3.5 after:h-[2px] after:bg-white'
+        ? 'text-white font-medium after:absolute after:bottom-0 after:left-3.5 after:right-3.5 after:h-[2.5px] after:bg-[#ffa116] after:rounded-full'
         : 'text-zinc-400 hover:text-white'
     }`;
 
@@ -60,20 +60,20 @@ export const Navbar = () => {
   const getRoleBadge = () => {
     if (!user?.role) return null;
     return (
-      <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-medium bg-zinc-900 border border-zinc-800 text-zinc-400 uppercase">
+      <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-medium bg-zinc-900 border border-zinc-700 text-zinc-400 uppercase">
         {user.role}
       </span>
     );
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full h-12 bg-[#09090b] border-b border-[#27272a] select-none">
+    <header className="sticky top-0 z-40 w-full h-12 bg-[#09090b] border-b border-zinc-700 select-none">
       <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-between gap-4">
         
         {/* Left: Brand Logo + Navigation Links */}
         <div className="flex items-center gap-6 h-full">
           <Link to="/" className="flex items-center gap-2 shrink-0 group">
-            <div className="w-6 h-6 rounded-md bg-zinc-900 border border-zinc-800 flex items-center justify-center text-white group-hover:border-zinc-500 transition-colors">
+            <div className="w-6 h-6 rounded-md bg-zinc-900 border border-zinc-700 flex items-center justify-center text-[#ffa116] group-hover:border-[#ffa116] transition-colors">
               <Terminal className="w-3.5 h-3.5" />
             </div>
             <span className="font-semibold text-sm tracking-tight text-white">
@@ -100,7 +100,7 @@ export const Navbar = () => {
                 className="flex items-center gap-2 p-1 rounded-full hover:bg-zinc-900 transition-colors group"
                 title="My Profile"
               >
-                <div className="w-6 h-6 rounded-full overflow-hidden bg-zinc-900 border border-zinc-800 group-hover:border-zinc-500 flex items-center justify-center text-zinc-300 text-xs font-medium transition-colors">
+                <div className="w-6 h-6 rounded-full overflow-hidden bg-zinc-900 border border-zinc-700 group-hover:border-zinc-500 flex items-center justify-center text-zinc-300 text-xs font-medium transition-colors">
                   {user?.avatarUrl ? (
                     <img src={resolveFileUrl(user.avatarUrl)} alt={user.name} className="w-full h-full object-cover" />
                   ) : (
@@ -124,7 +124,7 @@ export const Navbar = () => {
               {/* Mobile Menu Hamburger */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden p-1.5 rounded-md text-zinc-400 hover:text-white bg-zinc-900 border border-zinc-800"
+                className="md:hidden p-1.5 rounded-md text-zinc-400 hover:text-white bg-zinc-900 border border-zinc-700"
               >
                 {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
               </button>
@@ -139,7 +139,7 @@ export const Navbar = () => {
               </Link>
               <Link
                 to="/register"
-                className="text-xs font-semibold text-black px-3.5 py-1.5 rounded-full bg-white hover:bg-zinc-200 transition-colors shadow-sm"
+                className="text-xs font-semibold text-black px-4 py-1.5 rounded-full bg-amber-500 hover:bg-amber-400 transition-colors shadow-[0_0_15px_rgba(245,158,11,0.25)]"
               >
                 Get Started
               </Link>
@@ -150,12 +150,12 @@ export const Navbar = () => {
 
       {/* Mobile Menu Dropdown (< md screens) */}
       {mobileMenuOpen && user && (
-        <div className="md:hidden border-b border-[#27272a] bg-[#09090b] px-4 py-3 space-y-1 shadow-xl">
+        <div className="md:hidden border-b border-zinc-700 bg-[#09090b] px-4 py-3 space-y-1 shadow-xl">
           <Link
             to="/workspaces"
             onClick={() => setMobileMenuOpen(false)}
             className={`block px-3 py-2 rounded-md text-xs font-medium ${
-              isActive('/workspaces') ? 'bg-zinc-900 text-white font-semibold' : 'text-zinc-400 hover:text-white'
+              isActive('/workspaces') ? 'bg-zinc-900 text-[#ffa116] border-l-2 border-[#ffa116] font-semibold' : 'text-zinc-400 hover:text-white'
             }`}
           >
             Workspaces
@@ -164,7 +164,7 @@ export const Navbar = () => {
             to="/dashboard"
             onClick={() => setMobileMenuOpen(false)}
             className={`block px-3 py-2 rounded-md text-xs font-medium ${
-              isActive('/dashboard') ? 'bg-zinc-900 text-white font-semibold' : 'text-zinc-400 hover:text-white'
+              isActive('/dashboard') ? 'bg-zinc-900 text-[#ffa116] border-l-2 border-[#ffa116] font-semibold' : 'text-zinc-400 hover:text-white'
             }`}
           >
             Practice Tests
@@ -173,7 +173,7 @@ export const Navbar = () => {
             to="/ai-generate"
             onClick={() => setMobileMenuOpen(false)}
             className={`block px-3 py-2 rounded-md text-xs font-medium ${
-              isActive('/ai-generate') ? 'bg-zinc-900 text-white font-semibold' : 'text-zinc-400 hover:text-white'
+              isActive('/ai-generate') ? 'bg-zinc-900 text-[#ffa116] border-l-2 border-[#ffa116] font-semibold' : 'text-zinc-400 hover:text-white'
             }`}
           >
             Quick Quiz
@@ -182,7 +182,7 @@ export const Navbar = () => {
             to="/profile"
             onClick={() => setMobileMenuOpen(false)}
             className={`block px-3 py-2 rounded-md text-xs font-medium ${
-              isActive('/profile') ? 'bg-zinc-900 text-white font-semibold' : 'text-zinc-400 hover:text-white'
+              isActive('/profile') ? 'bg-zinc-900 text-[#ffa116] border-l-2 border-[#ffa116] font-semibold' : 'text-zinc-400 hover:text-white'
             }`}
           >
             My Profile
@@ -192,7 +192,7 @@ export const Navbar = () => {
               to="/admin"
               onClick={() => setMobileMenuOpen(false)}
               className={`block px-3 py-2 rounded-md text-xs font-medium ${
-                isActive('/admin') ? 'bg-zinc-900 text-white font-semibold' : 'text-zinc-400 hover:text-white'
+                isActive('/admin') ? 'bg-zinc-900 text-[#ffa116] border-l-2 border-[#ffa116] font-semibold' : 'text-zinc-400 hover:text-white'
               }`}
             >
               Admin Users

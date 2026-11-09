@@ -26,9 +26,9 @@ export const SubmitConfirmModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-      <div className="max-w-md w-full rounded-2xl p-6 border border-[#27272a] shadow-2xl bg-[#121215]">
-        <div className="flex items-center gap-3 mb-5 pb-4 border-b border-[#27272a]">
-          <div className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center shrink-0">
+      <div className="max-w-md w-full rounded-2xl p-6 border border-zinc-700 shadow-2xl bg-[#121215]">
+        <div className="flex items-center gap-3 mb-5 pb-4 border-b border-zinc-700">
+          <div className="w-10 h-10 rounded-full bg-amber-500 text-black flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(245,158,11,0.25)]">
             <Send className="w-4 h-4" />
           </div>
           <div>
@@ -38,31 +38,31 @@ export const SubmitConfirmModal = ({
         </div>
 
         <div className="grid grid-cols-3 gap-2.5 mb-5">
-          <div className="bg-[#18181b] rounded-xl p-3 border border-[#27272a] text-center">
+          <div className="bg-[#18181b] rounded-xl p-3 border border-zinc-700 text-center">
             <div className="text-[10px] font-mono uppercase text-zinc-400">Answered</div>
-            <div className="text-lg font-mono font-bold text-white mt-0.5">{answeredCount}</div>
+            <div className="text-lg font-mono font-bold text-emerald-400 mt-0.5">{answeredCount}</div>
           </div>
 
-          <div className="bg-[#18181b] rounded-xl p-3 border border-[#27272a] text-center">
+          <div className="bg-[#18181b] rounded-xl p-3 border border-zinc-700 text-center">
             <div className="text-[10px] font-mono uppercase text-zinc-400">Marked</div>
-            <div className="text-lg font-mono font-bold text-white mt-0.5">{markedCount}</div>
+            <div className="text-lg font-mono font-bold text-amber-400 mt-0.5">{markedCount}</div>
           </div>
 
-          <div className="bg-[#18181b] rounded-xl p-3 border border-[#27272a] text-center">
+          <div className="bg-[#18181b] rounded-xl p-3 border border-zinc-700 text-center">
             <div className="text-[10px] font-mono uppercase text-zinc-400">Unanswered</div>
             <div className="text-lg font-mono font-bold text-zinc-400 mt-0.5">{unattemptedCount}</div>
           </div>
         </div>
 
         {unattemptedCount > 0 && (
-          <div className="flex items-center gap-2.5 p-3 mb-5 rounded-xl bg-[#18181b] border border-[#27272a] text-zinc-300 text-xs">
-            <AlertCircle className="w-4 h-4 shrink-0 text-zinc-400" />
+          <div className="flex items-center gap-2.5 p-3 mb-5 rounded-xl bg-amber-950/30 border border-amber-800/60 text-amber-300 text-xs">
+            <AlertCircle className="w-4 h-4 shrink-0 text-amber-400" />
             <span>{unattemptedCount} unanswered questions yield 0 points.</span>
           </div>
         )}
 
         {statusText && (
-          <div className="flex items-center gap-2 p-3 mb-4 rounded-xl bg-[#18181b] border border-[#27272a] text-zinc-300 text-xs font-mono">
+          <div className="flex items-center gap-2 p-3 mb-4 rounded-xl bg-[#18181b] border border-zinc-700 text-zinc-300 text-xs font-mono">
             <AlertCircle className="w-4 h-4 shrink-0 text-zinc-400" />
             <span>{statusText}</span>
           </div>
@@ -79,7 +79,7 @@ export const SubmitConfirmModal = ({
           <button
             onClick={onConfirm}
             disabled={isSubmitting}
-            className="px-5 py-2 rounded-full text-xs font-semibold bg-white hover:bg-zinc-200 text-black shadow-sm transition-colors flex items-center gap-2 cursor-pointer"
+            className="px-5 py-2 rounded-full text-xs font-semibold bg-amber-500 hover:bg-amber-400 text-black shadow-[0_0_15px_rgba(245,158,11,0.25)] transition-all flex items-center gap-2 cursor-pointer"
           >
             {isSubmitting ? (
               <span>Submitting...</span>

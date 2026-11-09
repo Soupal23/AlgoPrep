@@ -110,7 +110,7 @@ export const Dashboard = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Filter Tabs */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-[#27272a] pb-4">
+      <div className="flex flex-wrap items-center gap-2 border-b border-zinc-700 pb-4">
         {FILTERS.map((f) => {
           const Icon = f.icon;
           const count = getFilterCount(f.id);
@@ -130,7 +130,7 @@ export const Dashboard = () => {
               className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer ${
                 isActive
                   ? 'bg-white text-black shadow-sm'
-                  : 'bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white'
+                  : 'bg-zinc-900 border border-zinc-700 text-zinc-400 hover:text-white hover:border-zinc-500'
               }`}
             >
               <Icon className="w-3.5 h-3.5" />
@@ -151,11 +151,11 @@ export const Dashboard = () => {
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="h-52 rounded-2xl bg-[#121215] border border-[#27272a] animate-pulse" />
+            <div key={i} className="h-52 rounded-2xl bg-[#121215] border border-zinc-700 animate-pulse" />
           ))}
         </div>
       ) : error ? (
-        <div className="p-8 text-center bg-[#121215] rounded-2xl border border-rose-900/40 text-rose-300 space-y-4">
+        <div className="p-8 text-center bg-[#121215] rounded-2xl border border-rose-900/60 text-rose-300 space-y-4">
           <p>{error}</p>
           <button
             onClick={fetchDashboardData}
@@ -166,7 +166,7 @@ export const Dashboard = () => {
         </div>
       ) : selectedFilter === 'Attempted Tests' ? (
         attempts.length === 0 ? (
-          <div className="p-12 text-center bg-[#121215] rounded-2xl border border-[#27272a] text-zinc-500 space-y-3">
+          <div className="p-12 text-center bg-[#121215] rounded-2xl border border-zinc-700 text-zinc-500 space-y-3">
             <Award className="w-10 h-10 text-zinc-400 mx-auto" />
             <h3 className="text-base font-bold text-white">No Attempted Tests Yet</h3>
             <button
@@ -189,7 +189,7 @@ export const Dashboard = () => {
               return (
                 <div
                   key={att._id}
-                  className="bg-[#121215] rounded-2xl p-6 border border-[#27272a] hover:border-zinc-700 transition-colors flex flex-col justify-between"
+                  className="bg-[#121215] rounded-2xl p-6 border border-zinc-700 hover:border-zinc-500 transition-all flex flex-col justify-between shadow-sm"
                 >
                   <div>
                     <h3 className="text-base font-bold text-white mb-4 line-clamp-2" title={testTitle}>
@@ -197,7 +197,7 @@ export const Dashboard = () => {
                     </h3>
 
                     {/* Test Details */}
-                    <div className="grid grid-cols-3 gap-2 p-3 rounded-xl bg-[#18181b] border border-[#27272a] mb-5 text-center text-xs">
+                    <div className="grid grid-cols-3 gap-2 p-3 rounded-xl bg-[#18181b] border border-zinc-700 mb-5 text-center text-xs">
                       <div>
                         <div className="text-zinc-500 text-[10px] uppercase font-mono">Score</div>
                         <div className="font-mono font-bold text-white mt-0.5">
@@ -214,7 +214,7 @@ export const Dashboard = () => {
 
                       <div>
                         <div className="text-zinc-500 text-[10px] uppercase font-mono">Accuracy</div>
-                        <div className="font-mono font-bold text-white mt-0.5">
+                        <div className="font-mono font-bold text-emerald-400 mt-0.5">
                           {att.accuracy}%
                         </div>
                       </div>
@@ -225,7 +225,7 @@ export const Dashboard = () => {
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       onClick={() => navigate(`/test/${testId}?retake=true`)}
-                      className="py-2 rounded-full font-semibold border border-zinc-800 bg-zinc-900 text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors flex items-center justify-center gap-1.5 text-xs cursor-pointer"
+                      className="py-2 rounded-full font-semibold border border-zinc-700 bg-zinc-900 text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors flex items-center justify-center gap-1.5 text-xs cursor-pointer"
                     >
                       <RotateCcw className="w-3.5 h-3.5" />
                       <span>Retake</span>
@@ -245,7 +245,7 @@ export const Dashboard = () => {
           </div>
         )
       ) : filteredTests.length === 0 ? (
-        <div className="p-12 text-center bg-[#121215] rounded-2xl border border-[#27272a] text-zinc-500">
+        <div className="p-12 text-center bg-[#121215] rounded-2xl border border-zinc-700 text-zinc-500">
           No tests found.
         </div>
       ) : (
@@ -256,7 +256,7 @@ export const Dashboard = () => {
             return (
               <div
                 key={test._id}
-                className="bg-[#121215] rounded-2xl p-6 border border-[#27272a] hover:border-zinc-700 transition-colors flex flex-col justify-between"
+                className="bg-[#121215] rounded-2xl p-6 border border-zinc-700 hover:border-zinc-500 transition-all flex flex-col justify-between shadow-sm"
               >
                 <div>
                   <h3 className="text-base font-bold text-white mb-4 line-clamp-2" title={test.title}>
@@ -264,7 +264,7 @@ export const Dashboard = () => {
                   </h3>
 
                   {/* Test Details (Marks, Time, No. of questions) */}
-                  <div className="grid grid-cols-3 gap-2 p-3 rounded-xl bg-[#18181b] border border-[#27272a] mb-5 text-center text-xs">
+                  <div className="grid grid-cols-3 gap-2 p-3 rounded-xl bg-[#18181b] border border-zinc-700 mb-5 text-center text-xs">
                     <div>
                       <div className="text-zinc-500 text-[10px] uppercase font-mono">Marks</div>
                       <div className="font-mono font-bold text-white mt-0.5">
@@ -291,10 +291,10 @@ export const Dashboard = () => {
                 {/* Start / Retake Button */}
                 <button
                   onClick={() => navigate(`/test/${test._id}${isAttempted ? '?retake=true' : ''}`)}
-                  className={`w-full py-2.5 rounded-full font-semibold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-sm ${
+                  className={`w-full py-2.5 rounded-full font-semibold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm ${
                     isAttempted
-                      ? 'bg-zinc-900 border border-zinc-800 text-zinc-200 hover:bg-zinc-800'
-                      : 'bg-white hover:bg-zinc-200 text-black'
+                      ? 'bg-zinc-900 border border-zinc-700 text-zinc-200 hover:bg-zinc-800'
+                      : 'bg-amber-500 hover:bg-amber-400 text-black shadow-[0_0_15px_rgba(245,158,11,0.25)]'
                   }`}
                 >
                   {isAttempted ? (

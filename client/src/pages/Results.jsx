@@ -114,7 +114,7 @@ export const Results = () => {
 
   if (error || !attempt) {
     return (
-      <div className="max-w-md mx-auto my-12 p-8 bg-[#121215] rounded-2xl border border-[#27272a] text-center space-y-4">
+      <div className="max-w-md mx-auto my-12 p-8 bg-[#121215] rounded-2xl border border-zinc-700 text-center space-y-4">
         <p className="text-zinc-300 font-semibold">{error || 'Attempt result not found'}</p>
         <Link to="/dashboard" className="inline-block px-5 py-2 rounded-full bg-white hover:bg-zinc-200 text-black text-xs font-semibold">
           Return to Dashboard
@@ -137,8 +137,8 @@ export const Results = () => {
   return (
     <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">
       {/* Main Scorecard Banner */}
-      <div className="bg-[#121215] rounded-2xl p-6 sm:p-8 border border-[#27272a] shadow-sm space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-[#27272a]">
+      <div className="bg-[#121215] rounded-2xl p-6 sm:p-8 border border-zinc-700 shadow-sm space-y-6">
+        <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-zinc-700">
           <div>
             <h1 className="text-xl sm:text-2xl font-bold text-white mt-1">{test?.title || 'CBT Assessment'}</h1>
             <p className="text-xs font-mono text-zinc-400 mt-1">
@@ -158,7 +158,7 @@ export const Results = () => {
             )}
             <Link
               to={`/test/${test?._id}?retake=true`}
-              className="px-4 py-2 rounded-full bg-[#18181b] hover:bg-[#27272a] text-zinc-300 text-xs font-mono font-semibold border border-[#27272a] transition-colors flex items-center gap-2"
+              className="px-4 py-2 rounded-full bg-amber-500 hover:bg-amber-400 text-black text-xs font-mono font-semibold transition-all shadow-[0_0_15px_rgba(245,158,11,0.25)] flex items-center gap-2"
             >
               <RotateCcw className="w-3.5 h-3.5 text-zinc-300" />
               <span>Retake Exam</span>
@@ -168,28 +168,28 @@ export const Results = () => {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="bg-[#18181b] rounded-xl p-3.5 border border-[#27272a] text-center">
+          <div className="bg-[#18181b] rounded-xl p-3.5 border border-zinc-700 text-center">
             <div className="text-[10px] font-mono uppercase text-zinc-400 mb-1">Final Score</div>
-            <div className="text-xl font-mono font-bold text-white">
+            <div className="text-xl font-mono font-bold text-amber-400">
               {attempt.score} <span className="text-xs text-zinc-400">/ {attempt.maxScore}</span>
             </div>
           </div>
 
-          <div className="bg-[#18181b] rounded-xl p-3.5 border border-[#27272a] text-center">
+          <div className="bg-[#18181b] rounded-xl p-3.5 border border-zinc-700 text-center">
             <div className="text-[10px] font-mono uppercase text-zinc-400 mb-1">Accuracy</div>
-            <div className="text-xl font-mono font-bold text-white">
+            <div className="text-xl font-mono font-bold text-emerald-400">
               {attempt.accuracy}%
             </div>
           </div>
 
-          <div className="bg-[#18181b] rounded-xl p-3.5 border border-[#27272a] text-center">
+          <div className="bg-[#18181b] rounded-xl p-3.5 border border-zinc-700 text-center">
             <div className="text-[10px] font-mono uppercase text-zinc-400 mb-1">Time Spent</div>
             <div className="text-xl font-mono font-bold text-white">
               {Math.floor(attempt.timeSpentSeconds / 60)}m {attempt.timeSpentSeconds % 60}s
             </div>
           </div>
 
-          <div className="bg-[#18181b] rounded-xl p-3.5 border border-[#27272a] text-center">
+          <div className="bg-[#18181b] rounded-xl p-3.5 border border-zinc-700 text-center">
             <div className="text-[10px] font-mono uppercase text-zinc-400 mb-1">Tab Warnings</div>
             <div className="text-xl font-mono font-bold text-white">
               {attempt.tabSwitches}
@@ -199,13 +199,13 @@ export const Results = () => {
       </div>
 
       {/* Tabs Navigation */}
-      <div className="flex items-center gap-2 border-b border-[#27272a] pb-3">
+      <div className="flex items-center gap-2 border-b border-zinc-700 pb-3">
         <button
           onClick={() => handleTabChange('review')}
           className={`px-4 py-2 rounded-full text-xs font-mono font-semibold transition-all flex items-center gap-2 cursor-pointer ${
             activeTab === 'review'
-              ? 'bg-white text-black shadow-sm'
-              : 'bg-[#18181b] border border-[#27272a] text-zinc-400 hover:text-white'
+              ? 'bg-amber-500 text-black font-semibold shadow-[0_0_15px_rgba(245,158,11,0.25)]'
+              : 'bg-[#18181b] border border-zinc-700 text-zinc-400 hover:text-white'
           }`}
         >
           <HelpCircle className="w-3.5 h-3.5" />
@@ -216,8 +216,8 @@ export const Results = () => {
           onClick={() => handleTabChange('analysis')}
           className={`px-4 py-2 rounded-full text-xs font-mono font-semibold transition-all flex items-center gap-2 cursor-pointer ${
             activeTab === 'analysis'
-              ? 'bg-white text-black shadow-sm'
-              : 'bg-[#18181b] border border-[#27272a] text-zinc-400 hover:text-white'
+              ? 'bg-amber-500 text-black font-semibold shadow-[0_0_15px_rgba(245,158,11,0.25)]'
+              : 'bg-[#18181b] border border-zinc-700 text-zinc-400 hover:text-white'
           }`}
         >
           <TrendingUp className="w-3.5 h-3.5" />
@@ -228,8 +228,8 @@ export const Results = () => {
           onClick={() => handleTabChange('ai-plan')}
           className={`px-4 py-2 rounded-full text-xs font-mono font-semibold transition-all flex items-center gap-2 cursor-pointer ${
             activeTab === 'ai-plan'
-              ? 'bg-white text-black shadow-sm'
-              : 'bg-[#18181b] border border-[#27272a] text-zinc-400 hover:text-white'
+              ? 'bg-amber-500 text-black font-semibold shadow-[0_0_15px_rgba(245,158,11,0.25)]'
+              : 'bg-[#18181b] border border-zinc-700 text-zinc-400 hover:text-white'
           }`}
         >
           <Sparkles className="w-3.5 h-3.5" />
@@ -241,12 +241,12 @@ export const Results = () => {
       {activeTab === 'review' && (
         <div className="space-y-6">
           {/* Question Filter Pills */}
-          <div className="flex flex-wrap items-center justify-between gap-4 p-3 bg-[#121215] rounded-2xl border border-[#27272a] text-xs">
+          <div className="flex flex-wrap items-center justify-between gap-4 p-3 bg-[#121215] rounded-2xl border border-zinc-700 text-xs">
             <div className="flex flex-wrap items-center gap-2">
               <button
                 onClick={() => setQuestionFilter('all')}
                 className={`px-3 py-1.5 rounded-full font-semibold transition-colors ${
-                  questionFilter === 'all' ? 'bg-white text-black' : 'bg-[#18181b] text-zinc-400 hover:text-white border border-[#27272a]'
+                  questionFilter === 'all' ? 'bg-white text-black' : 'bg-[#18181b] text-zinc-400 hover:text-white border border-zinc-700'
                 }`}
               >
                 All ({questions.length})
@@ -254,7 +254,7 @@ export const Results = () => {
               <button
                 onClick={() => setQuestionFilter('correct')}
                 className={`px-3 py-1.5 rounded-full font-semibold transition-colors ${
-                  questionFilter === 'correct' ? 'bg-white text-black' : 'bg-[#18181b] text-zinc-400 hover:text-white border border-[#27272a]'
+                  questionFilter === 'correct' ? 'bg-white text-black' : 'bg-[#18181b] text-zinc-400 hover:text-white border border-zinc-700'
                 }`}
               >
                 Correct ({correctCount})
@@ -262,7 +262,7 @@ export const Results = () => {
               <button
                 onClick={() => setQuestionFilter('incorrect')}
                 className={`px-3 py-1.5 rounded-full font-semibold transition-colors ${
-                  questionFilter === 'incorrect' ? 'bg-white text-black' : 'bg-[#18181b] text-zinc-400 hover:text-white border border-[#27272a]'
+                  questionFilter === 'incorrect' ? 'bg-white text-black' : 'bg-[#18181b] text-zinc-400 hover:text-white border border-zinc-700'
                 }`}
               >
                 Incorrect ({incorrectCount})
@@ -270,7 +270,7 @@ export const Results = () => {
               <button
                 onClick={() => setQuestionFilter('unattempted')}
                 className={`px-3 py-1.5 rounded-full font-semibold transition-colors ${
-                  questionFilter === 'unattempted' ? 'bg-white text-black' : 'bg-[#18181b] text-zinc-400 hover:text-white border border-[#27272a]'
+                  questionFilter === 'unattempted' ? 'bg-white text-black' : 'bg-[#18181b] text-zinc-400 hover:text-white border border-zinc-700'
                 }`}
               >
                 Unattempted ({unattemptedCount})
@@ -285,21 +285,21 @@ export const Results = () => {
                 <div
                   key={q._id}
                   id={`q-${q.order}`}
-                  className="bg-[#121215] rounded-2xl p-6 border border-[#27272a] shadow-sm transition-all"
+                  className="bg-[#121215] rounded-2xl p-6 border border-zinc-700 shadow-sm transition-all"
                 >
-                  <div className="flex items-center justify-between gap-2 pb-3 mb-4 border-b border-[#27272a]">
+                  <div className="flex items-center justify-between gap-2 pb-3 mb-4 border-b border-zinc-700">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="text-xs font-mono font-medium text-zinc-400">
                         Question {q.order}
                       </span>
                       {q.conceptKey && (
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#18181b] text-zinc-400 border border-[#27272a]">
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#18181b] text-zinc-400 border border-zinc-700">
                           {q.conceptKey}
                         </span>
                       )}
                     </div>
 
-                    <span className="inline-flex items-center gap-1 px-3 py-0.5 rounded-full text-xs font-semibold bg-[#18181b] text-zinc-300 border border-[#27272a]">
+                    <span className="inline-flex items-center gap-1 px-3 py-0.5 rounded-full text-xs font-semibold bg-[#18181b] text-zinc-300 border border-zinc-700">
                       {q.status === 'correct' && <Check className="w-3.5 h-3.5 text-white" />}
                       {q.status === 'incorrect' && <X className="w-3.5 h-3.5 text-zinc-400" />}
                       <span className="capitalize">{q.status}</span>
@@ -316,12 +316,12 @@ export const Results = () => {
                       const isSelected = q.selectedOptionIndex === optIdx;
                       const isCorrectOption = q.correctOptionIndex === optIdx;
 
-                      let style = 'bg-[#18181b] border-[#27272a] text-zinc-300';
+                      let style = 'bg-[#18181b] border-zinc-700 text-zinc-300';
 
                       if (isCorrectOption) {
-                        style = 'bg-zinc-800 border-zinc-500 text-white font-medium';
+                        style = 'bg-emerald-950/60 border-emerald-500/80 text-emerald-100 font-medium';
                       } else if (isSelected && !isCorrectOption) {
-                        style = 'bg-zinc-900 border-zinc-700 text-zinc-400';
+                        style = 'bg-rose-950/60 border-rose-500/80 text-rose-200 font-medium';
                       }
 
                       return (
@@ -341,7 +341,7 @@ export const Results = () => {
                               <span className="px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-300">Your Answer</span>
                             )}
                             {isCorrectOption && (
-                              <span className="px-2 py-0.5 rounded-md bg-white text-black font-semibold">Correct Key</span>
+                              <span className="px-2 py-0.5 rounded-md bg-emerald-500 text-black font-bold">Correct Key</span>
                             )}
                           </div>
                         </div>
@@ -350,7 +350,7 @@ export const Results = () => {
                   </div>
 
                   {/* Explanation Box */}
-                  <div className="p-4 rounded-xl bg-[#18181b] border border-[#27272a] text-xs leading-relaxed space-y-1">
+                  <div className="p-4 rounded-xl bg-[#18181b] border border-zinc-700 text-xs leading-relaxed space-y-1">
                     <span className="font-semibold text-white uppercase tracking-wider block mb-1">
                       Explanation
                     </span>
@@ -367,12 +367,12 @@ export const Results = () => {
       {activeTab === 'analysis' && (
         <div className="space-y-6">
           {analysisLoading && !analysis ? (
-            <div className="p-12 text-center space-y-3 bg-[#121215] rounded-2xl border border-[#27272a]">
+            <div className="p-12 text-center space-y-3 bg-[#121215] rounded-2xl border border-zinc-700">
               <Loader2 className="w-6 h-6 animate-spin text-white mx-auto" />
               <p className="text-xs text-zinc-400 font-mono">Analyzing concept mastery...</p>
             </div>
           ) : !analysis ? (
-            <div className="p-8 text-center space-y-3 bg-[#121215] rounded-2xl border border-[#27272a]">
+            <div className="p-8 text-center space-y-3 bg-[#121215] rounded-2xl border border-zinc-700">
               <p className="text-zinc-400 text-xs">No concept analysis recorded for this attempt.</p>
               <button
                 onClick={fetchAnalysis}
@@ -384,7 +384,7 @@ export const Results = () => {
           ) : (
             <div className="space-y-6">
               {/* Executive Summary Card */}
-              <div className="p-6 rounded-2xl bg-[#121215] border border-[#27272a] space-y-4 shadow-sm">
+              <div className="p-6 rounded-2xl bg-[#121215] border border-zinc-700 space-y-4 shadow-sm">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center">
@@ -397,20 +397,20 @@ export const Results = () => {
                   {test?.workspaceId && (
                     <Link
                       to={`/workspaces/${test.workspaceId}`}
-                      className="px-3.5 py-1.5 rounded-full bg-[#18181b] hover:bg-[#27272a] text-zinc-300 text-xs font-semibold border border-[#27272a] flex items-center gap-1.5 transition-colors"
+                      className="px-3.5 py-1.5 rounded-full bg-[#18181b] hover:bg-[#27272a] text-zinc-300 text-xs font-semibold border border-zinc-700 flex items-center gap-1.5 transition-colors"
                     >
                       <span>Workspace</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
                   )}
                 </div>
-                <p className="text-xs text-zinc-300 leading-relaxed bg-[#18181b] p-4 rounded-xl border border-[#27272a]">
+                <p className="text-xs text-zinc-300 leading-relaxed bg-[#18181b] p-4 rounded-xl border border-zinc-700">
                   {analysis.summary}
                 </p>
               </div>
 
               {/* Concept Mastery Changes (Deltas) */}
-              <div className="p-6 rounded-2xl bg-[#121215] border border-[#27272a] space-y-5 shadow-sm">
+              <div className="p-6 rounded-2xl bg-[#121215] border border-zinc-700 space-y-5 shadow-sm">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center">
@@ -432,14 +432,14 @@ export const Results = () => {
                     return (
                       <div
                         key={idx}
-                        className="p-4 rounded-xl bg-[#18181b] border border-[#27272a] space-y-3"
+                        className="p-4 rounded-xl bg-[#18181b] border border-zinc-700 space-y-3"
                       >
                         <div className="flex items-center justify-between gap-2">
                           <span className="font-semibold text-sm text-white truncate">
                             {m.conceptTitle || m.conceptKey}
                           </span>
                           <span
-                            className="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-[#121215] text-white border border-[#27272a]"
+                            className="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-[#121215] text-white border border-zinc-700"
                           >
                             {isPositive ? `+${deltaPct}%` : `${deltaPct}%`}
                           </span>
@@ -465,7 +465,7 @@ export const Results = () => {
 
               {/* Weak Concepts Card */}
               {analysis.weakConcepts?.length > 0 && (
-                <div className="p-6 rounded-2xl bg-[#121215] border border-[#27272a] space-y-4 shadow-sm">
+                <div className="p-6 rounded-2xl bg-[#121215] border border-zinc-700 space-y-4 shadow-sm">
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-full bg-zinc-800 text-white flex items-center justify-center">
                       <AlertTriangle className="w-4 h-4" />
@@ -479,13 +479,13 @@ export const Results = () => {
                     {analysis.weakConcepts.map((w, idx) => (
                       <div
                         key={idx}
-                        className="p-4 rounded-xl bg-[#18181b] border border-[#27272a] flex flex-col sm:flex-row sm:items-center justify-between gap-2"
+                        className="p-4 rounded-xl bg-[#18181b] border border-zinc-700 flex flex-col sm:flex-row sm:items-center justify-between gap-2"
                       >
                         <div>
                           <span className="font-semibold text-sm text-white">{w.conceptTitle || w.conceptKey}</span>
                           <p className="text-xs text-zinc-400 mt-0.5">{w.reason}</p>
                         </div>
-                        <span className="px-2.5 py-1 rounded-full text-xs font-mono font-semibold bg-[#121215] border border-[#27272a] text-zinc-300 shrink-0">
+                        <span className="px-2.5 py-1 rounded-full text-xs font-mono font-semibold bg-[#121215] border border-zinc-700 text-zinc-300 shrink-0">
                           {Math.round(w.mastery * 100)}% Mastery
                         </span>
                       </div>
@@ -496,7 +496,7 @@ export const Results = () => {
 
               {/* Strengths Card */}
               {analysis.strengths?.length > 0 && (
-                <div className="p-6 rounded-2xl bg-[#121215] border border-[#27272a] space-y-4 shadow-sm">
+                <div className="p-6 rounded-2xl bg-[#121215] border border-zinc-700 space-y-4 shadow-sm">
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center">
                       <CheckCircle2 className="w-4 h-4" />
@@ -510,7 +510,7 @@ export const Results = () => {
                     {analysis.strengths.map((s, idx) => (
                       <span
                         key={idx}
-                        className="px-3.5 py-1.5 rounded-full bg-[#18181b] border border-[#27272a] text-white text-xs font-semibold flex items-center gap-2"
+                        className="px-3.5 py-1.5 rounded-full bg-[#18181b] border border-zinc-700 text-white text-xs font-semibold flex items-center gap-2"
                       >
                         <span>{s.conceptTitle || s.conceptKey}</span>
                         <span className="text-[11px] font-mono text-zinc-400">
@@ -524,7 +524,7 @@ export const Results = () => {
 
               {/* Actionable Next Steps */}
               {analysis.nextSteps?.length > 0 && (
-                <div className="p-6 rounded-2xl bg-[#121215] border border-[#27272a] space-y-4 shadow-sm">
+                <div className="p-6 rounded-2xl bg-[#121215] border border-zinc-700 space-y-4 shadow-sm">
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center">
                       <Target className="w-4 h-4" />
@@ -538,7 +538,7 @@ export const Results = () => {
                     {analysis.nextSteps.map((step, idx) => (
                       <div
                         key={idx}
-                        className="flex items-start gap-3 p-3.5 rounded-xl bg-[#18181b] border border-[#27272a] text-xs text-zinc-300"
+                        className="flex items-start gap-3 p-3.5 rounded-xl bg-[#18181b] border border-zinc-700 text-xs text-zinc-300"
                       >
                         <span className="w-5 h-5 rounded-md bg-white text-black font-mono font-bold flex items-center justify-center shrink-0 mt-0.5 text-[11px]">
                           {idx + 1}
