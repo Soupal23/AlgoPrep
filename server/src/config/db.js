@@ -1,6 +1,5 @@
 import dns from 'dns';
 import mongoose from 'mongoose';
-import { MongoMemoryServer } from 'mongodb-memory-server';
 import { config } from './env.js';
 
 // Configure reliable DNS servers for MongoDB Atlas SRV lookups on Windows
@@ -26,6 +25,7 @@ export const connectDB = async () => {
 
     console.warn(`MongoDB Atlas connection failed (${err.message}). Falling back to mongodb-memory-server...`);
     try {
+      const { MongoMemoryServer } = await import('mongodb-memory-server');
       mongoMemoryServer = await MongoMemoryServer.create();
       const uri = mongoMemoryServer.getUri();
       await mongoose.connect(uri);
