@@ -94,25 +94,22 @@ export const RevisionPlanPanel = ({ attemptId, onJumpToQuestion }) => {
   });
 
   return (
-    <div className="space-y-7">
+    <div className="space-y-6">
       {/* Action Header Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-[#383050]">
+      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-[#27272a]">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-2xl bg-purple-500/20 text-purple-400 border border-purple-500/30">
-            <Sparkles className="w-6 h-6" />
+          <div className="w-9 h-9 rounded-full bg-white text-black flex items-center justify-center shrink-0">
+            <Sparkles className="w-4 h-4" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-white flex items-center gap-2">
-              <span>Personalized Revision Diagnostics</span>
+            <h2 className="text-lg font-bold text-white flex items-center gap-2">
+              <span>Revision Plan</span>
               {source === 'ai' && (
-                <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-purple-950/90 text-purple-300 border border-purple-700/60">
+                <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-[#18181b] text-zinc-300 border border-[#27272a]">
                   AI Synthesized
                 </span>
               )}
             </h2>
-            <p className="text-xs text-slate-400">
-              Targeted remediation plan, behavioral pattern diagnosis, and curated learning materials
-            </p>
           </div>
         </div>
 
@@ -120,7 +117,7 @@ export const RevisionPlanPanel = ({ attemptId, onJumpToQuestion }) => {
         <div className="flex items-center gap-2.5 no-print">
           <button
             onClick={handlePrint}
-            className="px-3.5 py-2 rounded-xl bg-[#1c1729] hover:bg-[#251e35] text-slate-300 hover:text-white text-xs font-semibold border border-[#383050] transition-colors flex items-center gap-1.5"
+            className="px-4 py-2 rounded-full bg-[#18181b] hover:bg-[#27272a] text-zinc-300 hover:text-white text-xs font-semibold border border-[#27272a] transition-colors flex items-center gap-1.5"
             title="Export or print this revision plan to PDF"
           >
             <Printer className="w-3.5 h-3.5" />
@@ -130,15 +127,14 @@ export const RevisionPlanPanel = ({ attemptId, onJumpToQuestion }) => {
           <button
             onClick={() => setShowConfirmModal(true)}
             disabled={!canRegenerate || regenerating}
-            className={`px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all flex items-center gap-1.5 ${
+            className={`px-4 py-2 rounded-full text-xs font-semibold border transition-all flex items-center gap-1.5 ${
               canRegenerate && !regenerating
-                ? 'bg-purple-600/90 hover:bg-purple-600 text-white border-purple-500 shadow-md shadow-purple-900/20'
-                : 'bg-slate-800/60 text-slate-500 border-slate-700 cursor-not-allowed'
+                ? 'bg-white hover:bg-zinc-200 text-black border-white shadow-sm'
+                : 'bg-[#18181b] text-zinc-600 border-[#27272a] cursor-not-allowed'
             }`}
-            title={canRegenerate ? `Regenerate plan with fresh AI reasoning (${remainingRegens} left)` : 'Maximum regenerations reached'}
           >
             <RotateCcw className={`w-3.5 h-3.5 ${regenerating ? 'animate-spin' : ''}`} />
-            <span>{regenerating ? 'Regenerating...' : `Regenerate AI (${remainingRegens} left)`}</span>
+            <span>{regenerating ? 'Regenerating...' : `Regenerate (${remainingRegens} left)`}</span>
           </button>
         </div>
       </div>

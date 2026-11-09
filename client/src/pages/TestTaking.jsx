@@ -559,8 +559,8 @@ export const TestTaking = () => {
     return (
       <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4">
         <div className="text-center space-y-4">
-          <div className="w-12 h-12 rounded-full border-4 border-purple-400 border-t-transparent animate-spin mx-auto" />
-          <p className="text-slate-400 font-mono text-sm">Loading exam...</p>
+          <div className="w-10 h-10 rounded-full border-2 border-white border-t-transparent animate-spin mx-auto" />
+          <p className="text-zinc-400 font-mono text-sm">Loading exam...</p>
         </div>
       </div>
     );
@@ -568,11 +568,11 @@ export const TestTaking = () => {
 
   if (error || !test || questions.length === 0) {
     return (
-      <div className="max-w-xl mx-auto my-12 p-8 bg-[#14111f] rounded-2xl border border-rose-800/40 text-center space-y-4">
-        <p className="text-rose-300 font-semibold">{error || 'Test not found'}</p>
+      <div className="max-w-xl mx-auto my-12 p-8 bg-[#121215] rounded-2xl border border-[#27272a] text-center space-y-4">
+        <p className="text-zinc-300 font-semibold">{error || 'Test not found'}</p>
         <button
           onClick={() => navigate('/')}
-          className="px-6 py-2.5 rounded-xl bg-[#1c1729] text-white text-sm font-semibold hover:bg-slate-800"
+          className="px-6 py-2 rounded-full bg-white hover:bg-zinc-200 text-black text-xs font-semibold transition-colors"
         >
           Return to Dashboard
         </button>
@@ -587,41 +587,41 @@ export const TestTaking = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-      <div className="bg-[#14111f] rounded-2xl p-4 sm:p-5 border border-[#383050] space-y-4 shadow-xl">
+      <div className="bg-[#121215] rounded-2xl p-5 border border-[#27272a] space-y-4 shadow-sm">
         {/* Top Header Row: Test Title & Marking Scheme */}
         <div>
-          <h1 className="text-xl font-extrabold text-white flex items-center gap-2">
+          <h1 className="text-lg sm:text-xl font-bold text-white flex flex-wrap items-center gap-2">
             <span>{test.title}</span>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-[#1c1729] text-purple-400 border border-[#383050] font-mono">
+            <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#18181b] text-zinc-400 border border-[#27272a] font-mono">
               {test.topic}
             </span>
             {test.mode === 'practice' ? (
-              <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-950/60 text-emerald-400 border border-emerald-800/40 font-mono font-bold">
+              <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#18181b] text-zinc-300 border border-[#27272a] font-mono font-medium">
                 Practice Mode
               </span>
             ) : (
-              <span className="text-xs px-2.5 py-0.5 rounded-full bg-amber-950/60 text-amber-400 border border-amber-800/40 font-mono font-bold">
+              <span className="text-xs px-2.5 py-0.5 rounded-full bg-white text-black font-mono font-semibold">
                 Exam Mode
               </span>
             )}
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
-            Marking Scheme: <span className="font-mono text-emerald-400 font-bold">+{test.markingScheme.correct}</span> /{' '}
-            <span className="font-mono text-rose-400 font-bold">{test.markingScheme.incorrect}</span> points per question
+          <p className="text-xs text-zinc-400 font-mono mt-1">
+            Scheme: <span className="text-white font-semibold">+{test.markingScheme.correct}</span> /{' '}
+            <span className="text-zinc-400 font-semibold">{test.markingScheme.incorrect}</span> points per question
           </p>
         </div>
 
         {/* Action Controls Bar: Auto-save on LEFT, Remaining Buttons on RIGHT */}
-        <div className="pt-3 border-t border-[#2d2545] flex flex-wrap items-center justify-between gap-3 sm:gap-4">
-          {/* LEFT: Auto-save Status (Text only, no emojis) */}
-          <div className="flex items-center gap-2 text-xs font-mono text-slate-400 bg-[#1c1729] px-3 py-1.5 rounded-xl border border-[#383050] shadow-inner select-none">
-            <Save
-              className={`w-3.5 h-3.5 ${
+        <div className="pt-3 border-t border-[#27272a] flex flex-wrap items-center justify-between gap-3 sm:gap-4">
+          {/* LEFT: Static Micro-Dot & Text (VS Code / JetBrains Status Bar Style - Zero motion/pulse) */}
+          <div className="flex items-center gap-2 text-[11px] font-mono text-zinc-400 bg-[#18181b] px-3 py-1.5 rounded-full border border-[#27272a] select-none">
+            <span
+              className={`w-1.5 h-1.5 rounded-full shrink-0 ${
                 savingStatus === 'saving'
-                  ? 'text-amber-400 animate-spin'
+                  ? 'bg-zinc-300'
                   : savingStatus === 'rate_limited' || savingStatus === 'error'
-                    ? 'text-rose-400'
-                    : 'text-purple-400'
+                    ? 'bg-zinc-500'
+                    : 'bg-zinc-600'
               }`}
             />
             <span>
@@ -630,17 +630,17 @@ export const TestTaking = () => {
                 : savingStatus === 'saved'
                   ? 'Saved'
                   : savingStatus === 'rate_limited'
-                    ? 'Saving paused - retrying'
+                    ? 'Save paused - retrying'
                     : savingStatus === 'error'
                       ? 'Save failed - retrying'
-                      : 'Auto-Sync Active'}
+                      : 'Synced'}
             </span>
           </div>
 
           {/* RIGHT: Remaining Controls stuck to the right */}
           <div className="flex items-center gap-3 sm:gap-4 ml-auto">
             {tabSwitches > 0 && (
-              <div className="flex items-center gap-1 text-xs text-rose-400 font-mono bg-rose-950/60 px-3 py-1.5 rounded-xl border border-rose-800">
+              <div className="flex items-center gap-1.5 text-xs text-zinc-300 font-mono bg-[#18181b] px-3 py-1.5 rounded-full border border-[#27272a]">
                 <ShieldAlert className="w-3.5 h-3.5" />
                 <span>Warnings: {tabSwitches}</span>
               </div>
@@ -649,12 +649,12 @@ export const TestTaking = () => {
             <button
               onClick={toggleFullscreen}
               title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen (Recommended)'}
-              className="flex items-center gap-1.5 text-xs text-slate-300 font-mono bg-[#1c1729] hover:bg-[#28213b] px-3 py-1.5 rounded-xl border border-[#383050] transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 text-xs text-zinc-300 font-mono bg-[#18181b] hover:bg-[#27272a] px-3.5 py-1.5 rounded-full border border-[#27272a] transition-colors cursor-pointer"
             >
               {isFullscreen ? (
-                <Minimize className="w-3.5 h-3.5 text-purple-400" />
+                <Minimize className="w-3.5 h-3.5 text-zinc-300" />
               ) : (
-                <Maximize className="w-3.5 h-3.5 text-purple-400" />
+                <Maximize className="w-3.5 h-3.5 text-zinc-300" />
               )}
               <span className="hidden sm:inline">{isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}</span>
             </button>
@@ -667,7 +667,7 @@ export const TestTaking = () => {
 
             <button
               onClick={() => setShowSubmitModal(true)}
-              className="px-5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg transition-colors flex items-center gap-1.5 cursor-pointer"
+              className="px-5 py-1.5 rounded-full text-xs font-semibold bg-white hover:bg-zinc-200 text-black shadow-sm transition-colors flex items-center gap-1.5 cursor-pointer font-mono"
             >
               <span>Submit</span>
               <Send className="w-3.5 h-3.5" />
@@ -678,21 +678,21 @@ export const TestTaking = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         <div className="lg:col-span-8 space-y-6">
-          <div className="bg-[#14111f] rounded-2xl p-6 sm:p-8 border border-[#383050] min-h-[420px] flex flex-col justify-between shadow-2xl">
+          <div className="bg-[#121215] rounded-2xl p-6 sm:p-8 border border-[#27272a] min-h-[420px] flex flex-col justify-between shadow-sm">
             <div>
-              <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#383050]">
-                <span className="text-xs font-mono font-bold text-purple-400 uppercase tracking-wider">
+              <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#27272a]">
+                <span className="text-xs font-mono font-medium text-zinc-400 uppercase tracking-wider">
                   Question {currentIndex + 1} of {questions.length}
                 </span>
                 {isMarked && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-950 border border-purple-800 text-purple-300">
-                    <Bookmark className="w-3 h-3 text-purple-400" />
+                  <span className="inline-flex items-center gap-1 px-3 py-0.5 rounded-full text-xs font-medium bg-[#18181b] border border-[#27272a] text-zinc-300 font-mono">
+                    <Bookmark className="w-3 h-3 text-zinc-400" />
                     Marked for Review
                   </span>
                 )}
               </div>
 
-              <h2 className="text-base sm:text-lg font-medium text-slate-100 leading-relaxed mb-8">
+              <h2 className="text-base sm:text-lg font-medium text-white leading-relaxed mb-8">
                 {currentQ.questionText}
               </h2>
 
@@ -704,15 +704,15 @@ export const TestTaking = () => {
                     <button
                       key={optIdx}
                       onClick={() => handleSelectOption(optIdx)}
-                      className={`w-full p-4 rounded-xl text-left text-sm font-medium transition-all flex items-start gap-3 border ${
+                      className={`w-full p-4 rounded-xl text-left text-sm font-medium transition-all flex items-start gap-3 border cursor-pointer ${
                         isSelected
-                          ? 'bg-[#1c1729] border-purple-400 text-white ring-1 ring-purple-400 shadow-md'
-                          : 'bg-[#1c1729]/50 border-[#383050] text-slate-300 hover:bg-[#1c1729] hover:border-slate-700'
+                          ? 'bg-white border-white text-black font-semibold shadow-sm'
+                          : 'bg-[#18181b] border-[#27272a] text-zinc-300 hover:border-zinc-500'
                       }`}
                     >
                       <span
-                        className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs font-mono shrink-0 transition-colors ${
-                          isSelected ? 'bg-purple-500 text-white font-bold' : 'bg-[#1c1729] text-slate-400 border border-[#383050]'
+                        className={`w-6 h-6 rounded-md flex items-center justify-center text-xs font-mono shrink-0 transition-colors ${
+                          isSelected ? 'bg-black text-white font-bold' : 'bg-zinc-800 text-zinc-400 border border-zinc-700'
                         }`}
                       >
                         {String.fromCharCode(65 + optIdx)}
@@ -724,12 +724,12 @@ export const TestTaking = () => {
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-6 mt-8 border-t border-[#383050]">
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-6 mt-8 border-t border-[#27272a]">
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleClearAnswer}
                   disabled={currentSelectedOption === undefined}
-                  className="px-3.5 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-rose-400 hover:bg-rose-950/30 border border-transparent hover:border-rose-900 transition-colors flex items-center gap-1.5 disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-400"
+                  className="px-3.5 py-2 rounded-full text-xs font-medium text-zinc-400 hover:text-white hover:bg-[#18181b] border border-transparent hover:border-[#27272a] transition-colors flex items-center gap-1.5 disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-zinc-500 cursor-pointer"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
                   <span>Clear Response</span>
@@ -737,10 +737,10 @@ export const TestTaking = () => {
 
                 <button
                   onClick={handleToggleMarkForReview}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-semibold border transition-colors flex items-center gap-1.5 ${
+                  className={`px-4 py-2 rounded-full text-xs font-semibold border transition-colors flex items-center gap-1.5 cursor-pointer ${
                     isMarked
-                      ? 'bg-purple-950 border-purple-800 text-purple-300'
-                      : 'bg-[#1c1729] border-[#383050] text-purple-400 hover:bg-purple-950/50'
+                      ? 'bg-white text-black border-white'
+                      : 'bg-[#18181b] border-[#27272a] text-zinc-300 hover:bg-[#27272a]'
                   }`}
                 >
                   <Bookmark className="w-3.5 h-3.5" />
@@ -752,7 +752,7 @@ export const TestTaking = () => {
                 <button
                   onClick={handlePrev}
                   disabled={currentIndex === 0}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold bg-[#1c1729] border border-[#383050] text-slate-300 hover:bg-[#251e35] disabled:opacity-40 transition-colors flex items-center gap-1"
+                  className="px-4 py-2 rounded-full text-xs font-semibold bg-[#18181b] border border-[#27272a] text-zinc-300 hover:bg-[#27272a] disabled:opacity-40 transition-colors flex items-center gap-1 cursor-pointer font-mono"
                 >
                   <ChevronLeft className="w-4 h-4" />
                   <span>Previous</span>
@@ -761,7 +761,7 @@ export const TestTaking = () => {
                 <button
                   onClick={handleNext}
                   disabled={currentIndex === questions.length - 1}
-                  className="px-5 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white disabled:opacity-40 transition-colors flex items-center gap-1 shadow-md"
+                  className="px-5 py-2 rounded-full text-xs font-semibold bg-white hover:bg-zinc-200 text-black disabled:opacity-40 transition-colors flex items-center gap-1 shadow-sm cursor-pointer font-mono"
                 >
                   <span>Next</span>
                   <ChevronRight className="w-4 h-4" />

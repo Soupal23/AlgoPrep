@@ -41,12 +41,11 @@ export const AppContent = () => {
   const location = useLocation();
 
   const isTestRoute = location.pathname.startsWith('/test/');
-  const isSidebarVisible = !!user && !isTestRoute;
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-[#f0eef5] flex flex-col font-sans">
+    <div className="min-h-screen bg-[#09090b] text-[#fafafa] flex flex-col font-sans selection:bg-white selection:text-black">
       {!isTestRoute && <Navbar />}
-      <main className={`flex-1 ${isSidebarVisible ? 'md:ml-64' : ''}`}>
+      <main className="flex-1">
         <ErrorBoundary>
           <Routes>
           <Route path="/" element={<Landing />} />

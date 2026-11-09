@@ -13,25 +13,25 @@ export const QuestionPalette = ({
 
     switch (status) {
       case 'answered':
-        base = 'bg-emerald-950/80 border-emerald-500 text-emerald-300 hover:bg-emerald-900';
+        base = 'bg-white border-white text-black font-bold hover:bg-zinc-200';
         break;
       case 'not_answered':
-        base = 'bg-rose-950/80 border-rose-600 text-rose-300 hover:bg-rose-900';
+        base = 'bg-zinc-900 border-zinc-600 text-zinc-200 hover:bg-zinc-800';
         break;
       case 'marked':
-        base = 'bg-purple-950/80 border-purple-500 text-purple-300 hover:bg-purple-900';
+        base = 'bg-zinc-900 border-zinc-500 text-white hover:bg-zinc-800';
         break;
       case 'answered_marked':
-        base = 'bg-purple-950/90 border-purple-400 text-purple-200 hover:bg-purple-900';
+        base = 'bg-white border-white text-black font-bold hover:bg-zinc-200';
         break;
       case 'unvisited':
       default:
-        base = 'bg-[#251e35] border-[#383050] text-[#9f99b0] hover:bg-[#3a2f50]';
+        base = 'bg-[#18181b] border-[#27272a] text-zinc-600 hover:text-zinc-400 hover:border-zinc-700';
         break;
     }
 
     if (isSelected) {
-      return `${base} ring-2 ring-purple-400 ring-offset-2 ring-offset-[#0a0a0f] font-extrabold z-10`;
+      return `${base} ring-2 ring-white ring-offset-2 ring-offset-[#09090b] font-bold z-10`;
     }
     return base;
   };
@@ -46,13 +46,13 @@ export const QuestionPalette = ({
   );
 
   return (
-    <div className="glass-card rounded-2xl p-5 border border-[#383050] bg-[#1c1729] flex flex-col h-full">
-      <h3 className="text-sm font-semibold text-[#f0eef5] uppercase tracking-wider mb-4 pb-2 border-b border-[#383050] flex items-center justify-between">
+    <div className="rounded-2xl p-6 border border-[#27272a] bg-[#121215] flex flex-col h-full shadow-sm">
+      <h3 className="text-xs font-mono font-bold text-white uppercase tracking-wider mb-4 pb-2 border-b border-[#27272a] flex items-center justify-between">
         <span>Question Palette</span>
-        <span className="text-xs font-mono text-purple-400">{questions.length} Questions</span>
+        <span className="text-xs font-mono text-zinc-400">{questions.length} Questions</span>
       </h3>
 
-      <div className="grid grid-cols-5 gap-2.5 mb-6 overflow-y-auto max-h-72 p-1">
+      <div className="grid grid-cols-5 gap-2 mb-6 overflow-y-auto max-h-72 p-1">
         {questions.map((q, idx) => {
           const st = questionStates[q._id] || 'unvisited';
           const isSelected = idx === currentIndex;
@@ -62,14 +62,14 @@ export const QuestionPalette = ({
             <button
               key={q._id}
               onClick={() => onSelectQuestion(idx)}
-              className={`relative h-11 w-full rounded-xl border text-sm font-medium transition-all flex items-center justify-center shadow-sm ${getStatusColor(
+              className={`relative h-10 w-full rounded-xl border text-xs font-mono font-semibold transition-all flex items-center justify-center cursor-pointer ${getStatusColor(
                 q._id,
                 isSelected
               )}`}
             >
               <span>{idx + 1}</span>
               {isAnsweredAndMarked && (
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-purple-500 rounded-full flex items-center justify-center border border-[#0a0a0f]">
+                <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-black rounded-full flex items-center justify-center border border-white">
                   <Check className="w-2.5 h-2.5 text-white stroke-[3]" />
                 </div>
               )}
@@ -78,47 +78,47 @@ export const QuestionPalette = ({
         })}
       </div>
 
-      <div className="mt-auto pt-4 border-t border-[#383050] space-y-2 text-xs">
+      <div className="mt-auto pt-4 border-t border-[#27272a] space-y-2 text-xs font-mono">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-emerald-500 border border-emerald-400" />
-            <span className="text-[#9f99b0]">Answered</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-white border border-white" />
+            <span className="text-zinc-400">Answered</span>
           </div>
-          <span className="font-mono font-semibold text-emerald-400">{counts.answered}</span>
+          <span className="font-mono font-semibold text-white">{counts.answered}</span>
         </div>
 
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-rose-500 border border-rose-400" />
-            <span className="text-[#9f99b0]">Not Answered</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-zinc-700 border border-zinc-600" />
+            <span className="text-zinc-400">Not Answered</span>
           </div>
-          <span className="font-mono font-semibold text-rose-400">{counts.not_answered}</span>
+          <span className="font-mono font-semibold text-zinc-300">{counts.not_answered}</span>
         </div>
 
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-purple-500 border border-purple-400" />
-            <span className="text-[#9f99b0]">Marked for Review</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-zinc-900 border border-zinc-500" />
+            <span className="text-zinc-400">Marked for Review</span>
           </div>
-          <span className="font-mono font-semibold text-purple-400">{counts.marked}</span>
+          <span className="font-mono font-semibold text-zinc-300">{counts.marked}</span>
         </div>
 
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-purple-500 border border-purple-400 flex items-center justify-center">
-              <Check className="w-2 h-2 text-white stroke-[3]" />
+            <span className="w-2.5 h-2.5 rounded-full bg-white border border-black flex items-center justify-center">
+              <Check className="w-1.5 h-1.5 text-black stroke-[3]" />
             </span>
-            <span className="text-[#9f99b0]">Answered & Marked</span>
+            <span className="text-zinc-400">Answered & Marked</span>
           </div>
-          <span className="font-mono font-semibold text-purple-300">{counts.answered_marked}</span>
+          <span className="font-mono font-semibold text-white">{counts.answered_marked}</span>
         </div>
 
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-[#251e35] border border-[#383050]" />
-            <span className="text-[#6b6380]">Not Visited</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-[#18181b] border border-[#27272a]" />
+            <span className="text-zinc-500">Not Visited</span>
           </div>
-          <span className="font-mono font-semibold text-[#6b6380]">{counts.unvisited}</span>
+          <span className="font-mono font-semibold text-zinc-500">{counts.unvisited}</span>
         </div>
       </div>
     </div>

@@ -60,16 +60,16 @@ export const Timer = ({ endTimeIso, initialRemainingSeconds, onTimeUp }) => {
 
   return (
     <div
-      className={`flex items-center gap-2 px-4 py-2 rounded-xl font-mono text-sm font-bold border transition-colors shadow-inner ${
+      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full font-mono text-xs font-bold border transition-colors shadow-sm ${
         isWarning
-          ? 'bg-rose-950/80 border-rose-800 text-rose-300 animate-pulse'
-          : 'bg-[#1c1729] border-[#383050] text-purple-400'
+          ? 'bg-zinc-900 border-rose-900 text-rose-400'
+          : 'bg-zinc-900 border-zinc-800 text-white'
       }`}
     >
       {isWarning ? (
-        <AlertTriangle className="w-4 h-4 text-rose-400" />
+        <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
       ) : (
-        <Clock className="w-4 h-4 text-purple-400" />
+        <Clock className="w-3.5 h-3.5 text-zinc-400" />
       )}
       <span>{formattedTime}</span>
     </div>

@@ -74,25 +74,18 @@ export const Workspaces = () => {
   const workspaces = data || [];
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-8">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
       {/* Header Banner */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#383050] pb-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#27272a] pb-6">
         <div>
-          <div className="flex items-center gap-2.5 text-indigo-400 font-mono text-xs font-bold uppercase tracking-wider mb-1">
-            <Layers className="w-4 h-4" />
-            <span>AlgoPrep v2 AI Workspaces</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#f0eef5] tracking-tight">
-            Study Workspaces
+          <h1 className="text-2xl font-bold text-white tracking-tight">
+            Workspaces
           </h1>
-          <p className="text-sm text-[#9f99b0] mt-1">
-            Create structured workspaces for your subjects, upload course materials, and generate AI-tailored study plans.
-          </p>
         </div>
 
         <button
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-md transition-all shrink-0 cursor-pointer"
+          className="flex items-center gap-2 px-5 py-2 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs transition-colors shrink-0 cursor-pointer shadow-sm"
         >
           <Plus className="w-4 h-4" />
           <span>New Workspace</span>
@@ -101,29 +94,26 @@ export const Workspaces = () => {
 
       {/* Loading & Empty States */}
       {isLoading ? (
-        <div className="flex flex-col items-center justify-center py-24 text-slate-400 space-y-3">
-          <Loader2 className="w-8 h-8 animate-spin text-indigo-400" />
-          <p className="text-sm font-medium">Loading your workspaces...</p>
+        <div className="flex flex-col items-center justify-center py-24 text-zinc-500 space-y-3 font-mono">
+          <Loader2 className="w-6 h-6 animate-spin text-white" />
+          <p className="text-xs">Loading workspaces...</p>
         </div>
       ) : isError ? (
-        <div className="p-6 rounded-2xl bg-rose-950/20 border border-rose-800 text-rose-300 text-sm">
+        <div className="p-4 rounded-xl bg-rose-950/30 border border-rose-900 text-rose-300 text-xs">
           Failed to load workspaces. Please check your connection and try again.
         </div>
       ) : workspaces.length === 0 ? (
-        <div className="p-12 rounded-3xl bg-[#14111f] border border-[#383050] text-center max-w-xl mx-auto space-y-4">
-          <div className="w-16 h-16 rounded-2xl bg-indigo-950/60 border border-indigo-800 flex items-center justify-center mx-auto text-indigo-400">
-            <FolderOpen className="w-8 h-8" />
+        <div className="p-10 rounded-2xl bg-[#121215] border border-[#27272a] text-center max-w-xl mx-auto space-y-4">
+          <div className="w-12 h-12 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto text-zinc-400">
+            <FolderOpen className="w-6 h-6" />
           </div>
-          <h2 className="text-xl font-bold text-white">No Workspaces Yet</h2>
-          <p className="text-sm text-[#9f99b0]">
-            Create your first workspace to start uploading syllabus documents, notes, slides, and generating grounded study roadmaps.
-          </p>
+          <h2 className="text-base font-bold text-white">No Workspaces Found</h2>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm transition-all shadow-md cursor-pointer"
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs transition-colors shadow-sm cursor-pointer"
           >
             <Plus className="w-4 h-4" />
-            <span>Create First Workspace</span>
+            <span>Create Workspace</span>
           </button>
         </div>
       ) : (
@@ -133,49 +123,49 @@ export const Workspaces = () => {
             <Link
               key={ws._id}
               to={`/workspaces/${ws._id}`}
-              className="group relative flex flex-col justify-between p-6 rounded-2xl bg-[#14111f] border border-[#383050] hover:border-indigo-500/50 hover:bg-[#181426] transition-all duration-200 shadow-sm"
+              className="group relative flex flex-col justify-between p-6 rounded-2xl bg-[#121215] border border-[#27272a] hover:border-zinc-700 hover:bg-[#161619] transition-all duration-200"
             >
               <div className="space-y-3">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-indigo-950/70 border border-indigo-800 text-indigo-300">
+                  <span className="px-2.5 py-0.5 rounded text-[11px] font-mono font-medium bg-zinc-900 border border-zinc-800 text-zinc-400 uppercase">
                     {ws.subject}
                   </span>
                   <button
                     onClick={(e) => handleDelete(e, ws._id, ws.title)}
                     title="Delete Workspace"
-                    className="p-1.5 rounded-lg text-[#9f99b0] hover:text-rose-400 hover:bg-rose-950/30 transition-colors cursor-pointer"
+                    className="p-1 rounded text-zinc-500 hover:text-white transition-colors cursor-pointer"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
 
-                <h3 className="text-lg font-bold text-white group-hover:text-indigo-300 transition-colors line-clamp-1">
+                <h3 className="text-base font-bold text-white group-hover:text-zinc-200 transition-colors line-clamp-1">
                   {ws.title}
                 </h3>
 
                 {ws.description && (
-                  <p className="text-xs text-[#9f99b0] line-clamp-2">
+                  <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
                     {ws.description}
                   </p>
                 )}
               </div>
 
-              <div className="mt-6 pt-4 border-t border-[#251e35] flex items-center justify-between text-xs text-[#9f99b0]">
+              <div className="mt-5 pt-3.5 border-t border-[#27272a] flex items-center justify-between text-xs font-mono text-zinc-500">
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-1.5" title="Uploaded Materials">
-                    <FileText className="w-3.5 h-3.5 text-indigo-400" />
+                    <FileText className="w-3.5 h-3.5 text-zinc-400" />
                     <span>{ws.materialCount || 0} files</span>
                   </div>
                   {ws.chunkCount > 0 && (
                     <div className="flex items-center gap-1.5" title="Indexed Knowledge Chunks">
-                      <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+                      <Sparkles className="w-3.5 h-3.5 text-zinc-400" />
                       <span>{ws.chunkCount} chunks</span>
                     </div>
                   )}
                 </div>
 
-                <span className="inline-flex items-center gap-1 font-semibold text-indigo-400 group-hover:translate-x-0.5 transition-transform">
-                  Enter <ArrowRight className="w-3.5 h-3.5" />
+                <span className="inline-flex items-center gap-1 font-medium text-white group-hover:translate-x-0.5 transition-transform">
+                  Open <ArrowRight className="w-3.5 h-3.5" />
                 </span>
               </div>
             </Link>
@@ -185,32 +175,32 @@ export const Workspaces = () => {
 
       {/* New Workspace Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
-          <div className="w-full max-w-lg rounded-3xl bg-[#14111f] border border-[#383050] p-6 sm:p-8 space-y-6 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-[#251e35] pb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="w-full max-w-lg rounded-2xl bg-[#121215] border border-[#27272a] p-6 space-y-5 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[#27272a] pb-4">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-indigo-600/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400">
-                  <Layers className="w-5 h-5" />
+                <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-white">
+                  <Layers className="w-4 h-4" />
                 </div>
-                <h2 className="text-xl font-bold text-white">Create New Workspace</h2>
+                <h2 className="text-base font-bold text-white">Create Workspace</h2>
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-slate-400 hover:text-white p-1 rounded-lg"
+                className="text-zinc-400 hover:text-white p-1 rounded-md cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
             {error && (
-              <div className="p-3 rounded-xl bg-rose-950/40 border border-rose-800 text-rose-300 text-xs">
+              <div className="p-3 rounded-lg bg-rose-950/40 border border-rose-900 text-rose-300 text-xs">
                 {error}
               </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-[#9f99b0] mb-1.5">
+                <label className="block text-xs font-medium text-zinc-400 mb-1.5">
                   Workspace Title *
                 </label>
                 <input
@@ -218,47 +208,47 @@ export const Workspaces = () => {
                   placeholder="e.g. Operating Systems & Architecture"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#1c1729] border border-[#383050] text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-500"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#9f99b0] mb-1.5">
+                <label className="block text-xs font-medium text-zinc-400 mb-1.5">
                   Subject / Discipline *
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Computer Science, GATE, Semester 5"
+                  placeholder="e.g. Computer Science, GATE, Algorithms"
                   value={formData.subject}
                   onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#1c1729] border border-[#383050] text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-500"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#9f99b0] mb-1.5">
-                  Description / Goals (Optional)
+                <label className="block text-xs font-medium text-zinc-400 mb-1.5">
+                  Description (Optional)
                 </label>
                 <textarea
                   rows={3}
-                  placeholder="e.g. Focusing on Virtual Memory, Scheduling algorithms, and deadlocks before midterms."
+                  placeholder="e.g. Focusing on Virtual Memory, Scheduling algorithms, and deadlocks."
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#1c1729] border border-[#383050] text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 resize-none"
+                  className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-500 resize-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#9f99b0] mb-1.5">
+                <label className="block text-xs font-medium text-zinc-400 mb-1.5">
                   Target Exam Date (Optional)
                 </label>
                 <input
                   type="date"
                   value={formData.examDate}
                   onChange={(e) => setFormData({ ...formData, examDate: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#1c1729] border border-[#383050] text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-500"
                 />
               </div>
 
@@ -266,18 +256,18 @@ export const Workspaces = () => {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white bg-[#1c1729] border border-[#383050] transition-colors"
+                  className="px-4 py-2 rounded-full text-xs font-medium text-zinc-400 hover:text-white bg-zinc-900 border border-zinc-800 transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={createMutation.isPending}
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 transition-all cursor-pointer shadow-md"
+                  className="flex items-center gap-2 px-5 py-2 rounded-full text-xs font-semibold text-black bg-white hover:bg-zinc-200 disabled:opacity-50 transition-colors cursor-pointer shadow-sm"
                 >
                   {createMutation.isPending ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
                       <span>Creating...</span>
                     </>
                   ) : (

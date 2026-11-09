@@ -8,24 +8,24 @@ export const PlanSummaryCard = ({ summary, stats }) => {
     switch (level) {
       case 'mastery':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-950/80 text-emerald-300 border border-emerald-700/60 shadow-sm">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white text-black shadow-sm">
             <CheckCircle2 className="w-3.5 h-3.5" />
             Mastery Level
           </span>
         );
       case 'intermediate':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-950/80 text-amber-300 border border-amber-700/60 shadow-sm">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#18181b] text-zinc-300 border border-[#27272a]">
             <Sparkles className="w-3.5 h-3.5" />
-            Intermediate Competency
+            Intermediate
           </span>
         );
       case 'needs_revision':
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-950/80 text-rose-300 border border-rose-700/60 shadow-sm">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#18181b] text-zinc-400 border border-[#27272a]">
             <Award className="w-3.5 h-3.5" />
-            Needs Targeted Revision
+            Needs Revision
           </span>
         );
     }
@@ -36,29 +36,26 @@ export const PlanSummaryCard = ({ summary, stats }) => {
   const accDiff = prev ? stats.accuracy - prev.accuracy : null;
 
   return (
-    <div className="bg-[#14111f] rounded-3xl p-6 sm:p-7 border border-[#383050] shadow-xl space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#383050]">
+    <div className="bg-[#121215] rounded-2xl p-6 sm:p-7 border border-[#27272a] shadow-sm space-y-5">
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#27272a]">
         <div>
-          <span className="text-[11px] font-mono uppercase tracking-wider text-purple-400 font-bold block mb-1">
-            Diagnostic Verdict
-          </span>
-          <h2 className="text-lg sm:text-xl font-extrabold text-white leading-snug">
+          <h2 className="text-lg sm:text-xl font-bold text-white leading-snug">
             {summary.verdict}
           </h2>
         </div>
         <div>{getLevelBadge(summary.performanceLevel)}</div>
       </div>
 
-      <p className="text-xs sm:text-sm text-slate-300 italic leading-relaxed">
+      <p className="text-xs sm:text-sm text-zinc-300 italic leading-relaxed">
         "{summary.encouragement}"
       </p>
 
       {/* Metric Tiles */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
-        <div className="bg-[#1c1729] rounded-2xl p-3.5 border border-[#383050] text-center">
-          <div className="text-[11px] text-slate-400 mb-0.5">Est. Study Time</div>
-          <div className="text-xl font-mono font-bold text-amber-400 flex items-center justify-center gap-1">
-            <Clock className="w-4 h-4 text-amber-400" />
+        <div className="bg-[#18181b] rounded-xl p-3.5 border border-[#27272a] text-center">
+          <div className="text-[10px] uppercase font-mono text-zinc-400 mb-0.5">Est. Study Time</div>
+          <div className="text-xl font-mono font-bold text-white flex items-center justify-center gap-1">
+            <Clock className="w-4 h-4 text-zinc-400" />
             <span>
               {summary.estimatedStudyMinutes >= 60
                 ? `${Math.floor(summary.estimatedStudyMinutes / 60)}h ${summary.estimatedStudyMinutes % 60}m`
@@ -67,39 +64,30 @@ export const PlanSummaryCard = ({ summary, stats }) => {
           </div>
         </div>
 
-        <div className="bg-[#1c1729] rounded-2xl p-3.5 border border-[#383050] text-center">
-          <div className="text-[11px] text-slate-400 mb-0.5">Pace per Question</div>
-          <div className="text-xl font-mono font-bold text-cyan-400">
+        <div className="bg-[#18181b] rounded-xl p-3.5 border border-[#27272a] text-center">
+          <div className="text-[10px] uppercase font-mono text-zinc-400 mb-0.5">Pace / Question</div>
+          <div className="text-xl font-mono font-bold text-white">
             {stats.avgSecondsPerQuestion > 0 ? `${stats.avgSecondsPerQuestion}s` : 'N/A'}
           </div>
         </div>
 
-        <div className="bg-[#1c1729] rounded-2xl p-3.5 border border-[#383050] text-center">
-          <div className="text-[11px] text-slate-400 mb-0.5">Overall Accuracy</div>
-          <div className="text-xl font-mono font-bold text-emerald-400">
+        <div className="bg-[#18181b] rounded-xl p-3.5 border border-[#27272a] text-center">
+          <div className="text-[10px] uppercase font-mono text-zinc-400 mb-0.5">Accuracy</div>
+          <div className="text-xl font-mono font-bold text-white">
             {stats.accuracy}%
           </div>
         </div>
 
-        <div className="bg-[#1c1729] rounded-2xl p-3.5 border border-[#383050] text-center">
-          <div className="text-[11px] text-slate-400 mb-0.5">Attempt Delta</div>
+        <div className="bg-[#18181b] rounded-xl p-3.5 border border-[#27272a] text-center">
+          <div className="text-[10px] uppercase font-mono text-zinc-400 mb-0.5">Attempt Delta</div>
           {prev ? (
-            <div
-              className={`text-sm font-mono font-bold flex items-center justify-center gap-1 ${
-                scoreDiff >= 0 ? 'text-emerald-400' : 'text-rose-400'
-              }`}
-            >
-              {scoreDiff >= 0 ? (
-                <TrendingUp className="w-4 h-4" />
-              ) : (
-                <TrendingDown className="w-4 h-4" />
-              )}
+            <div className="text-sm font-mono font-bold text-white flex items-center justify-center gap-1">
               <span>
                 {scoreDiff > 0 ? `+${scoreDiff}` : scoreDiff} pts ({accDiff > 0 ? `+${accDiff}` : accDiff}%)
               </span>
             </div>
           ) : (
-            <div className="text-xs text-slate-500 font-mono pt-1">First Attempt</div>
+            <div className="text-xs text-zinc-500 font-mono pt-1">First Attempt</div>
           )}
         </div>
       </div>

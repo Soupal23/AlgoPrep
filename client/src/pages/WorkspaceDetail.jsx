@@ -319,9 +319,9 @@ export const WorkspaceDetail = () => {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-slate-400 space-y-3">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-400" />
-        <p className="text-sm font-medium">Loading workspace materials...</p>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-zinc-500 space-y-3 font-mono">
+        <Loader2 className="w-6 h-6 animate-spin text-white" />
+        <p className="text-xs">Loading workspace...</p>
       </div>
     );
   }
@@ -329,11 +329,12 @@ export const WorkspaceDetail = () => {
   if (isError || !workspace) {
     return (
       <div className="p-8 max-w-4xl mx-auto space-y-4">
-        <Link to="/workspaces" className="inline-flex items-center gap-1.5 text-xs text-indigo-400 hover:underline">
+        <Link to="/workspaces" className="inline-flex items-center gap-1.5 text-xs text-zinc-400 hover:text-white transition-colors">
           <ArrowLeft className="w-4 h-4" /> Back to Workspaces
         </Link>
-        <div className="p-6 rounded-2xl bg-rose-950/20 border border-rose-800 text-rose-300 text-sm">
-          Failed to load workspace. It may not exist or you might not have access.
+        <div className="p-6 rounded-2xl bg-[#121215] border border-[#27272a] text-center space-y-3">
+          <AlertCircle className="w-8 h-8 text-rose-400 mx-auto" />
+          <h2 className="text-sm font-bold text-white">Workspace Not Found</h2>
         </div>
       </div>
     );
@@ -342,40 +343,38 @@ export const WorkspaceDetail = () => {
   const materials = workspace.materials || [];
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-8">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
       {/* Back button & Breadcrumb */}
-      <div className="flex items-center gap-2 text-xs font-semibold text-[#9f99b0]">
+      <div className="flex items-center gap-2 text-xs font-semibold text-zinc-400">
         <Link to="/workspaces" className="hover:text-white transition-colors">
           Workspaces
         </Link>
-        <ChevronRight className="w-3.5 h-3.5" />
+        <ChevronRight className="w-3.5 h-3.5 text-zinc-600" />
         <span className="text-white truncate max-w-xs">{workspace.title}</span>
       </div>
 
       {/* Workspace Header Card */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-[#14111f] border border-[#383050] space-y-6 shadow-xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-600/5 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
+      <div className="p-6 sm:p-8 rounded-2xl bg-[#121215] border border-[#27272a] space-y-6">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="space-y-2">
-            <div className="flex flex-wrap items-center gap-2.5">
-              <span className="px-3 py-1 rounded-xl text-xs font-bold bg-indigo-950/80 border border-indigo-800 text-indigo-300 uppercase tracking-wide">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="px-2.5 py-0.5 rounded text-[11px] font-mono font-medium bg-zinc-900 border border-zinc-800 text-zinc-300 uppercase">
                 {workspace.subject}
               </span>
               {workspace.examDate && (
-                <div className="flex items-center gap-1.5 text-xs text-purple-300 bg-purple-950/60 border border-purple-800/80 px-2.5 py-1 rounded-xl">
+                <div className="flex items-center gap-1.5 text-xs font-mono text-zinc-400 bg-zinc-900 border border-zinc-800 px-2.5 py-0.5 rounded">
                   <Calendar className="w-3.5 h-3.5" />
                   <span>Exam: {new Date(workspace.examDate).toLocaleDateString()}</span>
                 </div>
               )}
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#f0eef5] tracking-tight">
+            <h1 className="text-2xl font-bold text-white tracking-tight">
               {workspace.title}
             </h1>
 
             {workspace.description && (
-              <p className="text-sm text-[#9f99b0] max-w-2xl leading-relaxed">
+              <p className="text-xs text-zinc-400 max-w-2xl leading-relaxed">
                 {workspace.description}
               </p>
             )}
@@ -386,7 +385,7 @@ export const WorkspaceDetail = () => {
             {existingRoadmap ? (
               <Link
                 to={`/workspaces/${id}/roadmap`}
-                className="flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-indigo-600 hover:from-emerald-500 hover:to-indigo-500 text-white font-bold text-sm shadow-lg shadow-emerald-950/50 transition-all cursor-pointer"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs transition-colors cursor-pointer shadow-sm"
               >
                 <Compass className="w-4 h-4" />
                 <span>View Study Roadmap</span>
@@ -395,7 +394,7 @@ export const WorkspaceDetail = () => {
             ) : (
               <button
                 onClick={() => setIsRoadmapModalOpen(true)}
-                className="flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-sm shadow-lg shadow-indigo-950/50 transition-all cursor-pointer"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs transition-colors cursor-pointer shadow-sm"
               >
                 <Compass className="w-4 h-4" />
                 <span>Generate Study Roadmap</span>
@@ -405,24 +404,24 @@ export const WorkspaceDetail = () => {
         </div>
 
         {/* Workspace Quick Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-[#251e35] text-xs">
-          <div className="p-3 rounded-xl bg-[#1c1729]/60 border border-[#383050]">
-            <span className="text-[#9f99b0] block">Documents</span>
-            <span className="text-lg font-extrabold text-white">{materials.length}</span>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-[#27272a] text-xs font-mono">
+          <div className="p-3 rounded-xl bg-[#18181b] border border-[#27272a]">
+            <span className="text-zinc-500 block text-[10px] uppercase">Documents</span>
+            <span className="text-base font-bold text-white mt-0.5">{materials.length}</span>
           </div>
-          <div className="p-3 rounded-xl bg-[#1c1729]/60 border border-[#383050]">
-            <span className="text-[#9f99b0] block">Knowledge Chunks</span>
-            <span className="text-lg font-extrabold text-indigo-400">{workspace.chunkCount || 0}</span>
+          <div className="p-3 rounded-xl bg-[#18181b] border border-[#27272a]">
+            <span className="text-zinc-500 block text-[10px] uppercase">Knowledge Chunks</span>
+            <span className="text-base font-bold text-white mt-0.5">{workspace.chunkCount || 0}</span>
           </div>
-          <div className="p-3 rounded-xl bg-[#1c1729]/60 border border-[#383050]">
-            <span className="text-[#9f99b0] block">Syllabus Uploaded</span>
-            <span className="text-lg font-extrabold text-purple-400">
+          <div className="p-3 rounded-xl bg-[#18181b] border border-[#27272a]">
+            <span className="text-zinc-500 block text-[10px] uppercase">Syllabus Uploaded</span>
+            <span className="text-base font-bold text-white mt-0.5">
               {materials.some(m => m.kind === 'syllabus') ? 'Yes' : 'No'}
             </span>
           </div>
-          <div className="p-3 rounded-xl bg-[#1c1729]/60 border border-[#383050]">
-            <span className="text-[#9f99b0] block">RAG Ready</span>
-            <span className="text-lg font-extrabold text-emerald-400">
+          <div className="p-3 rounded-xl bg-[#18181b] border border-[#27272a]">
+            <span className="text-zinc-500 block text-[10px] uppercase">RAG Engine</span>
+            <span className="text-base font-bold text-white mt-0.5">
               {workspace.chunkCount > 0 ? 'Active' : 'Pending'}
             </span>
           </div>
@@ -431,32 +430,27 @@ export const WorkspaceDetail = () => {
 
       {/* Concept Mastery Overview (Phase 8) */}
       {masteryData?.concepts?.length > 0 && (
-        <div className="p-6 sm:p-8 rounded-3xl bg-[#14111f] border border-[#383050] space-y-6 shadow-xl">
+        <div className="p-6 rounded-2xl bg-[#121215] border border-[#27272a] space-y-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-emerald-950/80 border border-emerald-800 flex items-center justify-center text-emerald-400">
-                  <TrendingUp className="w-4 h-4" />
-                </div>
-                <h2 className="text-lg font-bold text-white">Concept Mastery Tracking</h2>
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-white">
+                <TrendingUp className="w-4 h-4" />
               </div>
-              <p className="text-xs text-[#9f99b0]">
-                Running weighted mastery across tests with SM-2 spaced repetition intervals
-              </p>
+              <h2 className="text-sm font-bold text-white">Concept Mastery</h2>
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-emerald-950/70 border border-emerald-800 text-emerald-400">
+              <span className="px-2.5 py-1 rounded text-xs font-mono font-medium bg-zinc-900 border border-zinc-800 text-white">
                 {masteryData.concepts.filter(c => c.mastery >= 0.75).length} Mastered
               </span>
-              <span className="px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-rose-950/70 border border-rose-800 text-rose-400">
+              <span className="px-2.5 py-1 rounded text-xs font-mono font-medium bg-zinc-900 border border-zinc-800 text-zinc-400">
                 {masteryData.concepts.filter(c => c.mastery < 0.6).length} Needs Review
               </span>
             </div>
           </div>
 
           {/* Bar Chart Visualization */}
-          <div className="h-56 w-full pt-2">
+          <div className="h-48 w-full pt-2">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={masteryData.concepts.map(c => ({
@@ -467,15 +461,15 @@ export const WorkspaceDetail = () => {
               >
                 <XAxis
                   dataKey="name"
-                  stroke="#64748b"
-                  tick={{ fill: '#94a3b8', fontSize: 11 }}
+                  stroke="#27272a"
+                  tick={{ fill: '#71717a', fontSize: 11, fontFamily: 'monospace' }}
                   interval={0}
                   angle={-15}
                   textAnchor="end"
                 />
                 <YAxis
-                  stroke="#64748b"
-                  tick={{ fill: '#94a3b8', fontSize: 11 }}
+                  stroke="#27272a"
+                  tick={{ fill: '#71717a', fontSize: 11, fontFamily: 'monospace' }}
                   domain={[0, 100]}
                 />
                 <Tooltip
@@ -483,19 +477,19 @@ export const WorkspaceDetail = () => {
                     if (active && payload && payload.length) {
                       const data = payload[0];
                       return (
-                        <div className="p-2.5 rounded-xl bg-[#1c1729] border border-[#383050] shadow-xl text-xs font-mono">
+                        <div className="p-2.5 rounded-lg bg-[#09090b] border border-[#27272a] shadow-xl text-xs font-mono">
                           <p className="font-bold text-white mb-1">{data.payload.name}</p>
-                          <p className="text-emerald-400 font-extrabold">{data.value}% Mastery</p>
+                          <p className="text-white font-bold">{data.value}% Mastery</p>
                         </div>
                       );
                     }
                     return null;
                   }}
                 />
-                <Bar dataKey="mastery" radius={[6, 6, 0, 0]}>
+                <Bar dataKey="mastery" radius={[4, 4, 0, 0]}>
                   {masteryData.concepts.map((entry, index) => {
                     const score = entry.mastery * 100;
-                    const fill = score >= 75 ? '#10b981' : score >= 60 ? '#6366f1' : '#f43f5e';
+                    const fill = score >= 75 ? '#ffffff' : score >= 60 ? '#a1a1aa' : '#52525b';
                     return <Cell key={`cell-${index}`} fill={fill} />;
                   })}
                 </Bar>
@@ -507,40 +501,31 @@ export const WorkspaceDetail = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 pt-2">
             {masteryData.concepts.map((c) => {
               const pct = Math.round(c.mastery * 100);
-              const isStrong = pct >= 75;
-              const isWeak = pct < 60;
-              const nextReview = c.nextReviewAt ? new Date(c.nextReviewAt).toLocaleDateString() : null;
 
               return (
                 <div
                   key={c._id || c.conceptKey}
-                  className="p-3 rounded-2xl bg-[#1c1729]/70 border border-[#383050] space-y-2"
+                  className="p-3 rounded-xl bg-[#18181b] border border-[#27272a] space-y-2 font-mono"
                 >
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-bold text-white truncate max-w-[70%]">
                       {c.conceptTitle || c.conceptKey}
                     </span>
-                    <span
-                      className={`font-mono font-bold ${
-                        isStrong ? 'text-emerald-400' : isWeak ? 'text-rose-400' : 'text-indigo-400'
-                      }`}
-                    >
+                    <span className="font-mono font-bold text-white">
                       {pct}%
                     </span>
                   </div>
 
-                  <div className="w-full h-1.5 rounded-full bg-[#14111f] overflow-hidden">
+                  <div className="w-full h-1.5 rounded-full bg-zinc-900 overflow-hidden">
                     <div
-                      className={`h-full rounded-full transition-all duration-300 ${
-                        isStrong ? 'bg-emerald-500' : isWeak ? 'bg-rose-500' : 'bg-indigo-500'
-                      }`}
+                      className="h-full rounded-full bg-white transition-all duration-300"
                       style={{ width: `${pct}%` }}
                     />
                   </div>
 
-                  <div className="flex items-center justify-between text-[11px] text-[#9f99b0]">
+                  <div className="flex items-center justify-between text-[10px] text-zinc-500">
                     <span>{c.attempts || 1} attempt{c.attempts === 1 ? '' : 's'}</span>
-                    {nextReview && <span>Review: {nextReview}</span>}
+                    <span>interval: {c.intervalDays || 1}d</span>
                   </div>
                 </div>
               );
@@ -552,28 +537,28 @@ export const WorkspaceDetail = () => {
       {/* Active Jobs Progress Bar Banner */}
       {Object.keys(activeJobs).length > 0 && (
         <div className="space-y-3">
-          <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-indigo-400 flex items-center gap-2">
-            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            <span>Ingesting Materials in Real-Time</span>
+          <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
+            <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
+            <span>Ingesting Materials</span>
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {Object.entries(activeJobs).map(([jobId, job]) => (
               <div
                 key={jobId}
-                className="p-4 rounded-2xl bg-[#14111f] border border-indigo-500/30 space-y-2 shadow-md"
+                className="p-4 rounded-xl bg-[#121215] border border-[#27272a] space-y-2 shadow-sm"
               >
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-semibold text-white truncate max-w-[70%]">
                     {job.stage || 'Processing document...'}
                   </span>
-                  <span className="font-mono font-bold text-indigo-400">
+                  <span className="font-mono font-bold text-white">
                     {job.progress}%
                   </span>
                 </div>
-                <div className="w-full h-2 rounded-full bg-[#1c1729] overflow-hidden">
+                <div className="w-full h-1.5 rounded-full bg-zinc-900 overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-300 rounded-full"
+                    className="h-full bg-white transition-all duration-300 rounded-full"
                     style={{ width: `${job.progress}%` }}
                   />
                 </div>
@@ -584,19 +569,19 @@ export const WorkspaceDetail = () => {
       )}
 
       {/* Main Grid: Upload Dropzone + Materials List */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Upload Form (Left Column, 1 col) */}
         <div className="lg:col-span-1 space-y-6">
-          <div className="p-6 rounded-3xl bg-[#14111f] border border-[#383050] space-y-5 shadow-sm">
+          <div className="p-5 rounded-2xl bg-[#121215] border border-[#27272a] space-y-4">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-indigo-600/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400">
+              <div className="w-7 h-7 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-white">
                 <UploadCloud className="w-4 h-4" />
               </div>
-              <h2 className="text-base font-bold text-white">Upload Material</h2>
+              <h2 className="text-xs font-bold uppercase tracking-wider text-white">Upload Material</h2>
             </div>
 
             {uploadError && (
-              <div className="p-3 rounded-xl bg-rose-950/40 border border-rose-800 text-rose-300 text-xs flex items-center gap-2">
+              <div className="p-3 rounded-lg bg-rose-950/40 border border-rose-900 text-rose-300 text-xs flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>{uploadError}</span>
               </div>
@@ -604,26 +589,26 @@ export const WorkspaceDetail = () => {
 
             <form onSubmit={handleUploadSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-[#9f99b0] mb-1.5">
+                <label className="block text-[11px] font-medium text-zinc-400 mb-1.5">
                   Document Type
                 </label>
                 <select
                   value={materialKind}
                   onChange={(e) => setMaterialKind(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#1c1729] border border-[#383050] text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-white focus:outline-none focus:border-zinc-500"
                 >
-                  <option value="syllabus">Syllabus / Curriculum (Recommended First)</option>
+                  <option value="syllabus">Syllabus / Curriculum</option>
                   <option value="notes">Lecture Notes / Summary</option>
                   <option value="slides">Presentation Slides (.pptx)</option>
-                  <option value="book">Textbook / Reference Material</option>
-                  <option value="other">Other Document</option>
+                  <option value="book">Textbook / Reference</option>
+                  <option value="other">Other</option>
                 </select>
               </div>
 
               {/* Dropzone Box */}
               <div
                 onClick={() => fileInputRef.current?.click()}
-                className="border-2 border-dashed border-[#383050] hover:border-indigo-500/60 rounded-2xl p-6 text-center cursor-pointer transition-colors bg-[#1c1729]/40 hover:bg-[#1c1729]/80 space-y-2"
+                className="border border-dashed border-[#27272a] hover:border-zinc-500 rounded-xl p-5 text-center cursor-pointer transition-colors bg-[#09090b] space-y-2"
               >
                 <input
                   ref={fileInputRef}
@@ -633,29 +618,29 @@ export const WorkspaceDetail = () => {
                   onChange={handleFileChange}
                   className="hidden"
                 />
-                <div className="w-10 h-10 rounded-xl bg-indigo-950/70 border border-indigo-800 flex items-center justify-center mx-auto text-indigo-400">
-                  <UploadCloud className="w-5 h-5" />
+                <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto text-zinc-400">
+                  <UploadCloud className="w-4 h-4" />
                 </div>
                 <div>
                   <p className="text-xs font-semibold text-white">
                     Click to browse or drop files
                   </p>
-                  <p className="text-[11px] text-[#9f99b0] mt-0.5">
-                    PDF, DOCX, PPTX, TXT, MD up to 25MB
+                  <p className="text-[10px] text-zinc-500 mt-0.5">
+                    PDF, DOCX, PPTX, TXT up to 25MB
                   </p>
                 </div>
               </div>
 
               {selectedFiles.length > 0 && (
                 <div className="space-y-1.5">
-                  <span className="text-[11px] font-semibold text-[#9f99b0]">
+                  <span className="text-[10px] font-mono uppercase text-zinc-400">
                     Selected ({selectedFiles.length}):
                   </span>
-                  <div className="max-h-28 overflow-y-auto space-y-1 text-xs">
+                  <div className="max-h-28 overflow-y-auto space-y-1 text-xs font-mono">
                     {selectedFiles.map((f, i) => (
                       <div
                         key={i}
-                        className="px-2.5 py-1.5 rounded-lg bg-[#1c1729] border border-[#383050] text-slate-300 truncate"
+                        className="px-2.5 py-1 rounded-md bg-[#0d1117] border border-[#30363d] text-slate-300 truncate"
                       >
                         {f.name} ({(f.size / 1024 / 1024).toFixed(1)} MB)
                       </div>
@@ -667,65 +652,60 @@ export const WorkspaceDetail = () => {
               <button
                 type="submit"
                 disabled={isUploading || selectedFiles.length === 0}
-                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white font-semibold text-xs shadow-md transition-all cursor-pointer"
+                className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-white hover:bg-zinc-200 disabled:opacity-40 text-black font-semibold text-xs transition-colors cursor-pointer"
               >
                 {isUploading ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>Uploading & Queuing...</span>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin text-black" />
+                    <span>Uploading...</span>
                   </>
                 ) : (
-                  <span>Upload & Ingest Chunks</span>
+                  <span>Upload &amp; Ingest</span>
                 )}
               </button>
             </form>
           </div>
 
           {/* Semantic Search Inspector (RAG Testing) */}
-          <div className="p-6 rounded-3xl bg-[#14111f] border border-[#383050] space-y-4 shadow-sm">
+          <div className="p-5 rounded-2xl bg-[#121215] border border-[#27272a] space-y-3.5">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-purple-600/20 border border-purple-500/40 flex items-center justify-center text-purple-400">
+              <div className="w-7 h-7 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-white">
                 <Search className="w-4 h-4" />
               </div>
-              <div>
-                <h2 className="text-base font-bold text-white">RAG Search Test</h2>
-                <p className="text-[11px] text-[#9f99b0]">
-                  Query indexed material chunks
-                </p>
-              </div>
+              <h2 className="text-xs font-bold uppercase tracking-wider text-white">RAG Search Test</h2>
             </div>
 
             <form onSubmit={handleSearch} className="flex gap-2">
               <input
                 type="text"
-                placeholder="Ask or search your notes..."
+                placeholder="Search notes..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1 px-3 py-2 rounded-xl bg-[#1c1729] border border-[#383050] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-purple-500"
+                className="flex-1 px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-500"
               />
               <button
                 type="submit"
                 disabled={isSearching || !searchQuery.trim()}
-                className="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 disabled:opacity-40 text-white text-xs font-semibold shrink-0 cursor-pointer"
+                className="px-3.5 py-1.5 rounded-full bg-white hover:bg-zinc-200 text-black disabled:opacity-40 text-xs font-semibold shrink-0 cursor-pointer transition-colors"
               >
-                {isSearching ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Search'}
+                {isSearching ? <Loader2 className="w-3.5 h-3.5 animate-spin text-black" /> : 'Search'}
               </button>
             </form>
 
             {searchResults && (
-              <div className="space-y-2 pt-2 border-t border-[#251e35] max-h-60 overflow-y-auto">
-                <span className="text-[10px] font-mono font-bold uppercase text-[#9f99b0]">
-                  Top {searchResults.length} Match(es):
+              <div className="space-y-2 pt-2 border-t border-[#27272a] max-h-60 overflow-y-auto">
+                <span className="text-[10px] font-mono font-bold uppercase text-zinc-400">
+                  Matches ({searchResults.length}):
                 </span>
                 {searchResults.length === 0 ? (
-                  <p className="text-xs text-slate-500">No relevant passages found.</p>
+                  <p className="text-xs text-zinc-500">No passages found.</p>
                 ) : (
                   searchResults.map((result, idx) => (
                     <div
                       key={idx}
-                      className="p-2.5 rounded-xl bg-[#1c1729] border border-[#383050] text-[11px] space-y-1"
+                      className="p-2.5 rounded-lg bg-[#18181b] border border-[#27272a] text-[11px] font-mono space-y-1"
                     >
-                      <div className="flex items-center justify-between text-[10px] text-purple-400 font-mono">
+                      <div className="flex items-center justify-between text-[10px] text-zinc-400">
                         <span>
                           {result.location?.page
                             ? `Page ${result.location.page}`
@@ -737,7 +717,7 @@ export const WorkspaceDetail = () => {
                           <span>Score: {(result.score * 100).toFixed(0)}%</span>
                         )}
                       </div>
-                      <p className="text-slate-300 line-clamp-3 leading-snug">
+                      <p className="text-zinc-300 line-clamp-3 leading-snug">
                         {result.text}
                       </p>
                     </div>
@@ -751,47 +731,44 @@ export const WorkspaceDetail = () => {
         {/* Materials Table (Right Column, 2 cols) */}
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-base font-bold text-white flex items-center gap-2">
-              <FileCheck2 className="w-4 h-4 text-indigo-400" />
+            <h2 className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
+              <FileCheck2 className="w-4 h-4 text-zinc-400" />
               <span>Workspace Materials ({materials.length})</span>
             </h2>
           </div>
 
           {materials.length === 0 ? (
-            <div className="p-12 rounded-3xl bg-[#14111f] border border-[#383050] text-center space-y-3">
-              <div className="w-12 h-12 rounded-xl bg-[#1c1729] border border-[#383050] flex items-center justify-center mx-auto text-[#9f99b0]">
-                <FileText className="w-6 h-6" />
+            <div className="p-10 rounded-2xl bg-[#121215] border border-[#27272a] text-center space-y-3 font-mono">
+              <div className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto text-zinc-500">
+                <FileText className="w-5 h-5" />
               </div>
-              <h3 className="text-base font-bold text-white">No materials uploaded yet</h3>
-              <p className="text-xs text-[#9f99b0] max-w-sm mx-auto">
-                Upload your course syllabus, lecture slides, or revision notes on the left. The ingestion engine will automatically extract pages and generate vector embeddings.
-              </p>
+              <h3 className="text-sm font-bold text-white">No materials uploaded yet</h3>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               {materials.map((m) => (
                 <div
                   key={m._id}
-                  className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-2xl bg-[#14111f] border border-[#383050] hover:border-[#483d66] transition-colors"
+                  className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl bg-[#121215] border border-[#27272a] hover:border-zinc-700 transition-colors"
                 >
                   <div className="flex items-start gap-3 min-w-0">
-                    <div className="w-10 h-10 rounded-xl bg-indigo-950/70 border border-indigo-800 flex items-center justify-center text-indigo-400 shrink-0 mt-0.5">
-                      <FileText className="w-5 h-5" />
+                    <div className="w-9 h-9 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300 shrink-0 mt-0.5">
+                      <FileText className="w-4.5 h-4.5" />
                     </div>
                     <div className="space-y-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-sm text-white truncate max-w-xs">
+                        <span className="font-bold text-xs sm:text-sm text-white truncate max-w-xs font-mono">
                           {m.fileName}
                         </span>
-                        <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold uppercase bg-[#1c1729] border border-[#383050] text-slate-300">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase bg-zinc-900 border border-zinc-800 text-zinc-400">
                           {m.kind}
                         </span>
                       </div>
-                      <div className="flex flex-wrap items-center gap-3 text-xs text-[#9f99b0]">
+                      <div className="flex flex-wrap items-center gap-3 text-xs font-mono text-[#8b949e]">
                         <span>{(m.sizeBytes / 1024 / 1024).toFixed(2)} MB</span>
                         {m.pageCount > 0 && <span>• {m.pageCount} pages</span>}
                         {m.chunkCount > 0 && (
-                          <span className="text-purple-400 font-semibold">
+                          <span className="text-zinc-300 font-medium">
                             • {m.chunkCount} chunks
                           </span>
                         )}
@@ -799,22 +776,22 @@ export const WorkspaceDetail = () => {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 self-end sm:self-center shrink-0">
+                  <div className="flex items-center gap-2.5 self-end sm:self-center shrink-0">
                     {/* Status Badge */}
                     {m.status === 'ready' ? (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-950/60 border border-emerald-800 text-emerald-400">
-                        <CheckCircle2 className="w-3.5 h-3.5" /> Ready
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-mono font-bold bg-zinc-900 border border-zinc-800 text-white">
+                        <CheckCircle2 className="w-3 h-3" /> Ready
                       </span>
                     ) : m.status === 'processing' ? (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-indigo-950/60 border border-indigo-800 text-indigo-400">
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" /> Processing
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-mono font-bold bg-zinc-900 border border-zinc-800 text-zinc-400">
+                        <Loader2 className="w-3 h-3 animate-spin" /> Ingesting
                       </span>
                     ) : m.status === 'failed' ? (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-rose-950/60 border border-rose-800 text-rose-400">
-                        <AlertCircle className="w-3.5 h-3.5" /> Failed
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-mono font-bold bg-rose-950/70 border border-rose-800 text-rose-400">
+                        <AlertCircle className="w-3 h-3" /> Failed
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-800 border border-slate-700 text-slate-400">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-mono font-bold bg-zinc-900 border border-zinc-800 text-zinc-500">
                         Pending
                       </span>
                     )}
@@ -826,9 +803,9 @@ export const WorkspaceDetail = () => {
                         }
                       }}
                       title="Delete Material"
-                      className="p-2 rounded-xl text-[#9f99b0] hover:text-rose-400 hover:bg-rose-950/30 transition-colors cursor-pointer"
+                      className="p-1.5 rounded-md text-zinc-500 hover:text-white transition-colors cursor-pointer"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 </div>
@@ -841,95 +818,92 @@ export const WorkspaceDetail = () => {
       {/* Roadmap Setup Modal */}
       {isRoadmapModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-3xl bg-[#14111f] border border-[#383050] p-6 sm:p-8 space-y-6 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-[#251e35] pb-4">
+          <div className="w-full max-w-md rounded-2xl bg-[#121215] border border-[#27272a] p-6 space-y-5 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[#27272a] pb-4">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-indigo-600/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400">
-                  <Compass className="w-5 h-5" />
+                <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-white">
+                  <Compass className="w-4 h-4" />
                 </div>
-                <h2 className="text-lg font-bold text-white">Generate Study Roadmap</h2>
+                <h2 className="text-sm font-bold text-white">Generate Study Roadmap</h2>
               </div>
               <button
                 onClick={() => setIsRoadmapModalOpen(false)}
-                className="text-slate-400 hover:text-white p-1 rounded-lg"
+                className="text-zinc-400 hover:text-white p-1 rounded-md cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
             {roadmapError && (
-              <div className="p-3 rounded-xl bg-rose-950/40 border border-rose-800 text-rose-300 text-xs">
+              <div className="p-3 rounded-lg bg-rose-950/40 border border-rose-900 text-rose-300 text-xs font-mono">
                 {roadmapError}
               </div>
             )}
 
             {roadmapJobId ? (
-              <div className="space-y-4 py-6 text-center">
-                <Loader2 className="w-8 h-8 animate-spin text-indigo-400 mx-auto" />
+              <div className="space-y-4 py-6 text-center font-mono">
+                <Loader2 className="w-6 h-6 animate-spin text-white mx-auto" />
                 <div>
-                  <h3 className="text-sm font-bold text-white">
-                    {roadmapJobProgress?.stage || 'Analyzing syllabus & curriculum materials...'}
+                  <h3 className="text-xs font-bold text-white">
+                    {roadmapJobProgress?.stage || 'Analyzing curriculum materials...'}
                   </h3>
-                  <p className="text-xs text-[#9f99b0] mt-1">
-                    Extracting topics, resolving dependencies, and structuring schedule...
-                  </p>
                 </div>
                 {roadmapJobProgress?.progress && (
-                  <div className="w-full h-2 rounded-full bg-[#1c1729] overflow-hidden">
+                  <div className="w-full h-1.5 rounded-full bg-zinc-900 overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-300 rounded-full"
+                      className="h-full bg-white transition-all duration-300 rounded-full"
                       style={{ width: `${roadmapJobProgress.progress}%` }}
                     />
                   </div>
                 )}
               </div>
             ) : (
-              <form onSubmit={handleGenerateRoadmap} className="space-y-4">
+              <form onSubmit={handleGenerateRoadmap} className="space-y-4 text-xs">
                 <div>
-                  <label className="block text-xs font-semibold text-[#9f99b0] mb-1.5">
+                  <label className="block text-[11px] font-medium text-zinc-400 mb-1.5">
                     Target Preparation Days
                   </label>
                   <select
                     value={roadmapSettings.days}
                     onChange={(e) => setRoadmapSettings({ ...roadmapSettings, days: Number(e.target.value) })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#1c1729] border border-[#383050] text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-white focus:outline-none focus:border-zinc-500"
                   >
-                    <option value={5}>5 Days (Intensive Sprint)</option>
-                    <option value={7}>7 Days (Standard Week)</option>
-                    <option value={10}>10 Days (Comprehensive)</option>
-                    <option value={14}>14 Days (Two-Week In-Depth)</option>
-                    <option value={21}>21 Days (Semester Pace)</option>
+                    <option value={5}>5 Days</option>
+                    <option value={7}>7 Days</option>
+                    <option value={10}>10 Days</option>
+                    <option value={14}>14 Days</option>
+                    <option value={21}>21 Days</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-[#9f99b0] mb-1.5">
+                  <label className="block text-[11px] font-medium text-zinc-400 mb-1.5">
                     Daily Study Commitment
                   </label>
                   <select
                     value={roadmapSettings.hoursPerDay}
                     onChange={(e) => setRoadmapSettings({ ...roadmapSettings, hoursPerDay: Number(e.target.value) })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#1c1729] border border-[#383050] text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-white focus:outline-none focus:border-zinc-500"
                   >
                     <option value={1}>1 hour / day</option>
-                    <option value={2}>2 hours / day (Recommended)</option>
+                    <option value={2}>2 hours / day</option>
                     <option value={3}>3 hours / day</option>
-                    <option value={4}>4+ hours / day (Immersion)</option>
+                    <option value={4}>4+ hours / day</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-[#9f99b0] mb-1.5">
-                    Target Rigor & Level
+                  <label className="block text-[11px] font-medium text-zinc-400 mb-1.5">
+                    Target Level
                   </label>
                   <select
                     value={roadmapSettings.level}
                     onChange={(e) => setRoadmapSettings({ ...roadmapSettings, level: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#1c1729] border border-[#383050] text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-white focus:outline-none focus:border-zinc-500"
                   >
-                    <option value="beginner">Beginner (Foundational explanations & clear pacing)</option>
-                    <option value="intermediate">Intermediate (Standard University / College Level)</option>
-                    <option value="advanced">Advanced (Deep Theoretical Rigor & Problem-Solving)</option>
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
                   </select>
                 </div>
 
@@ -937,15 +911,15 @@ export const WorkspaceDetail = () => {
                   <button
                     type="button"
                     onClick={() => setIsRoadmapModalOpen(false)}
-                    className="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white bg-[#1c1729] border border-[#383050] transition-colors"
+                    className="px-4 py-2 rounded-full text-xs font-medium text-zinc-400 hover:text-white bg-zinc-900 border border-zinc-800 transition-colors cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 transition-all cursor-pointer shadow-md"
+                    className="flex items-center gap-2 px-5 py-2 rounded-full text-xs font-semibold text-black bg-white hover:bg-zinc-200 transition-colors cursor-pointer shadow-sm"
                   >
-                    <Compass className="w-4 h-4" />
+                    <Compass className="w-3.5 h-3.5" />
                     <span>Create Roadmap</span>
                   </button>
                 </div>

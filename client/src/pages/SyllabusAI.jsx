@@ -56,64 +56,57 @@ export const SyllabusAI = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
+    <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
       {/* Header Banner */}
-      <div className="rounded-3xl bg-[#14111f] border border-[#383050] p-8 shadow-xl">
-        <div className="max-w-2xl space-y-2">
-          <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-2">
-            <Sparkles className="w-6 h-6 text-purple-400" />
-            <span>Syllabus-to-Test AI Generator</span>
-          </h1>
-          <p className="text-slate-400 text-sm">
-            Upload your course syllabus PDF or plain text to synthesize a proctored exam.
-          </p>
-        </div>
+      <div className="rounded-2xl bg-[#121215] border border-[#27272a] p-6 shadow-sm">
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+          Quick Quiz
+        </h1>
       </div>
 
       {error && (
-        <div className="p-4 rounded-2xl bg-rose-950/60 border border-rose-800 text-rose-300 text-sm flex items-center gap-3">
-          <AlertCircle className="w-5 h-5 shrink-0 text-rose-400" />
+        <div className="p-3.5 rounded-xl bg-[#18181b] border border-[#27272a] text-zinc-300 text-xs font-mono flex items-center gap-2.5">
+          <AlertCircle className="w-4 h-4 shrink-0 text-zinc-400" />
           <span>{error}</span>
         </div>
       )}
 
       {/* Success Card */}
       {generatedTest ? (
-        <div className="bg-[#14111f] rounded-3xl p-8 border border-emerald-500/30 text-center space-y-6">
-          <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center mx-auto shadow-lg">
-            <CheckCircle2 className="w-8 h-8" />
+        <div className="bg-[#121215] rounded-2xl p-8 border border-[#27272a] text-center space-y-5 shadow-sm">
+          <div className="w-12 h-12 rounded-full bg-white text-black flex items-center justify-center mx-auto shadow-sm">
+            <CheckCircle2 className="w-6 h-6" />
           </div>
           <div>
-            <span className="text-xs font-mono px-3 py-1 rounded-full bg-emerald-950/80 border border-emerald-800 text-emerald-400 uppercase">
-              AI Generation Complete
+            <span className="text-[10px] font-mono px-3 py-1 rounded-full bg-[#18181b] border border-[#27272a] text-zinc-300 uppercase font-semibold">
+              Ready
             </span>
-            <h2 className="text-2xl font-extrabold text-white mt-3">{generatedTest.title}</h2>
-            <p className="text-sm text-slate-400 mt-1 max-w-lg mx-auto">{generatedTest.description}</p>
+            <h2 className="text-lg font-bold text-white mt-3">{generatedTest.title}</h2>
           </div>
 
-          <div className="flex items-center justify-center gap-6 text-xs font-mono text-slate-300 pt-2">
-            <div>Questions: <span className="text-purple-400 font-bold">{generatedTest.totalQuestions}</span></div>
-            <div>Time Limit: <span className="text-amber-400 font-bold">{generatedTest.timeLimitMinutes}m</span></div>
-            <div>Scheme: <span className="text-emerald-400 font-bold">+{generatedTest.markingScheme?.correct} / {generatedTest.markingScheme?.incorrect}</span></div>
+          <div className="flex items-center justify-center gap-5 text-xs font-mono text-zinc-400 pt-1">
+            <div>Questions: <span className="text-white font-semibold">{generatedTest.totalQuestions}</span></div>
+            <div>Time Limit: <span className="text-white font-semibold">{generatedTest.timeLimitMinutes}m</span></div>
+            <div>Scheme: <span className="text-white font-semibold">+{generatedTest.markingScheme?.correct} / {generatedTest.markingScheme?.incorrect}</span></div>
           </div>
 
           <button
             onClick={() => navigate(`/test/${generatedTest._id}`)}
-            className="px-8 py-3.5 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg transition-all inline-flex items-center gap-2"
+            className="px-6 py-2.5 rounded-full font-semibold text-xs bg-white hover:bg-zinc-200 text-black shadow-sm transition-all inline-flex items-center gap-2 cursor-pointer"
           >
-            <span>Start AI Exam Now</span>
-            <Play className="w-4 h-4 fill-current" />
+            <span>Start Exam</span>
+            <Play className="w-3.5 h-3.5 fill-current" />
           </button>
         </div>
       ) : (
         /* Generator Form */
-        <form onSubmit={handleGenerate} className="bg-[#14111f] rounded-3xl p-8 border border-[#383050] space-y-6 shadow-xl">
+        <form onSubmit={handleGenerate} className="bg-[#121215] rounded-2xl p-6 sm:p-8 border border-[#27272a] space-y-5 shadow-sm">
           {/* File Upload Zone */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
-              Upload Syllabus Document (PDF or TXT, Max 5MB)
+            <label className="block text-xs font-mono uppercase tracking-wider text-zinc-400 mb-2">
+              Syllabus Document (PDF or TXT, Max 5MB)
             </label>
-            <div className="relative border-2 border-dashed border-[#383050] hover:border-purple-400 rounded-2xl p-6 text-center transition-colors bg-[#1c1729] group">
+            <div className="relative border border-dashed border-[#27272a] hover:border-zinc-500 rounded-xl p-6 text-center transition-colors bg-[#18181b] group">
               <input
                 type="file"
                 accept=".pdf,.txt,application/pdf,text/plain"
@@ -121,17 +114,16 @@ export const SyllabusAI = () => {
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
               />
               <div className="space-y-2 pointer-events-none">
-                <FileUp className="w-10 h-10 text-slate-500 group-hover:text-purple-400 mx-auto transition-colors" />
+                <FileUp className="w-8 h-8 text-zinc-500 group-hover:text-zinc-300 mx-auto transition-colors" />
                 {file ? (
-                  <p className="text-sm font-semibold text-purple-300 font-mono">
-                    Selected: {file.name} ({(file.size / 1024).toFixed(1)} KB)
+                  <p className="text-xs font-semibold text-white font-mono">
+                    {file.name} ({(file.size / 1024).toFixed(1)} KB)
                   </p>
                 ) : (
                   <>
-                    <p className="text-sm font-medium text-slate-300">
-                      Drag & drop your syllabus PDF / text file here, or click to browse
+                    <p className="text-xs font-medium text-zinc-300">
+                      Drag &amp; drop syllabus PDF / text file here, or click to browse
                     </p>
-                    <p className="text-xs text-slate-500">Supported formats: PDF, TXT</p>
                   </>
                 )}
               </div>
@@ -140,45 +132,45 @@ export const SyllabusAI = () => {
 
           {/* Or Paste Text Option */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
-              Or Paste Syllabus Excerpt Directly
+            <label className="block text-xs font-mono uppercase tracking-wider text-zinc-400 mb-2">
+              Or Paste Syllabus Text
             </label>
             <textarea
               rows={4}
               value={syllabusText}
               onChange={(e) => setSyllabusText(e.target.value)}
-              placeholder="Paste syllabus topics, course modules, or lecture notes..."
-              className="w-full p-4 rounded-xl bg-[#1c1729] border border-[#383050] text-slate-100 text-sm focus:outline-none focus:border-purple-400 transition-colors"
+              placeholder="Paste syllabus topics or notes..."
+              className="w-full p-3 rounded-xl bg-[#18181b] border border-[#27272a] text-white text-xs font-mono focus:outline-none focus:border-zinc-500 transition-colors resize-none"
             />
           </div>
 
           {/* Form Options Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
-                Subject / Topic Title
+              <label className="block text-xs font-mono uppercase tracking-wider text-zinc-400 mb-1.5">
+                Topic Title
               </label>
               <input
                 type="text"
                 value={topicName}
                 onChange={(e) => setTopicName(e.target.value)}
-                placeholder="e.g. Distributed Systems & Microservices"
-                className="w-full px-4 py-3 rounded-xl bg-[#1c1729] border border-[#383050] text-slate-100 text-sm focus:outline-none focus:border-purple-400"
+                placeholder="e.g. Distributed Systems"
+                className="w-full px-3.5 py-2 rounded-xl bg-[#18181b] border border-[#27272a] text-white text-xs font-mono focus:outline-none focus:border-zinc-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
+              <label className="block text-xs font-mono uppercase tracking-wider text-zinc-400 mb-1.5">
                 Number of MCQs
               </label>
               <select
                 value={numQuestions}
                 onChange={(e) => setNumQuestions(parseInt(e.target.value, 10))}
-                className="w-full px-4 py-3 rounded-xl bg-[#1c1729] border border-[#383050] text-slate-100 text-sm focus:outline-none focus:border-purple-400"
+                className="w-full px-3.5 py-2 rounded-xl bg-[#18181b] border border-[#27272a] text-white text-xs font-mono focus:outline-none focus:border-zinc-500 cursor-pointer"
               >
-                <option value={10}>10 Questions (Standard)</option>
+                <option value={10}>10 Questions</option>
                 <option value={12}>12 Questions</option>
-                <option value={15}>15 Questions (Full Exam)</option>
+                <option value={15}>15 Questions</option>
               </select>
             </div>
           </div>
@@ -187,18 +179,15 @@ export const SyllabusAI = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-4 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg transition-colors flex items-center justify-center gap-2"
+              className="w-full py-2.5 rounded-full font-semibold text-xs bg-white hover:bg-zinc-200 text-black shadow-sm transition-colors flex items-center justify-center gap-2 cursor-pointer"
             >
               {loading ? (
                 <>
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  <span>Generating test...</span>
+                  <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                  <span>Synthesizing...</span>
                 </>
               ) : (
-                <>
-                  <Sparkles className="w-5 h-5 text-white" />
-                  <span>Synthesize AI Test Now</span>
-                </>
+                <span>Synthesize Quiz</span>
               )}
             </button>
           </div>

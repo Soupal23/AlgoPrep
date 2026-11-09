@@ -262,9 +262,9 @@ export const DayView = () => {
 
   if (isDayLoading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-slate-400 space-y-3">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-400" />
-        <p className="text-sm font-medium">Loading session material...</p>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-zinc-400 space-y-3">
+        <Loader2 className="w-8 h-8 animate-spin text-white" />
+        <p className="text-xs font-mono text-zinc-400">Loading session...</p>
       </div>
     );
   }
@@ -301,26 +301,26 @@ export const DayView = () => {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <Link
           to={`/workspaces/${dayData.workspaceId}/roadmap`}
-          className="inline-flex items-center gap-2 text-xs font-semibold text-[#9f99b0] hover:text-white transition-colors"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-zinc-400 hover:text-white transition-colors"
         >
-          <ArrowLeft className="w-4 h-4 text-indigo-400" />
-          <span>Back to Study Roadmap</span>
+          <ArrowLeft className="w-4 h-4 text-zinc-400" />
+          <span>Back to Roadmap</span>
         </Link>
 
         {/* Status Actions */}
         <div className="flex items-center gap-2.5">
           {isCompleted ? (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-950/80 border border-emerald-800 text-emerald-300">
-              <CheckCircle2 className="w-4 h-4" /> Completed
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-zinc-900 border border-zinc-800 text-zinc-300">
+              <CheckCircle2 className="w-4 h-4 text-white" /> Completed
             </span>
           ) : (
             <button
               onClick={() => updateStatusMutation.mutate({ status: 'completed' })}
               disabled={updateStatusMutation.isPending}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-all cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs transition-colors cursor-pointer"
             >
               <Check className="w-3.5 h-3.5" />
-              <span>Mark Day Completed</span>
+              <span>Mark Completed</span>
             </button>
           )}
 
@@ -328,43 +328,43 @@ export const DayView = () => {
             onClick={() => regenerateMutation.mutate()}
             disabled={regenerateMutation.isPending || !!activeJobId}
             title="Regenerate Grounded Notes"
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#1c1729] hover:bg-[#251e35] border border-[#383050] text-slate-300 hover:text-white text-xs font-semibold transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 hover:text-white text-xs font-medium transition-colors cursor-pointer"
           >
-            <RotateCcw className={`w-3.5 h-3.5 text-indigo-400 ${regenerateMutation.isPending ? 'animate-spin' : ''}`} />
-            <span className="hidden sm:inline">Regenerate Notes</span>
+            <RotateCcw className={`w-3.5 h-3.5 text-zinc-400 ${regenerateMutation.isPending ? 'animate-spin' : ''}`} />
+            <span className="hidden sm:inline">Regenerate</span>
           </button>
         </div>
       </div>
 
       {/* Main Day Header Banner */}
-      <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-[#383050] bg-[#14111f] shadow-xl space-y-4">
-        <div className="flex flex-wrap items-center gap-2.5">
-          <span className="px-3 py-1 rounded-lg text-xs font-mono font-bold bg-indigo-600/30 border border-indigo-500/50 text-indigo-300">
+      <div className="p-6 sm:p-8 rounded-2xl border border-[#27272a] bg-[#121215] space-y-4">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="px-2.5 py-1 rounded text-xs font-mono font-bold bg-zinc-900 border border-zinc-800 text-white">
             DAY {dayData.dayNumber}
           </span>
-          <span className="px-2.5 py-1 rounded-lg text-xs font-semibold uppercase tracking-wider bg-[#1c1729] border border-[#383050] text-purple-300">
-            {dayData.type} SESSION
+          <span className="px-2.5 py-1 rounded text-xs font-mono uppercase tracking-wider bg-zinc-900 border border-zinc-800 text-zinc-400">
+            {dayData.type}
           </span>
-          <div className="flex items-center gap-1 text-xs text-[#9f99b0] ml-auto">
+          <div className="flex items-center gap-1 text-xs text-zinc-500 font-mono ml-auto">
             <Clock className="w-3.5 h-3.5" />
-            <span>Target: ~{dayData.estMinutes} mins</span>
+            <span>~{dayData.estMinutes}m</span>
           </div>
         </div>
 
-        <h1 className="text-2xl sm:text-3xl font-black text-[#f0eef5] tracking-tight">
+        <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
           {dayData.title}
         </h1>
 
         {/* Objectives Checklist */}
         {dayData.objectives?.length > 0 && (
-          <div className="pt-2 border-t border-[#251e35] space-y-2">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-indigo-400 font-bold">
-              Target Learning Objectives:
+          <div className="pt-2 border-t border-[#27272a] space-y-2">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400 font-semibold">
+              Target Objectives
             </span>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs text-[#9f99b0]">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs text-zinc-300">
               {dayData.objectives.map((obj, i) => (
-                <div key={i} className="flex items-start gap-2 bg-[#1c1729]/60 p-2.5 rounded-xl border border-[#2b243d]">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                <div key={i} className="flex items-start gap-2 bg-[#18181b] p-2.5 rounded-lg border border-[#27272a]">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-zinc-400 shrink-0 mt-0.5" />
                   <span className="leading-relaxed">{obj}</span>
                 </div>
               ))}
@@ -374,43 +374,41 @@ export const DayView = () => {
       </div>
 
       {/* Interactive Tabs Header (Notes | Resources | Test) */}
-      <div className="grid grid-cols-3 gap-2 p-1.5 rounded-2xl bg-[#14111f] border border-[#383050]">
+      <div className="flex items-center gap-1 p-1 rounded-full bg-[#121215] border border-[#27272a] max-w-md">
         <button
           onClick={() => setActiveTab('notes')}
-          className={`py-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer ${
+          className={`flex-1 py-1.5 rounded-full text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${
             activeTab === 'notes'
-              ? 'bg-indigo-600 text-white shadow-lg'
-              : 'text-[#9f99b0] hover:text-white'
+              ? 'bg-white text-black shadow-sm'
+              : 'text-zinc-400 hover:text-white'
           }`}
         >
-          <BookOpen className="w-4 h-4" />
-          <span>Grounded Notes</span>
+          <BookOpen className="w-3.5 h-3.5" />
+          <span>Notes</span>
         </button>
 
         <button
           onClick={() => setActiveTab('resources')}
-          className={`py-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer ${
+          className={`flex-1 py-1.5 rounded-full text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${
             activeTab === 'resources'
-              ? 'bg-indigo-600 text-white shadow-lg'
-              : 'text-[#9f99b0] hover:text-white'
+              ? 'bg-white text-black shadow-sm'
+              : 'text-zinc-400 hover:text-white'
           }`}
         >
-          <Video className="w-4 h-4" />
-          <span>Curated Resources</span>
-          <span className="hidden sm:inline px-1.5 py-0.5 rounded text-[10px] bg-purple-950 border border-purple-800 text-purple-300">P6</span>
+          <Video className="w-3.5 h-3.5" />
+          <span>Resources</span>
         </button>
 
         <button
           onClick={() => setActiveTab('test')}
-          className={`py-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer ${
+          className={`flex-1 py-1.5 rounded-full text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${
             activeTab === 'test'
-              ? 'bg-indigo-600 text-white shadow-lg'
-              : 'text-[#9f99b0] hover:text-white'
+              ? 'bg-white text-black shadow-sm'
+              : 'text-zinc-400 hover:text-white'
           }`}
         >
-          <ClipboardList className="w-4 h-4" />
-          <span>Daily Quiz</span>
-          <span className="hidden sm:inline px-1.5 py-0.5 rounded text-[10px] bg-amber-950 border border-amber-800 text-amber-300">P7</span>
+          <ClipboardList className="w-3.5 h-3.5" />
+          <span>Quiz</span>
         </button>
       </div>
 
@@ -419,27 +417,23 @@ export const DayView = () => {
         <div className="space-y-8">
           {/* Generation Progress Banner */}
           {isGenerating && (
-            <div className="p-6 rounded-3xl bg-[#1c1729] border border-indigo-500/40 shadow-xl space-y-4">
+            <div className="p-6 rounded-2xl bg-[#121215] border border-[#27272a] space-y-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-sm font-bold text-indigo-300">
-                  <Sparkles className="w-4 h-4 text-indigo-400 animate-spin" />
-                  <span>Synthesizing Grounded Notes from Course Materials...</span>
+                <div className="flex items-center gap-2 text-sm font-semibold text-white">
+                  <Loader2 className="w-4 h-4 animate-spin text-white" />
+                  <span>Generating Study Notes...</span>
                 </div>
-                <span className="font-mono text-xs font-bold text-indigo-400">
+                <span className="font-mono text-xs font-bold text-white">
                   {jobProgress?.progress || 35}%
                 </span>
               </div>
 
-              <div className="w-full h-2 rounded-full bg-[#14111f] overflow-hidden">
+              <div className="w-full h-1.5 rounded-full bg-zinc-900 overflow-hidden">
                 <div
-                  className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-300 rounded-full"
+                  className="h-full bg-white transition-all duration-300 rounded-full"
                   style={{ width: `${jobProgress?.progress || 35}%` }}
                 />
               </div>
-
-              <p className="text-xs text-[#9f99b0] font-mono">
-                {jobProgress?.stage || 'Cross-referencing textbook passages, extracting citations and equations...'}
-              </p>
             </div>
           )}
 
@@ -448,15 +442,15 @@ export const DayView = () => {
             <>
               {/* Quick Summary / Key Takeaways Callout */}
               {notesData.keyPoints?.length > 0 && (
-                <div className="p-6 rounded-3xl bg-[#14111f] border border-emerald-900/60 shadow-lg space-y-3">
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-2">
-                    <Lightbulb className="w-4 h-4" />
-                    <span>High-Yield Key Takeaways</span>
+                <div className="p-6 rounded-2xl bg-[#121215] border border-[#27272a] space-y-3">
+                  <h3 className="text-xs font-mono uppercase tracking-wider text-zinc-400 flex items-center gap-2">
+                    <Lightbulb className="w-4 h-4 text-white" />
+                    <span>Key Takeaways</span>
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-slate-300">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-zinc-300">
                     {notesData.keyPoints.map((point, idx) => (
-                      <div key={idx} className="flex items-start gap-2 bg-[#1c1729]/80 p-3 rounded-2xl border border-[#2b243d]">
-                        <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                      <div key={idx} className="flex items-start gap-2 bg-[#18181b] p-3 rounded-xl border border-[#27272a]">
+                        <Check className="w-4 h-4 text-white shrink-0 mt-0.5" />
                         <span className="leading-relaxed">{point}</span>
                       </div>
                     ))}
@@ -469,61 +463,61 @@ export const DayView = () => {
                 {notesData.sections?.map((section, idx) => (
                   <article
                     key={idx}
-                    className="p-6 sm:p-8 rounded-3xl bg-[#14111f] border border-[#383050] shadow-xl space-y-5"
+                    className="p-6 sm:p-8 rounded-2xl bg-[#121215] border border-[#27272a] space-y-5"
                   >
                     {/* Section Top Header & Beyond Materials Alert */}
-                    <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#251e35]">
+                    <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#27272a]">
                       <div className="space-y-1">
-                        <span className="text-[11px] font-mono text-indigo-400 uppercase tracking-wider">
+                        <span className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">
                           Module {idx + 1}
                         </span>
-                        <h2 className="text-xl font-bold text-white tracking-tight">
+                        <h2 className="text-lg font-bold text-white tracking-tight">
                           {section.heading}
                         </h2>
                       </div>
 
                       {section.isBeyondMaterials && (
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium bg-amber-950/60 border border-amber-800 text-amber-300">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-mono bg-zinc-900 border border-zinc-800 text-zinc-400">
                           <AlertCircle className="w-3.5 h-3.5" />
-                          <span>Supplemented Theory (Beyond Materials)</span>
+                          <span>Supplemented Theory</span>
                         </span>
                       )}
                     </div>
 
                     {/* Markdown Body */}
-                    <div className="prose prose-invert prose-indigo max-w-none text-xs sm:text-sm text-slate-300 leading-relaxed space-y-4">
+                    <div className="prose prose-invert max-w-none text-xs sm:text-sm text-zinc-300 leading-relaxed space-y-4">
                       <ReactMarkdown
                         remarkPlugins={[remarkGfm]}
                         components={{
                           h1: ({ children }) => <h1 className="text-xl font-bold text-white mt-4 mb-2">{children}</h1>,
-                          h2: ({ children }) => <h2 className="text-lg font-bold text-indigo-200 mt-4 mb-2">{children}</h2>,
-                          h3: ({ children }) => <h3 className="text-base font-semibold text-white mt-3 mb-1.5">{children}</h3>,
+                          h2: ({ children }) => <h2 className="text-base font-bold text-white mt-4 mb-2">{children}</h2>,
+                          h3: ({ children }) => <h3 className="text-sm font-semibold text-zinc-200 mt-3 mb-1.5">{children}</h3>,
                           p: ({ children }) => <p className="leading-relaxed mb-3">{children}</p>,
                           ul: ({ children }) => <ul className="list-disc pl-5 space-y-1 mb-3">{children}</ul>,
                           ol: ({ children }) => <ol className="list-decimal pl-5 space-y-1 mb-3">{children}</ol>,
                           li: ({ children }) => <li className="leading-relaxed">{children}</li>,
                           table: ({ children }) => (
-                            <div className="overflow-x-auto my-5 rounded-2xl border border-[#383050] bg-[#14111f] shadow-xl">
-                              <table className="w-full text-left text-xs border-collapse divide-y divide-[#251e35]">{children}</table>
+                            <div className="overflow-x-auto my-5 rounded-xl border border-[#27272a] bg-[#09090b]">
+                              <table className="w-full text-left text-xs border-collapse divide-y divide-[#27272a]">{children}</table>
                             </div>
                           ),
-                          thead: ({ children }) => <thead className="bg-[#1c1729] text-indigo-300 font-mono text-[11px] uppercase tracking-wider">{children}</thead>,
-                          tbody: ({ children }) => <tbody className="divide-y divide-[#251e35] bg-[#14111f]/60">{children}</tbody>,
-                          tr: ({ children }) => <tr className="hover:bg-white/[0.02] transition-colors">{children}</tr>,
-                          th: ({ children }) => <th className="px-4 py-3 font-bold border-b border-[#383050] text-indigo-200">{children}</th>,
-                          td: ({ children }) => <td className="px-4 py-3 text-slate-300 leading-relaxed align-top">{children}</td>,
+                          thead: ({ children }) => <thead className="bg-[#121215] text-zinc-300 font-mono text-[11px] uppercase tracking-wider">{children}</thead>,
+                          tbody: ({ children }) => <tbody className="divide-y divide-[#27272a] bg-[#09090b]">{children}</tbody>,
+                          tr: ({ children }) => <tr className="hover:bg-zinc-900/40 transition-colors">{children}</tr>,
+                          th: ({ children }) => <th className="px-4 py-3 font-semibold border-b border-[#27272a] text-zinc-300">{children}</th>,
+                          td: ({ children }) => <td className="px-4 py-3 text-zinc-300 leading-relaxed align-top">{children}</td>,
                           code: ({ inline, children }) =>
                             inline ? (
-                              <code className="px-1.5 py-0.5 rounded bg-[#1c1729] border border-[#383050] font-mono text-indigo-300 text-[12px]">
+                              <code className="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 font-mono text-zinc-200 text-[12px]">
                                 {children}
                               </code>
                             ) : (
-                              <pre className="p-4 rounded-2xl bg-[#0a0a0f] border border-[#2b243d] overflow-x-auto text-[12px] font-mono text-indigo-200">
+                              <pre className="p-4 rounded-xl bg-[#09090b] border border-zinc-800 overflow-x-auto text-[12px] font-mono text-zinc-200">
                                 <code>{children}</code>
                               </pre>
                             ),
                           blockquote: ({ children }) => (
-                            <blockquote className="border-l-4 border-indigo-500 pl-4 py-1 italic bg-[#1c1729]/50 rounded-r-xl text-slate-300 my-3">
+                            <blockquote className="border-l-2 border-white pl-4 py-1 italic bg-zinc-900/30 text-zinc-300 my-3">
                               {children}
                             </blockquote>
                           )
@@ -540,22 +534,22 @@ export const DayView = () => {
 
                     {/* Verified Course Citations Chips */}
                     {section.citations?.length > 0 && (
-                      <div className="pt-4 border-t border-[#251e35] space-y-2">
-                        <span className="text-[11px] font-mono uppercase tracking-wider text-[#9f99b0] flex items-center gap-1.5">
-                          <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                          <span>Grounded Source Citations in your Materials:</span>
+                      <div className="pt-4 border-t border-[#27272a] space-y-2">
+                        <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+                          <ShieldCheck className="w-3.5 h-3.5 text-white" />
+                          <span>Grounded Source Citations:</span>
                         </span>
                         <div className="flex flex-wrap gap-2">
                           {section.citations.map((cite, cIdx) => (
                             <button
                               key={cIdx}
                               onClick={() => setActiveCitation(cite)}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#1c1729] hover:bg-[#251e35] border border-[#383050] hover:border-indigo-500 text-indigo-300 transition-all cursor-pointer shadow-sm"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 text-zinc-300 transition-colors cursor-pointer"
                             >
-                              <span className="font-mono text-indigo-400 font-bold">[{cite.citationId}]</span>
+                              <span className="text-white font-bold">[{cite.citationId}]</span>
                               <span>{cite.materialName}</span>
                               {(cite.location?.page || cite.location?.slide) && (
-                                <span className="text-[10px] text-[#9f99b0]">
+                                <span className="text-[10px] text-zinc-500">
                                   ({cite.location.page ? `p. ${cite.location.page}` : `slide ${cite.location.slide}`})
                                 </span>
                               )}
@@ -570,31 +564,28 @@ export const DayView = () => {
 
               {/* Active Recall Flashcards Deck */}
               {flashcards.length > 0 && (
-                <div className="p-6 sm:p-8 rounded-3xl bg-[#14111f] border border-[#383050] shadow-xl space-y-4">
+                <div className="p-6 sm:p-8 rounded-2xl bg-[#121215] border border-[#27272a] space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-base font-bold text-white flex items-center gap-2">
-                      <Layers className="w-5 h-5 text-purple-400" />
+                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                      <Layers className="w-4 h-4 text-zinc-400" />
                       <span>Active Recall Flashcards ({flashcards.length})</span>
                     </h3>
-                    <span className="font-mono text-xs text-[#9f99b0]">
-                      Card {currentCardIdx + 1} of {flashcards.length}
+                    <span className="font-mono text-xs text-zinc-500">
+                      {currentCardIdx + 1} / {flashcards.length}
                     </span>
                   </div>
 
                   {/* Card Surface */}
                   <div
                     onClick={() => setIsFlipped(!isFlipped)}
-                    className="min-h-[180px] p-8 rounded-3xl bg-gradient-to-br from-[#1c1729] to-[#14111f] border border-purple-500/40 hover:border-purple-400 transition-all flex flex-col items-center justify-center text-center cursor-pointer shadow-lg space-y-3"
+                    className="min-h-[160px] p-8 rounded-xl bg-[#18181b] border border-[#27272a] hover:border-zinc-700 transition-colors flex flex-col items-center justify-center text-center cursor-pointer space-y-3"
                   >
-                    <span className="text-[11px] font-mono uppercase tracking-wider text-purple-400 font-bold">
-                      {isFlipped ? 'Answer / Invariant:' : 'Question (Click to reveal):'}
+                    <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400 font-medium">
+                      {isFlipped ? 'Answer:' : 'Question (Click to reveal):'}
                     </span>
-                    <p className="text-base sm:text-lg font-bold text-white max-w-xl leading-relaxed">
+                    <p className="text-base font-bold text-white max-w-xl leading-relaxed">
                       {isFlipped ? (flashcards[currentCardIdx]?.back || '') : (flashcards[currentCardIdx]?.front || '')}
                     </p>
-                    <span className="text-[11px] text-[#9f99b0] italic">
-                      {isFlipped ? 'Click again to view question' : 'Click card to flip'}
-                    </span>
                   </div>
 
                   {/* Flashcard Navigation Controls */}
@@ -605,7 +596,7 @@ export const DayView = () => {
                         setCurrentCardIdx((prev) => Math.max(0, prev - 1));
                       }}
                       disabled={currentCardIdx === 0}
-                      className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#1c1729] hover:bg-[#251e35] disabled:opacity-40 border border-[#383050] text-xs font-semibold text-white transition-colors cursor-pointer"
+                      className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-zinc-900 hover:bg-zinc-800 disabled:opacity-40 border border-zinc-800 text-xs font-medium text-white transition-colors cursor-pointer"
                     >
                       <ChevronLeft className="w-4 h-4" /> Previous
                     </button>
@@ -614,8 +605,8 @@ export const DayView = () => {
                       {flashcards.map((_, i) => (
                         <div
                           key={i}
-                          className={`w-2 h-2 rounded-full transition-all ${
-                            i === currentCardIdx ? 'w-5 bg-purple-400' : 'bg-[#2b243d]'
+                          className={`w-1.5 h-1.5 rounded-full transition-all ${
+                            i === currentCardIdx ? 'w-4 bg-white' : 'bg-zinc-800'
                           }`}
                         />
                       ))}
@@ -627,7 +618,7 @@ export const DayView = () => {
                         setCurrentCardIdx((prev) => Math.min(flashcards.length - 1, prev + 1));
                       }}
                       disabled={currentCardIdx === flashcards.length - 1}
-                      className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#1c1729] hover:bg-[#251e35] disabled:opacity-40 border border-[#383050] text-xs font-semibold text-white transition-colors cursor-pointer"
+                      className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-zinc-900 hover:bg-zinc-800 disabled:opacity-40 border border-zinc-800 text-xs font-medium text-white transition-colors cursor-pointer"
                     >
                       Next <ChevronRight className="w-4 h-4" />
                     </button>
@@ -636,21 +627,16 @@ export const DayView = () => {
               )}
 
               {/* Bottom Actions: Mark Notes Read */}
-              <div className="flex flex-wrap items-center justify-between gap-4 p-6 rounded-3xl bg-[#14111f] border border-[#383050]">
-                <div className="space-y-1">
-                  <h4 className="text-sm font-bold text-white">Finished reading today's notes?</h4>
-                  <p className="text-xs text-[#9f99b0]">
-                    Marking notes as read updates your roadmap progress and unlocks review checkpoints.
-                  </p>
-                </div>
+              <div className="flex flex-wrap items-center justify-between gap-4 p-6 rounded-2xl bg-[#121215] border border-[#27272a]">
+                <h4 className="text-sm font-bold text-white">Finished reading today's notes?</h4>
 
                 <button
                   onClick={() => markReadMutation.mutate()}
                   disabled={markReadMutation.isPending || notesData.readStatus}
-                  className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs shadow-md transition-all cursor-pointer ${
+                  className={`flex items-center gap-2 px-5 py-2 rounded-full font-semibold text-xs transition-colors cursor-pointer ${
                     notesData.readStatus
-                      ? 'bg-emerald-950/80 border border-emerald-800 text-emerald-300'
-                      : 'bg-indigo-600 hover:bg-indigo-500 text-white'
+                      ? 'bg-zinc-900 border border-zinc-800 text-zinc-300'
+                      : 'bg-white hover:bg-zinc-200 text-black'
                   }`}
                 >
                   <Bookmark className="w-4 h-4" />
@@ -664,29 +650,26 @@ export const DayView = () => {
 
       {/* TAB 2: CURATED RESOURCES (Phase 6) */}
       {activeTab === 'resources' && (
-        <div className="space-y-8 animate-fadeIn">
+        <div className="space-y-6">
           {/* Header & Controls */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-3xl bg-[#14111f] border border-[#383050]">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-2xl bg-[#121215] border border-[#27272a]">
             <div>
-              <h2 className="text-lg font-black text-white flex items-center gap-2">
-                <Video className="w-5 h-5 text-purple-400" />
-                <span>Curated Educational Resources</span>
+              <h2 className="text-base font-bold text-white flex items-center gap-2">
+                <Video className="w-4 h-4 text-zinc-400" />
+                <span>Curated Resources</span>
               </h2>
-              <p className="text-xs text-[#9f99b0] mt-1">
-                Authoritative video walkthroughs, encyclopedic references, web docs, and academic papers ranked for Day {dayData.dayNumber}.
-              </p>
             </div>
 
             <div className="flex items-center gap-3">
               <button
                 onClick={() => regenerateResourcesMutation.mutate()}
                 disabled={regenerateResourcesMutation.isPending || activeJobId}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#1c1729] hover:bg-[#251e35] disabled:opacity-50 border border-[#383050] text-xs font-semibold text-[#9f99b0] hover:text-white transition-all cursor-pointer shadow-sm"
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-900 hover:bg-zinc-800 disabled:opacity-50 border border-zinc-800 text-xs font-medium text-zinc-300 hover:text-white transition-colors cursor-pointer"
               >
                 {regenerateResourcesMutation.isPending || activeJobId ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin text-purple-400" />
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
                 ) : (
-                  <RotateCcw className="w-3.5 h-3.5 text-purple-400" />
+                  <RotateCcw className="w-3.5 h-3.5" />
                 )}
                 <span>{regenerateResourcesMutation.isPending || activeJobId ? 'Curating...' : 'Refresh Resources'}</span>
               </button>
@@ -695,28 +678,25 @@ export const DayView = () => {
 
           {/* Progress Banner during Live Generation */}
           {(activeJobId || isResourcesLoading) && (
-            <div className="p-8 rounded-3xl bg-purple-950/20 border border-purple-500/30 text-center space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-purple-600/20 border border-purple-500/40 flex items-center justify-center mx-auto text-purple-400">
-                <Loader2 className="w-6 h-6 animate-spin" />
+            <div className="p-8 rounded-2xl bg-[#121215] border border-[#27272a] text-center space-y-4">
+              <div className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto text-white">
+                <Loader2 className="w-5 h-5 animate-spin" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-base font-bold text-white">
+                <h3 className="text-sm font-bold text-white">
                   {jobProgress?.stage || 'Curating & Ranking Multi-Source Resources...'}
                 </h3>
-                <p className="text-xs text-[#9f99b0]">
-                  Querying YouTube, Wikipedia, Developer Guides, and arXiv with two-stage semantic ranking.
-                </p>
               </div>
 
               {jobProgress && (
                 <div className="w-full max-w-md mx-auto space-y-1">
-                  <div className="w-full bg-[#1c1729] h-2 rounded-full overflow-hidden border border-[#383050]">
+                  <div className="w-full bg-zinc-900 h-1.5 rounded-full overflow-hidden">
                     <div
-                      className="bg-gradient-to-r from-purple-500 to-indigo-500 h-full transition-all duration-300 rounded-full"
+                      className="bg-white h-full transition-all duration-300 rounded-full"
                       style={{ width: `${jobProgress.progress || 20}%` }}
                     />
                   </div>
-                  <div className="flex justify-between text-[11px] font-mono text-[#9f99b0]">
+                  <div className="flex justify-between text-[11px] font-mono text-zinc-500">
                     <span>{jobProgress.stage}</span>
                     <span>{jobProgress.progress}%</span>
                   </div>
@@ -729,24 +709,21 @@ export const DayView = () => {
           {!activeJobId && !isResourcesLoading && (
             <>
               {(!resourcesData || resourcesData.length === 0) ? (
-                <div className="p-12 rounded-3xl bg-[#14111f] border border-[#383050] text-center space-y-4">
-                  <div className="w-12 h-12 rounded-2xl bg-purple-600/20 border border-purple-500/40 flex items-center justify-center mx-auto text-purple-400">
-                    <Video className="w-6 h-6" />
+                <div className="p-10 rounded-2xl bg-[#121215] border border-[#27272a] text-center space-y-4">
+                  <div className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto text-zinc-400">
+                    <Video className="w-5 h-5" />
                   </div>
-                  <h3 className="text-base font-bold text-white">No Curated Resources Yet</h3>
-                  <p className="text-xs text-[#9f99b0] max-w-sm mx-auto">
-                    Click below to discover and rank top YouTube tutorials, documentation, and papers for Day {dayData.dayNumber}.
-                  </p>
+                  <h3 className="text-base font-bold text-white">No Resources Curated Yet</h3>
                   <button
                     onClick={() => regenerateResourcesMutation.mutate()}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow-md transition-all cursor-pointer"
+                    className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs transition-colors cursor-pointer"
                   >
                     <Sparkles className="w-4 h-4" />
                     <span>Curate Resources Now</span>
                   </button>
                 </div>
               ) : (
-                <div className="space-y-10">
+                <div className="space-y-8">
                   {Object.entries(
                     resourcesData.reduce((acc, curr) => {
                       const topic = curr.topicTitle || curr.topicKey || 'General Resources';
@@ -755,12 +732,11 @@ export const DayView = () => {
                       return acc;
                     }, {})
                   ).map(([topicTitle, items]) => (
-                    <div key={topicTitle} className="space-y-4">
+                    <div key={topicTitle} className="space-y-3">
                       {/* Topic Section Header */}
-                      <div className="flex items-center gap-3">
-                        <div className="h-4 w-1 bg-purple-400 rounded-full" />
-                        <h3 className="text-base font-extrabold text-white">{topicTitle}</h3>
-                        <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-[#1c1729] border border-[#383050] text-[#9f99b0]">
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-sm font-bold text-white">{topicTitle}</h3>
+                        <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-500">
                           {items.length} {items.length === 1 ? 'Resource' : 'Resources'}
                         </span>
                       </div>
@@ -774,27 +750,27 @@ export const DayView = () => {
                           const sourceConfig = {
                             youtube: {
                               label: 'YouTube',
-                              color: 'text-red-400 bg-red-500/10 border-red-500/30',
+                              color: 'text-zinc-200 bg-zinc-900 border-zinc-800',
                               icon: PlayCircle
                             },
                             wikipedia: {
                               label: 'Wikipedia',
-                              color: 'text-sky-400 bg-sky-500/10 border-sky-500/30',
+                              color: 'text-zinc-200 bg-zinc-900 border-zinc-800',
                               icon: BookOpen
                             },
                             arxiv: {
                               label: 'arXiv Paper',
-                              color: 'text-purple-400 bg-purple-500/10 border-purple-500/30',
+                              color: 'text-zinc-200 bg-zinc-900 border-zinc-800',
                               icon: GraduationCap
                             },
                             web: {
                               label: 'Documentation',
-                              color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30',
+                              color: 'text-zinc-200 bg-zinc-900 border-zinc-800',
                               icon: Globe
                             }
                           }[res.source] || {
                             label: 'External',
-                            color: 'text-slate-400 bg-slate-500/10 border-slate-500/30',
+                            color: 'text-zinc-400 bg-zinc-900 border-zinc-800',
                             icon: Globe
                           };
 
@@ -803,32 +779,32 @@ export const DayView = () => {
                           return (
                             <div
                               key={item._id}
-                              className={`p-5 rounded-3xl bg-[#14111f] border transition-all flex flex-col justify-between space-y-4 ${
+                              className={`p-5 rounded-2xl bg-[#121215] border transition-all flex flex-col justify-between space-y-4 ${
                                 feedback.watched
-                                  ? 'border-emerald-500/30 bg-emerald-950/5'
-                                  : 'border-[#383050] hover:border-purple-500/40'
+                                  ? 'border-zinc-700 bg-[#151519]'
+                                  : 'border-[#27272a] hover:border-zinc-700'
                               }`}
                             >
                               <div className="space-y-3">
                                 {/* Card Header: Source Badge + Score */}
                                 <div className="flex items-center justify-between gap-2">
                                   <span
-                                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border ${sourceConfig.color}`}
+                                    className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-[11px] font-mono border ${sourceConfig.color}`}
                                   >
                                     <SourceIcon className="w-3.5 h-3.5" />
                                     <span>{sourceConfig.label}</span>
                                   </span>
 
                                   {item.finalScore ? (
-                                    <span className="text-[11px] font-mono font-bold text-purple-300 bg-purple-900/30 px-2 py-0.5 rounded-md border border-purple-800/40">
-                                      Match {item.finalScore}%
+                                    <span className="text-[11px] font-mono font-medium text-zinc-400 bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800">
+                                      {item.finalScore}%
                                     </span>
                                   ) : null}
                                 </div>
 
                                 {/* Thumbnail for YouTube if available */}
                                 {res.thumbnail && (
-                                  <div className="relative aspect-video rounded-2xl overflow-hidden bg-black/40 border border-[#383050] group">
+                                  <div className="relative aspect-video rounded-xl overflow-hidden bg-black border border-[#27272a] group">
                                     <img
                                       src={res.thumbnail}
                                       alt={res.title}
@@ -836,7 +812,7 @@ export const DayView = () => {
                                       loading="lazy"
                                     />
                                     {res.durationSec && (
-                                      <span className="absolute bottom-2 right-2 px-2 py-0.5 rounded-md bg-black/80 backdrop-blur-sm text-[10px] font-mono text-white font-bold">
+                                      <span className="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-black/80 text-[10px] font-mono text-white">
                                         {Math.floor(res.durationSec / 60)}:
                                         {String(res.durationSec % 60).padStart(2, '0')}
                                       </span>
@@ -850,36 +826,36 @@ export const DayView = () => {
                                     href={res.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-sm font-bold text-white hover:text-purple-300 transition-colors line-clamp-2 inline-flex items-start gap-1 group"
+                                    className="text-sm font-bold text-white hover:underline transition-all line-clamp-2 inline-flex items-start gap-1 group"
                                   >
                                     <span>{res.title}</span>
-                                    <ExternalLink className="w-3.5 h-3.5 text-[#9f99b0] group-hover:text-purple-300 shrink-0 mt-0.5" />
+                                    <ExternalLink className="w-3.5 h-3.5 text-zinc-500 shrink-0 mt-0.5" />
                                   </a>
                                   {res.authorOrChannel && (
-                                    <p className="text-[11px] text-[#9f99b0] mt-0.5">
-                                      by <span className="text-slate-300 font-medium">{res.authorOrChannel}</span>
+                                    <p className="text-[11px] text-zinc-500 mt-0.5">
+                                      by <span className="text-zinc-400 font-medium">{res.authorOrChannel}</span>
                                     </p>
                                   )}
                                 </div>
 
                                 {/* Why Recommended Callout */}
                                 {item.whyRecommended && (
-                                  <div className="p-3 rounded-2xl bg-purple-950/20 border border-purple-900/40 flex items-start gap-2 text-xs text-purple-200/90 leading-relaxed">
-                                    <Sparkles className="w-3.5 h-3.5 text-purple-400 shrink-0 mt-0.5" />
+                                  <div className="p-3 rounded-xl bg-[#18181b] border border-[#27272a] flex items-start gap-2 text-xs text-zinc-300 leading-relaxed">
+                                    <Sparkles className="w-3.5 h-3.5 text-zinc-400 shrink-0 mt-0.5" />
                                     <span>{item.whyRecommended}</span>
                                   </div>
                                 )}
 
                                 {/* Description */}
                                 {res.description && (
-                                  <p className="text-xs text-[#9f99b0] line-clamp-3 leading-relaxed">
+                                  <p className="text-xs text-zinc-400 line-clamp-3 leading-relaxed">
                                     {res.description}
                                   </p>
                                 )}
                               </div>
 
                               {/* Card Footer: Watched Checkbox + Thumbs Feedback */}
-                              <div className="pt-3 border-t border-[#252033] flex items-center justify-between text-xs">
+                              <div className="pt-3 border-t border-[#27272a] flex items-center justify-between text-xs">
                                 <button
                                   onClick={() =>
                                     feedbackMutation.mutate({
@@ -887,16 +863,16 @@ export const DayView = () => {
                                       watched: !feedback.watched
                                     })
                                   }
-                                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl transition-all cursor-pointer font-medium ${
+                                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-colors cursor-pointer text-xs font-medium ${
                                     feedback.watched
-                                      ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/30'
-                                      : 'text-[#9f99b0] hover:text-white bg-[#1c1729] border border-[#383050]'
+                                      ? 'text-white bg-zinc-800 border border-zinc-700'
+                                      : 'text-zinc-400 hover:text-white bg-zinc-900 border border-zinc-800'
                                   }`}
                                 >
                                   {feedback.watched ? (
-                                    <CheckSquare className="w-4 h-4 text-emerald-400" />
+                                    <CheckSquare className="w-3.5 h-3.5 text-white" />
                                   ) : (
-                                    <Square className="w-4 h-4 text-[#9f99b0]" />
+                                    <Square className="w-3.5 h-3.5 text-zinc-500" />
                                   )}
                                   <span>{feedback.watched ? 'Watched' : 'Mark as Watched'}</span>
                                 </button>
@@ -910,10 +886,10 @@ export const DayView = () => {
                                       })
                                     }
                                     title="Helpful"
-                                    className={`p-1.5 rounded-lg border transition-all cursor-pointer ${
+                                    className={`p-1.5 rounded-md border transition-colors cursor-pointer ${
                                       feedback.helpful === true
-                                        ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
-                                        : 'bg-[#1c1729] border-[#383050] text-[#9f99b0] hover:text-white'
+                                        ? 'bg-white text-black border-white'
+                                        : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white'
                                     }`}
                                   >
                                     <ThumbsUp className="w-3.5 h-3.5" />
@@ -926,10 +902,10 @@ export const DayView = () => {
                                       })
                                     }
                                     title="Not Helpful"
-                                    className={`p-1.5 rounded-lg border transition-all cursor-pointer ${
+                                    className={`p-1.5 rounded-md border transition-colors cursor-pointer ${
                                       feedback.helpful === false
-                                        ? 'bg-rose-500/20 border-rose-500/40 text-rose-300'
-                                        : 'bg-[#1c1729] border-[#383050] text-[#9f99b0] hover:text-white'
+                                        ? 'bg-zinc-800 text-white border-zinc-700'
+                                        : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white'
                                     }`}
                                   >
                                     <ThumbsDown className="w-3.5 h-3.5" />
@@ -951,59 +927,51 @@ export const DayView = () => {
 
       {/* TAB 3: DAILY CBT DIAGNOSTIC TEST (Phase 7) */}
       {activeTab === 'test' && (
-        <div className="space-y-8 animate-fadeIn">
+        <div className="space-y-6">
           {/* Header & Controls */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-3xl bg-[#14111f] border border-[#383050]">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-2xl bg-[#121215] border border-[#27272a]">
             <div>
-              <h2 className="text-lg font-black text-white flex items-center gap-2">
-                <ClipboardList className="w-5 h-5 text-amber-400" />
-                <span>Day {dayData.dayNumber} Concept Examination</span>
+              <h2 className="text-base font-bold text-white flex items-center gap-2">
+                <ClipboardList className="w-4 h-4 text-zinc-400" />
+                <span>Day {dayData.dayNumber} Test</span>
               </h2>
-              <p className="text-xs text-[#9f99b0] mt-1">
-                Grounded multiple-choice diagnostic test covering today's concepts with positive and negative marking.
-              </p>
             </div>
 
             <div className="flex items-center gap-3">
               <button
                 onClick={() => generateTestMutation.mutate()}
                 disabled={generateTestMutation.isPending || activeJobId}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#1c1729] hover:bg-[#251e35] disabled:opacity-50 border border-[#383050] text-xs font-semibold text-[#9f99b0] hover:text-white transition-all cursor-pointer shadow-sm"
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-900 hover:bg-zinc-800 disabled:opacity-50 border border-zinc-800 text-xs font-medium text-zinc-300 hover:text-white transition-colors cursor-pointer"
               >
                 {generateTestMutation.isPending || activeJobId ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-400" />
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
                 ) : (
-                  <RotateCcw className="w-3.5 h-3.5 text-amber-400" />
+                  <RotateCcw className="w-3.5 h-3.5" />
                 )}
-                <span>{generateTestMutation.isPending || activeJobId ? 'Preparing...' : 'Re-generate Test'}</span>
+                <span>{generateTestMutation.isPending || activeJobId ? 'Preparing...' : 'Re-generate'}</span>
               </button>
             </div>
           </div>
 
           {/* Progress Banner during Live Generation */}
           {(activeJobId || isTestLoading) && (
-            <div className="p-8 rounded-3xl bg-amber-950/20 border border-amber-500/30 text-center space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-amber-600/20 border border-amber-500/40 flex items-center justify-center mx-auto text-amber-400">
-                <Loader2 className="w-6 h-6 animate-spin" />
+            <div className="p-8 rounded-2xl bg-[#121215] border border-[#27272a] text-center space-y-4">
+              <div className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto text-white">
+                <Loader2 className="w-5 h-5 animate-spin" />
               </div>
-              <div className="space-y-1">
-                <h3 className="text-base font-bold text-white">
-                  {jobProgress?.stage || 'Synthesizing Grounded CBT Questions...'}
-                </h3>
-                <p className="text-xs text-[#9f99b0]">
-                  Formulating diagnostic questions grounded in your course materials with randomized distractors.
-                </p>
-              </div>
+              <h3 className="text-sm font-bold text-white">
+                {jobProgress?.stage || 'Synthesizing CBT Questions...'}
+              </h3>
 
               {jobProgress && (
                 <div className="w-full max-w-md mx-auto space-y-1">
-                  <div className="w-full bg-[#1c1729] h-2 rounded-full overflow-hidden border border-[#383050]">
+                  <div className="w-full bg-zinc-900 h-1.5 rounded-full overflow-hidden">
                     <div
-                      className="bg-gradient-to-r from-amber-500 to-indigo-500 h-full transition-all duration-300 rounded-full"
+                      className="bg-white h-full transition-all duration-300 rounded-full"
                       style={{ width: `${jobProgress.progress || 25}%` }}
                     />
                   </div>
-                  <div className="flex justify-between text-[11px] font-mono text-[#9f99b0]">
+                  <div className="flex justify-between text-[11px] font-mono text-zinc-500">
                     <span>{jobProgress.stage}</span>
                     <span>{jobProgress.progress}%</span>
                   </div>
@@ -1017,44 +985,41 @@ export const DayView = () => {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
               {/* Left Column: Test Details & Start Action */}
               <div className="lg:col-span-7 space-y-6">
-                <div className="p-6 rounded-3xl bg-[#14111f] border border-[#383050] space-y-5">
+                <div className="p-6 rounded-2xl bg-[#121215] border border-[#27272a] space-y-5">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border border-amber-500/30 bg-amber-500/10 text-amber-300">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-xs font-mono font-medium border border-zinc-800 bg-zinc-900 text-zinc-300">
                       <Award className="w-3.5 h-3.5" />
-                      <span>{dayTestData.mode === 'practice' ? 'Practice Examination' : 'Exam Mode'}</span>
+                      <span>{dayTestData.mode === 'practice' ? 'Practice' : 'Exam'}</span>
                     </span>
 
-                    <span className="text-xs font-mono text-[#9f99b0]">
-                      Format: Standard CBT
+                    <span className="text-xs font-mono text-zinc-500">
+                      CBT Engine
                     </span>
                   </div>
 
                   <div>
-                    <h3 className="text-xl font-extrabold text-white leading-tight">
+                    <h3 className="text-lg font-bold text-white leading-tight">
                       {dayTestData.title}
                     </h3>
-                    <p className="text-xs text-[#9f99b0] mt-1 leading-relaxed">
-                      {dayTestData.description}
-                    </p>
                   </div>
 
                   {/* Test Specs Grid */}
                   <div className="grid grid-cols-3 gap-3 pt-2">
-                    <div className="p-3.5 rounded-2xl bg-[#1c1729] border border-[#2b243d] text-center">
-                      <div className="text-[11px] text-[#9f99b0] uppercase font-mono">Questions</div>
-                      <div className="text-lg font-mono font-extrabold text-white mt-0.5">
+                    <div className="p-3 rounded-xl bg-[#18181b] border border-[#27272a] text-center">
+                      <div className="text-[11px] text-zinc-500 uppercase font-mono">Questions</div>
+                      <div className="text-base font-mono font-bold text-white mt-0.5">
                         {dayTestData.totalQuestions}
                       </div>
                     </div>
-                    <div className="p-3.5 rounded-2xl bg-[#1c1729] border border-[#2b243d] text-center">
-                      <div className="text-[11px] text-[#9f99b0] uppercase font-mono">Time Limit</div>
-                      <div className="text-lg font-mono font-extrabold text-amber-300 mt-0.5">
+                    <div className="p-3 rounded-xl bg-[#18181b] border border-[#27272a] text-center">
+                      <div className="text-[11px] text-zinc-500 uppercase font-mono">Time Limit</div>
+                      <div className="text-base font-mono font-bold text-white mt-0.5">
                         {dayTestData.timeLimitMinutes}m
                       </div>
                     </div>
-                    <div className="p-3.5 rounded-2xl bg-[#1c1729] border border-[#2b243d] text-center">
-                      <div className="text-[11px] text-[#9f99b0] uppercase font-mono">Marking</div>
-                      <div className="text-lg font-mono font-extrabold text-emerald-400 mt-0.5">
+                    <div className="p-3 rounded-xl bg-[#18181b] border border-[#27272a] text-center">
+                      <div className="text-[11px] text-zinc-500 uppercase font-mono">Marking</div>
+                      <div className="text-base font-mono font-bold text-white mt-0.5">
                         +{dayTestData.markingScheme?.correct || 4} / {dayTestData.markingScheme?.incorrect || -1}
                       </div>
                     </div>
@@ -1063,14 +1028,14 @@ export const DayView = () => {
                   {/* Topics Covered */}
                   {dayTestData.conceptKeys?.length > 0 && (
                     <div className="space-y-2 pt-2">
-                      <span className="text-xs font-bold text-slate-300 uppercase tracking-wider block">
-                        Concepts Evaluated:
+                      <span className="text-xs font-medium text-zinc-400 uppercase tracking-wider block">
+                        Concepts Evaluated
                       </span>
                       <div className="flex flex-wrap gap-1.5">
                         {dayTestData.conceptKeys.map((k) => (
                           <span
                             key={k}
-                            className="text-xs px-2.5 py-1 rounded-xl bg-[#1c1729] border border-[#383050] text-purple-300 font-mono"
+                            className="text-xs px-2.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-300 font-mono"
                           >
                             {k}
                           </span>
@@ -1080,22 +1045,22 @@ export const DayView = () => {
                   )}
 
                   {/* Primary CTA */}
-                  <div className="pt-4 border-t border-[#251e35] flex flex-wrap items-center gap-3">
+                  <div className="pt-4 border-t border-[#27272a] flex flex-wrap items-center gap-3">
                     <Link
                       to={`/test/${dayTestData._id}`}
-                      className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-xl transition-all cursor-pointer"
+                      className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs transition-colors cursor-pointer"
                     >
-                      <Play className="w-4 h-4 fill-white" />
-                      <span>{userAttempts.length > 0 ? 'Take Another Attempt' : 'Start Day Test'}</span>
+                      <Play className="w-3.5 h-3.5 fill-current" />
+                      <span>{userAttempts.length > 0 ? 'Take Another Attempt' : 'Start Test'}</span>
                     </Link>
 
                     {userAttempts.length > 0 && (
                       <Link
                         to={`/test/${dayTestData._id}?retake=true`}
-                        className="inline-flex items-center gap-2 px-4 py-3 rounded-2xl bg-[#1c1729] hover:bg-[#251e35] text-purple-300 text-xs font-bold border border-[#383050] transition-all cursor-pointer"
+                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-zinc-900 hover:bg-zinc-800 text-zinc-300 text-xs font-medium border border-zinc-800 transition-colors cursor-pointer"
                       >
                         <RotateCcw className="w-3.5 h-3.5" />
-                        <span>Fresh Retake</span>
+                        <span>Retake</span>
                       </Link>
                     )}
                   </div>
@@ -1104,46 +1069,43 @@ export const DayView = () => {
 
               {/* Right Column: Performance History / Attempts */}
               <div className="lg:col-span-5 space-y-4">
-                <div className="p-6 rounded-3xl bg-[#14111f] border border-[#383050] space-y-4">
-                  <div className="flex items-center justify-between pb-3 border-b border-[#251e35]">
-                    <h4 className="text-sm font-extrabold text-white flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <div className="p-6 rounded-2xl bg-[#121215] border border-[#27272a] space-y-4">
+                  <div className="flex items-center justify-between pb-3 border-b border-[#27272a]">
+                    <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-zinc-400" />
                       <span>Attempt History ({userAttempts.length})</span>
                     </h4>
                   </div>
 
                   {userAttempts.length === 0 ? (
-                    <div className="py-8 text-center space-y-2">
-                      <HelpCircle className="w-8 h-8 text-[#9f99b0] mx-auto opacity-50" />
-                      <p className="text-xs text-[#9f99b0]">No attempts recorded yet for Day {dayData.dayNumber}.</p>
-                      <p className="text-[11px] text-slate-500">
-                        Complete your study notes, then take this diagnostic quiz to evaluate your retention.
-                      </p>
+                    <div className="py-6 text-center space-y-2">
+                      <HelpCircle className="w-6 h-6 text-zinc-600 mx-auto" />
+                      <p className="text-xs text-zinc-500">No attempts recorded yet.</p>
                     </div>
                   ) : (
-                    <div className="space-y-3">
+                    <div className="space-y-2.5">
                       {userAttempts.map((att, idx) => (
                         <div
                           key={att._id}
-                          className="p-4 rounded-2xl bg-[#1c1729] border border-[#383050] hover:border-purple-500/40 transition-all flex items-center justify-between gap-3"
+                          className="p-3.5 rounded-xl bg-[#18181b] border border-[#27272a] hover:border-zinc-700 transition-colors flex items-center justify-between gap-3"
                         >
                           <div>
                             <div className="flex items-center gap-2">
                               <span className="text-xs font-mono font-bold text-white">
-                                Attempt #{userAttempts.length - idx}
+                                #{userAttempts.length - idx}
                               </span>
-                              <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-800 font-bold">
+                              <span className="text-[10px] px-2 py-0.5 rounded bg-zinc-900 text-zinc-300 border border-zinc-800 font-mono">
                                 {att.accuracy || 0}% Accuracy
                               </span>
                             </div>
-                            <div className="text-[11px] text-[#9f99b0] mt-1 font-mono">
-                              Score: <span className="text-purple-300 font-bold">{att.score}</span> / {att.maxScore} pts · {Math.floor((att.timeSpentSeconds || 0) / 60)}m
+                            <div className="text-[11px] text-zinc-500 mt-1 font-mono">
+                              Score: <span className="text-white font-bold">{att.score}</span> / {att.maxScore} · {Math.floor((att.timeSpentSeconds || 0) / 60)}m
                             </div>
                           </div>
 
                           <Link
                             to={`/results/${att._id}`}
-                            className="px-3 py-1.5 rounded-xl bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/40 text-purple-300 text-xs font-semibold transition-all inline-flex items-center gap-1 shrink-0"
+                            className="px-3 py-1 rounded-full bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-200 text-xs font-medium transition-colors inline-flex items-center gap-1 shrink-0"
                           >
                             <span>Review</span>
                             <ExternalLink className="w-3 h-3" />
@@ -1159,20 +1121,17 @@ export const DayView = () => {
 
           {/* If no test generated yet */}
           {!activeJobId && !isTestLoading && !dayTestData && (
-            <div className="p-12 rounded-3xl bg-[#14111f] border border-[#383050] text-center space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-amber-600/20 border border-amber-500/40 flex items-center justify-center mx-auto text-amber-400">
-                <ClipboardList className="w-6 h-6" />
+            <div className="p-10 rounded-2xl bg-[#121215] border border-[#27272a] text-center space-y-4">
+              <div className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto text-zinc-400">
+                <ClipboardList className="w-5 h-5" />
               </div>
-              <h3 className="text-base font-bold text-white">Day {dayData.dayNumber} Test Ready to Generate</h3>
-              <p className="text-xs text-[#9f99b0] max-w-sm mx-auto">
-                Generate diagnostic CBT multiple-choice questions grounded in today's topics and verified study materials.
-              </p>
+              <h3 className="text-base font-bold text-white">Day {dayData.dayNumber} Test Ready</h3>
               <button
                 onClick={() => generateTestMutation.mutate()}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs shadow-md transition-all cursor-pointer"
+                className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs transition-colors cursor-pointer"
               >
                 <Sparkles className="w-4 h-4" />
-                <span>Generate Day Test</span>
+                <span>Generate Test</span>
               </button>
             </div>
           )}
@@ -1181,33 +1140,32 @@ export const DayView = () => {
 
       {/* Citation Inspection Drawer / Modal */}
       {activeCitation && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-          <div className="glass-panel max-w-lg w-full rounded-3xl p-6 border border-indigo-500/50 bg-[#14111f] shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-[#251e35]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="max-w-lg w-full rounded-2xl p-6 border border-[#27272a] bg-[#121215] shadow-2xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[#27272a]">
               <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 rounded text-xs font-mono font-bold bg-indigo-600/30 text-indigo-300">
+                <span className="px-2 py-0.5 rounded text-xs font-mono font-bold bg-zinc-900 border border-zinc-800 text-white">
                   {activeCitation.citationId}
                 </span>
-                <span className="text-sm font-bold text-white">Grounded Reference Citation</span>
+                <span className="text-sm font-bold text-white">Reference Citation</span>
               </div>
               <button
                 onClick={() => setActiveCitation(null)}
-                className="text-slate-400 hover:text-white text-xs font-mono px-2 py-1"
+                className="text-zinc-400 hover:text-white text-xs font-mono px-2 py-1"
               >
                 ✕
               </button>
             </div>
 
             <div className="space-y-3">
-              <div className="p-3 rounded-2xl bg-[#1c1729] border border-[#2b243d] space-y-1.5">
-                <div className="text-[11px] font-mono text-[#9f99b0] uppercase">Source Document:</div>
+              <div className="p-3 rounded-xl bg-[#18181b] border border-[#27272a] space-y-1.5">
+                <div className="text-[11px] font-mono text-zinc-500 uppercase">Document:</div>
                 <div className="text-sm font-bold text-white flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-indigo-400" />
+                  <FileText className="w-4 h-4 text-zinc-400" />
                   <span>{activeCitation.materialName}</span>
                 </div>
                 {(activeCitation.location?.page || activeCitation.location?.slide || activeCitation.location?.heading) && (
-                  <div className="text-xs text-indigo-300 font-mono">
-                    Location:{' '}
+                  <div className="text-xs text-zinc-400 font-mono">
                     {[
                       activeCitation.location?.page && `Page ${activeCitation.location.page}`,
                       activeCitation.location?.slide && `Slide ${activeCitation.location.slide}`,
@@ -1219,8 +1177,8 @@ export const DayView = () => {
 
               {activeCitation.snippet && (
                 <div className="space-y-1">
-                  <span className="text-[11px] font-mono text-[#9f99b0] uppercase">Material Excerpt:</span>
-                  <div className="p-4 rounded-2xl bg-[#0a0a0f] border border-[#2b243d] text-xs text-slate-300 italic leading-relaxed font-serif">
+                  <span className="text-[11px] font-mono text-zinc-500 uppercase">Excerpt:</span>
+                  <div className="p-4 rounded-xl bg-[#09090b] border border-zinc-800 text-xs text-zinc-300 italic leading-relaxed">
                     "{activeCitation.snippet}..."
                   </div>
                 </div>
@@ -1230,9 +1188,9 @@ export const DayView = () => {
             <div className="pt-2 flex justify-end">
               <button
                 onClick={() => setActiveCitation(null)}
-                className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs shadow-md transition-all cursor-pointer"
+                className="px-4 py-2 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs transition-colors cursor-pointer"
               >
-                Close Citation
+                Close
               </button>
             </div>
           </div>
