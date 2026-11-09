@@ -13,22 +13,6 @@
 
 ---
 
-## 🚀 The Evolution: AlgoPrep v1.0 vs v2.0
-
-AlgoPrep v1.0 established a zero-trust, server-authoritative Computer-Based Testing (CBT) engine. **AlgoPrep v2.0** elevates the platform into an autonomous, RAG-driven learning companion that guides students from document upload to subject mastery.
-
-| Capability | AlgoPrep v1.0 (CBT Portal) | AlgoPrep v2.0 (Autonomous Study Platform) |
-| :--- | :--- | :--- |
-| **Learning Path** | Static topic-wise tests | **Adaptive Day-by-Day Roadmaps** synthesized with prerequisite graphs & daily time budgets |
-| **Document Processing**| Single-document synchronous PDF parsing | **Asynchronous Multi-Format Pipeline** (PDF, DOCX, PPTX, OCR) via BullMQ & Redis with live SSE progress |
-| **Retrieval & RAG** | Raw keyword matching | **Hybrid Dense + Lexical Retrieval** (768-dim `gemini-embedding-001` vectors + regex keyword filtering) |
-| **Study Notes** | None (Questions only) | **Grounded Deep-Dive Notes** with verified inline citations (`[C1]`), LaTeX math rendering, and GFM tables |
-| **Resource Discovery** | Hardcoded static links | **Two-Stage Multi-Adapter Ranker** (YouTube, Wikipedia, OpenLibrary, ArXiv) with LLM reranking & TTL cache |
-| **Testing Engine** | Zero-trust CBT with monotonic locking | **Dual-Mode Engine**: Exam mode (fullscreen & re-entry locks) + Practice mode (instant feedback & citations) |
-| **Mastery & Analytics**| Single-attempt scorecards | **Knowledge Tracing (SM-2 Spaced Repetition)** with automatic dynamic re-planning for weak concepts |
-| **AI Tutoring** | Post-test static revision hints | **Live Socratic AI Tutor** with SSE token streaming, memory summaries, document tool-calling, and test guardrails |
-
----
 
 ## ✨ Key Architectural Features
 
@@ -144,30 +128,6 @@ graph TB
 
 ---
 
-## 📸 Application Screenshots
-
-### 🎓 Student Workspace & Day-by-Day Study
-| Interactive Day Study View | Grounded Notes & KaTeX Math |
-| :---: | :---: |
-| ![Student Dashboard](utils/student_dashboard.png) | ![Test Taking](utils/test_taking_1.png) |
-| **Leaderboard & Rankings** | **Analytics & Mastery Scorecard** |
-| ![Leaderboard](utils/leaderboard.png) | ![Analytics](utils/analytics.png) |
-
-### 🧑‍🏫 Teacher Portal & LMS Capabilities
-| Educator Dashboard | Syllabus-to-Exam Generator |
-| :---: | :---: |
-| ![Teacher Dashboard](utils/teacher_dashboard.png) | ![Syllabus AI](utils/ai_test_generator.png) |
-| **Test Management** | **Class Roster & Candidate Analytics** |
-| ![Test Management](utils/test_management.png) | ![Candidate Analytics](utils/class_roster.png) |
-
-### 🛡️ Admin Portal & Hiring Pipeline
-| Admin Overview | Teacher Hiring Pipeline |
-| :---: | :---: |
-| ![Admin Dashboard](utils/admin_dashboard.png) | ![Hiring Pipeline](utils/hiring.png) |
-| **User Directory** | **Real-Time Direct Messaging** |
-| ![User Management](utils/all_user.png) | ![Messaging](utils/messagin_admin.png) |
-
----
 
 ## 📡 API Overview & Endpoints
 
