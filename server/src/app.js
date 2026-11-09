@@ -15,6 +15,7 @@ import chatRoutes from './routes/chatRoutes.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 import path from 'path';
+import fs from 'fs';
 
 const app = express();
 
@@ -53,6 +54,25 @@ app.use('/api/jobs', jobRoutes);
 app.use('/api/workspaces', workspaceRoutes);
 app.use('/api', roadmapRoutes);
 app.use('/api', chatRoutes);
+
+// Serve static client build in production if available
+const clientDistPath = path.resolve('client/dist');
+const altClientDistPath = path.resolve('../client/dist');
+const resolvedDist = fs.existsSync(clientDistPath)
+  ? clientDistPath
+  : fs.existsSync(altClientDistPath)
+    ? altClientDistPath
+    : null;
+
+if (resolvedDist) {
+  app.use(express.static(resolvedDist));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+      return next();
+    }
+    res.sendFile(path.join(resolvedDist, 'index.html'));
+  });
+}
 
 app.use(errorHandler);
 
