@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 import { api } from '../../services/api';
 import {
   Sparkles,
@@ -299,8 +301,30 @@ export const AITutorDrawer = ({ workspaceId, dayId = null, dayTitle = null }) =>
                       <p className="whitespace-pre-wrap">{msg.content}</p>
                     ) : (
                       <div className="prose prose-invert prose-xs max-w-none space-y-2">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                          {msg.content ? msg.content.replace(/\|\s*\|\s*/g, '|\n| ') : ''}
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm, remarkMath]}
+                          rehypePlugins={[rehypeKatex]}
+                          components={{
+                            pre: ({ children }) => (
+                              <pre className="p-3 rounded-lg bg-[#09090b] border border-zinc-700 overflow-x-auto text-[11px] font-mono text-zinc-200 my-2 leading-normal">
+                                {children}
+                              </pre>
+                            ),
+                            code: ({ className, children, ...props }) => {
+                              const isBlock = /language-/.test(className || '') || (typeof children === 'string' && children.includes('\n'));
+                              return isBlock ? (
+                                <code className={`font-mono text-zinc-200 text-[11px] ${className || ''}`} {...props}>
+                                  {children}
+                                </code>
+                              ) : (
+                                <code className="px-1.5 py-0.5 mx-0.5 rounded bg-zinc-900 border border-zinc-700 font-mono text-amber-300 text-[11px]" {...props}>
+                                  {children}
+                                </code>
+                              );
+                            }
+                          }}
+                        >
+                          {msg.content ? msg.content.replace(/\|[^\S\r\n]*\|[^\S\r\n]*/g, '|\n| ') : ''}
                         </ReactMarkdown>
                       </div>
                     )}
@@ -332,8 +356,30 @@ export const AITutorDrawer = ({ workspaceId, dayId = null, dayTitle = null }) =>
               <div className="flex flex-col items-start space-y-1.5">
                 <div className="max-w-[88%] p-3 rounded-xl text-xs leading-relaxed bg-[#18181b] text-zinc-200 border border-zinc-700 shadow-sm space-y-2">
                   <div className="prose prose-invert prose-xs max-w-none">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                      {streamingReply ? streamingReply.replace(/\|\s*\|\s*/g, '|\n| ') : 'Thinking...'}
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm, remarkMath]}
+                      rehypePlugins={[rehypeKatex]}
+                      components={{
+                        pre: ({ children }) => (
+                          <pre className="p-3 rounded-lg bg-[#09090b] border border-zinc-700 overflow-x-auto text-[11px] font-mono text-zinc-200 my-2 leading-normal">
+                            {children}
+                          </pre>
+                        ),
+                        code: ({ className, children, ...props }) => {
+                          const isBlock = /language-/.test(className || '') || (typeof children === 'string' && children.includes('\n'));
+                          return isBlock ? (
+                            <code className={`font-mono text-zinc-200 text-[11px] ${className || ''}`} {...props}>
+                              {children}
+                            </code>
+                          ) : (
+                            <code className="px-1.5 py-0.5 mx-0.5 rounded bg-zinc-900 border border-zinc-700 font-mono text-amber-300 text-[11px]" {...props}>
+                              {children}
+                            </code>
+                          );
+                        }
+                      }}
+                    >
+                      {streamingReply ? streamingReply.replace(/\|[^\S\r\n]*\|[^\S\r\n]*/g, '|\n| ') : 'Thinking...'}
                     </ReactMarkdown>
                   </div>
                   <span className="inline-block w-1.5 h-3 bg-white animate-pulse align-middle ml-1" />

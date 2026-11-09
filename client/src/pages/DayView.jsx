@@ -3,6 +3,8 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 import { api } from '../services/api';
 import { AITutorDrawer } from '../components/chat/AITutorDrawer';
 import {
@@ -38,6 +40,32 @@ import {
   Award,
   Play
 } from 'lucide-react';
+
+const cleanSectionMarkdown = (raw = '', heading = '') => {
+  if (!raw) return '';
+  let text = raw.replace(/\r\n/g, '\n');
+
+  // Strip duplicate leading section heading if it matches the card's section.heading
+  if (heading) {
+    const escapedHeading = heading.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    text = text.replace(new RegExp(`^\\s*#{1,3}\\s*${escapedHeading}\\s*(\\n+---)?\\n*`, 'i'), '');
+  }
+
+  // Ensure horizontal consecutive table cells or rows are properly separated by newlines
+  // e.g. "... Approach || :---" -> "... Approach |\n| :---"
+  text = text.replace(/\|[^\S\r\n]*\|[^\S\r\n]*/g, '|\n| ');
+
+  // Ensure table starts and ends have empty lines so CommonMark / GFM parses them cleanly
+  text = text.replace(/([^\n|])\n(\|[^\n]+\|)/g, '$1\n\n$2');
+  text = text.replace(/(\|[^\n]+\|)\n([^\n|])/g, '$1\n\n$2');
+
+  // Format citations [C1, C2] or [C1] into markdown links [#cite-C1] for interactive modal inspection
+  text = text.replace(/\[(C\d+),\s*(C\d+),\s*(C\d+)\]/g, '[$1](#cite-$1), [$2](#cite-$2), [$3](#cite-$3)');
+  text = text.replace(/\[(C\d+),\s*(C\d+)\]/g, '[$1](#cite-$1), [$2](#cite-$2)');
+  text = text.replace(/\[(C\d+)\]/g, '[$1](#cite-$1)');
+
+  return text;
+};
 
 export const DayView = () => {
   const { workspaceId, dayId } = useParams();
@@ -487,48 +515,84 @@ export const DayView = () => {
                     {/* Markdown Body */}
                     <div className="prose prose-invert max-w-none text-xs sm:text-sm text-zinc-300 leading-relaxed space-y-4">
                       <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
+                        remarkPlugins={[remarkGfm, remarkMath]}
+                        rehypePlugins={[rehypeKatex]}
                         components={{
-                          h1: ({ children }) => <h1 className="text-xl font-bold text-white mt-4 mb-2">{children}</h1>,
-                          h2: ({ children }) => <h2 className="text-base font-bold text-white mt-4 mb-2">{children}</h2>,
-                          h3: ({ children }) => <h3 className="text-sm font-semibold text-zinc-200 mt-3 mb-1.5">{children}</h3>,
-                          p: ({ children }) => <p className="leading-relaxed mb-3">{children}</p>,
-                          ul: ({ children }) => <ul className="list-disc pl-5 space-y-1 mb-3">{children}</ul>,
-                          ol: ({ children }) => <ol className="list-decimal pl-5 space-y-1 mb-3">{children}</ol>,
+                          h1: ({ children }) => <h1 className="text-xl font-bold text-white mt-6 mb-3 tracking-tight">{children}</h1>,
+                          h2: ({ children }) => <h2 className="text-base font-bold text-white mt-5 mb-2.5 tracking-tight">{children}</h2>,
+                          h3: ({ children }) => <h3 className="text-sm font-semibold text-zinc-100 mt-4 mb-2 tracking-tight">{children}</h3>,
+                          h4: ({ children }) => <h4 className="text-sm font-bold text-white mt-4 mb-2 tracking-wide">{children}</h4>,
+                          h5: ({ children }) => <h5 className="text-xs font-bold uppercase tracking-wider text-zinc-300 mt-3 mb-1.5">{children}</h5>,
+                          h6: ({ children }) => <h6 className="text-xs font-semibold text-zinc-400 mt-2 mb-1">{children}</h6>,
+                          hr: () => <hr className="my-6 border-zinc-700/60" />,
+                          p: ({ children }) => <p className="leading-relaxed mb-3 text-zinc-300">{children}</p>,
+                          ul: ({ children }) => <ul className="list-disc pl-5 space-y-1.5 mb-3 text-zinc-300">{children}</ul>,
+                          ol: ({ children }) => <ol className="list-decimal pl-5 space-y-1.5 mb-3 text-zinc-300">{children}</ol>,
                           li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+                          strong: ({ children }) => <strong className="font-semibold text-white">{children}</strong>,
+                          em: ({ children }) => <em className="italic text-zinc-300">{children}</em>,
+                          a: ({ href, children, ...props }) => {
+                            if (href?.startsWith('#cite-')) {
+                              const cId = href.replace('#cite-', '');
+                              const foundCitation = section.citations?.find((c) => c.citationId === cId);
+                              return (
+                                <button
+                                  type="button"
+                                  onClick={() => foundCitation && setActiveCitation(foundCitation)}
+                                  className="inline-flex items-center px-1.5 py-0.2 mx-0.5 rounded text-[11px] font-mono font-bold bg-zinc-900 border border-zinc-700 text-amber-400 hover:text-white hover:border-zinc-500 transition-colors cursor-pointer align-baseline"
+                                  title={foundCitation ? `${foundCitation.materialName} (click to view)` : `Citation ${cId}`}
+                                >
+                                  [{cId}]
+                                </button>
+                              );
+                            }
+                            return (
+                              <a
+                                href={href}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-amber-400 hover:text-amber-300 underline underline-offset-2"
+                                {...props}
+                              >
+                                {children}
+                              </a>
+                            );
+                          },
                           table: ({ children }) => (
-                            <div className="overflow-x-auto my-5 rounded-xl border border-zinc-700 bg-[#09090b]">
-                              <table className="w-full text-left text-xs border-collapse divide-y divide-[#27272a]">{children}</table>
+                            <div className="overflow-x-auto my-5 rounded-xl border border-zinc-700 bg-[#09090b] shadow-sm">
+                              <table className="w-full text-left text-xs border-collapse divide-y divide-zinc-700">{children}</table>
                             </div>
                           ),
                           thead: ({ children }) => <thead className="bg-[#121215] text-zinc-300 font-mono text-[11px] uppercase tracking-wider">{children}</thead>,
-                          tbody: ({ children }) => <tbody className="divide-y divide-[#27272a] bg-[#09090b]">{children}</tbody>,
-                          tr: ({ children }) => <tr className="hover:bg-zinc-900/40 transition-colors">{children}</tr>,
-                          th: ({ children }) => <th className="px-4 py-3 font-semibold border-b border-zinc-700 text-zinc-300">{children}</th>,
+                          tbody: ({ children }) => <tbody className="divide-y divide-zinc-800 bg-[#09090b]">{children}</tbody>,
+                          tr: ({ children }) => <tr className="hover:bg-zinc-900/50 transition-colors">{children}</tr>,
+                          th: ({ children }) => <th className="px-4 py-3 font-semibold border-b border-zinc-700 text-zinc-200">{children}</th>,
                           td: ({ children }) => <td className="px-4 py-3 text-zinc-300 leading-relaxed align-top">{children}</td>,
-                          code: ({ inline, children }) =>
-                            inline ? (
-                              <code className="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-700 font-mono text-zinc-200 text-[12px]">
+                          pre: ({ children }) => (
+                            <pre className="p-4 rounded-xl bg-[#09090b] border border-zinc-700 overflow-x-auto text-[12px] font-mono text-zinc-200 my-4 leading-normal">
+                              {children}
+                            </pre>
+                          ),
+                          code: ({ className, children, ...props }) => {
+                            const isBlock = /language-/.test(className || '') || (typeof children === 'string' && children.includes('\n'));
+                            return isBlock ? (
+                              <code className={`font-mono text-zinc-200 text-[12px] ${className || ''}`} {...props}>
                                 {children}
                               </code>
                             ) : (
-                              <pre className="p-4 rounded-xl bg-[#09090b] border border-zinc-700 overflow-x-auto text-[12px] font-mono text-zinc-200">
-                                <code>{children}</code>
-                              </pre>
-                            ),
+                              <code className="px-1.5 py-0.5 mx-0.5 rounded bg-zinc-900 border border-zinc-700 font-mono text-amber-300 text-[12px]" {...props}>
+                                {children}
+                              </code>
+                            );
+                          },
                           blockquote: ({ children }) => (
-                            <blockquote className="border-l-2 border-white pl-4 py-1 italic bg-zinc-900/30 text-zinc-300 my-3">
+                            <blockquote className="border-l-2 border-amber-500/80 pl-4 py-1.5 italic bg-[#18181b]/60 text-zinc-300 my-4 rounded-r-lg">
                               {children}
                             </blockquote>
                           )
                         }}
                       >
-                        {section.markdown
-                          ? section.markdown
-                              .replace(/\|\s*\|\s*/g, '|\n| ')
-                              .replace(/\n\s*\|/g, '\n|')
-                              .replace(/\|\s*\n/g, '|\n')
-                          : ''}
+                        {cleanSectionMarkdown(section.markdown, section.heading)}
                       </ReactMarkdown>
                     </div>
 

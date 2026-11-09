@@ -231,9 +231,10 @@ export const generateDayNotes = async ({
         });
 
         sectionMarkdown = (llmResponse.text || '')
-          .replace(/\|\s*\|\s*/g, '|\n| ')
-          .replace(/\n\s*\|/g, '\n|')
-          .replace(/\|\s*\n/g, '|\n');
+          .replace(/\r\n/g, '\n')
+          .replace(/\|[^\S\r\n]*\|[^\S\r\n]*/g, '|\n| ')
+          .replace(/([^\n|])\n(\|[^\n]+\|)/g, '$1\n\n$2')
+          .replace(/(\|[^\n]+\|)\n([^\n|])/g, '$1\n\n$2');
         if (sectionMarkdown.toLowerCase().includes('beyond your materials') || isBeyondMaterials) {
           isBeyondMaterials = true;
         }
