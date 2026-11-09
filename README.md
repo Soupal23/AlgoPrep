@@ -1,359 +1,359 @@
-# AlgoPrep
+# AlgoPrep v2.0
 
-> AlgoPrep is a comprehensive computer-based testing platform designed specifically for computer science students and educators. It enables users to take proctored, time-bound technical assessments while leveraging AI to generate customized practice tests directly from syllabus documents.
+> **AlgoPrep** is an enterprise-grade, AI-powered adaptive computer science study and examination platform. It transforms raw academic materials (lecture notes, syllabi, textbooks, and slide decks) into personalized, day-by-day mastery roadmaps featuring grounded study notes, curated multi-source multimedia resources, live Socratic AI tutoring, and proctored computer-based examinations (CBT).
 
-![React](https://img.shields.io/badge/Frontend-React-61DAFB?style=flat&logo=react&logoColor=black)
-![Node.js](https://img.shields.io/badge/Backend-Node.js-339933?style=flat&logo=nodedotjs&logoColor=white)
+![React](https://img.shields.io/badge/Frontend-React_19-61DAFB?style=flat&logo=react&logoColor=black)
+![Node.js](https://img.shields.io/badge/Backend-Node.js_20+-339933?style=flat&logo=nodedotjs&logoColor=white)
 ![Express](https://img.shields.io/badge/Framework-Express-000000?style=flat&logo=express&logoColor=white)
-![MongoDB](https://img.shields.io/badge/Database-MongoDB-47A248?style=flat&logo=mongodb&logoColor=white)
-![Gemini API](https://img.shields.io/badge/AI-Gemini-4285F4?style=flat&logo=googlegemini&logoColor=white)
+![MongoDB](https://img.shields.io/badge/Database-MongoDB_Atlas-47A248?style=flat&logo=mongodb&logoColor=white)
+![Redis](https://img.shields.io/badge/Queue-Redis_%26_BullMQ-DC382D?style=flat&logo=redis&logoColor=white)
+![Gemini AI](https://img.shields.io/badge/AI-Google_Gemini_3.5-4285F4?style=flat&logo=googlegemini&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Styling-Tailwind_v4-06B6D4?style=flat&logo=tailwindcss&logoColor=white)
+![KaTeX](https://img.shields.io/badge/Math-KaTeX-329894?style=flat&logo=latex&logoColor=white)
 
-## Overview
-This platform serves as a vital bridge between academic learning and technical interviews, helping computer science candidates identify their weak areas through detailed analytics and personalized AI revision plans. By providing a realistic, proctored test environment with strict time limits, it helps students build confidence and improve their problem-solving speed under pressure. For educators and recruiters, AlgoPrep offers a secure, reliable, and automated way to evaluate a candidate's core computer science fundamentals.
+---
 
-## ✨ Key Features (Built for Scale & Integrity)
+## 🚀 The Evolution: AlgoPrep v1.0 vs v2.0
 
-- 🤖 **AI-Powered Test Generation**: Integrates the Gemini API to parse uploaded syllabus PDFs and synthesize customized, strict JSON-schema validated practice exams. Includes automatic repair retries and user-keyed rate limiting.
-- 🔒 **Proctored Anti-Cheat System**: Utilizes the browser Visibility API to detect tab-switching and focus loss, reporting anomalies directly to the server to maintain test integrity.
-- ⏱️ **Server-Authoritative Test Engine**: Features a zero-trust architecture with a server-side countdown timer and **monotonic version locking** to prevent race conditions or out-of-order save data corruption during active attempts.
-- 📊 **Advanced Analytics & AI Revision**: Provides detailed scorecards (percentiles, accuracy) and a personalized, AI-generated 3-step study recommendation plan based on the candidate's incorrect answers.
-- 🏆 **High-Performance Leaderboards**: Employs complex MongoDB aggregation pipelines (`$setWindowFields`) to calculate global and per-test rankings, including multi-field tie-breaker rules.
-- 🧑‍🏫 **Educator Hiring Pipeline**: A dedicated, streamlined workflow for recruiting, evaluating, and onboarding teachers applying to join the AlgoPrep platform.
+AlgoPrep v1.0 established a zero-trust, server-authoritative Computer-Based Testing (CBT) engine. **AlgoPrep v2.0** elevates the platform into an autonomous, RAG-driven learning companion that guides students from document upload to subject mastery.
+
+| Capability | AlgoPrep v1.0 (CBT Portal) | AlgoPrep v2.0 (Autonomous Study Platform) |
+| :--- | :--- | :--- |
+| **Learning Path** | Static topic-wise tests | **Adaptive Day-by-Day Roadmaps** synthesized with prerequisite graphs & daily time budgets |
+| **Document Processing**| Single-document synchronous PDF parsing | **Asynchronous Multi-Format Pipeline** (PDF, DOCX, PPTX, OCR) via BullMQ & Redis with live SSE progress |
+| **Retrieval & RAG** | Raw keyword matching | **Hybrid Dense + Lexical Retrieval** (768-dim `gemini-embedding-001` vectors + regex keyword filtering) |
+| **Study Notes** | None (Questions only) | **Grounded Deep-Dive Notes** with verified inline citations (`[C1]`), LaTeX math rendering, and GFM tables |
+| **Resource Discovery** | Hardcoded static links | **Two-Stage Multi-Adapter Ranker** (YouTube, Wikipedia, OpenLibrary, ArXiv) with LLM reranking & TTL cache |
+| **Testing Engine** | Zero-trust CBT with monotonic locking | **Dual-Mode Engine**: Exam mode (fullscreen & re-entry locks) + Practice mode (instant feedback & citations) |
+| **Mastery & Analytics**| Single-attempt scorecards | **Knowledge Tracing (SM-2 Spaced Repetition)** with automatic dynamic re-planning for weak concepts |
+| **AI Tutoring** | Post-test static revision hints | **Live Socratic AI Tutor** with SSE token streaming, memory summaries, document tool-calling, and test guardrails |
+
+---
+
+## ✨ Key Architectural Features
+
+### 1. 📚 Multi-Format Asynchronous Ingestion (BullMQ + Redis)
+- **Format Support**: Multi-page PDF extraction via `unpdf` and `pdf-parse`, DOCX via `mammoth`, PPTX slide-by-slide parsing, and image OCR via `tesseract.js`.
+- **Intelligent Chunking**: Sliding window boundary chunker (400–800 tokens, 100-token overlap) preserving document hierarchy (page, slide, section heading).
+- **Resilient Background Queues**: Offloaded to BullMQ worker pools running over Redis with exponential backoff retries, batch embedding pacing (16 items/batch with 600ms delay), and real-time SSE progress streaming.
+
+### 2. 🗺️ Intelligent Roadmap & Adaptive Day Planning
+- **Pedagogical Structuring**: Synthesizes custom curricula based on student target exam dates and daily time constraints (e.g. 60–120 mins/day).
+- **Topological Sorting**: Enforces strict concept dependencies (e.g., *Linear Algebra & Gradient Descent* $\rightarrow$ *Backpropagation* $\rightarrow$ *CNNs*).
+- **Buffer & Synthesis Days**: Automatically reserves review days and milestone mock exams.
+
+### 3. 📖 Grounded Study Notes with Verified Citations & Math
+- **Hallucination-Resistant Synthesis**: LLM sections are generated strictly using retrieved passages. If supplementary concepts are required, they are visibly badged as `Supplemented Theory`.
+- **Interactive Citation Cards**: Inline markers (`[C1]`, `[C2]`) open modal drawers displaying verified source material snippets and page/slide locations.
+- **Rich Scientific Typography**: Fully rendered KaTeX mathematical notation (e.g., $T, E, P$, $\rightarrow$, loss gradients) and styled GitHub Flavored Markdown (GFM) comparison tables.
+
+### 4. 🎯 Multi-Source Educational Resource Ranking
+- **Parallel Adapters**: Gathers learning assets from the YouTube Data API v3, Wikipedia REST Summary API, OpenLibrary, and ArXiv.
+- **Two-Stage Hybrid Scoring**:
+  $$\text{Final Score} = 0.4 \cdot \text{Relevance} + 0.2 \cdot \text{Quality} + 0.4 \cdot \text{LLM Rerank}$$
+- **Quota-Aware Caching**: Stores normalized candidate rankings in MongoDB with a 7-day TTL cache to protect third-party API quotas.
+
+### 5. ⏱️ Zero-Trust CBT Engine & Anti-Cheat System
+- **Server-Authoritative Countdown**: Strict server-side deadline tracking immune to client system clock manipulation.
+- **Monotonic Version Locking**: Prevents race conditions and out-of-order state overwrites during concurrent network reconnects.
+- **Proctoring Telemetry**: Detects tab-switching, window blur, and fullscreen exits via the HTML5 Page Visibility API.
+- **Pre-Seeded Platform Assessments**: 25 comprehensive Computer Science topic exams (375 questions) covering OS, DBMS, Networks, Data Structures, Algorithms, and System Design.
+
+### 6. 🧠 Knowledge Tracing & Dynamic Re-Planning
+- **Mastery Scoring**: Calculates mastery per concept ($0.0 \rightarrow 1.0$) using weighted accuracy, difficulty scales, and behavioral signals (`fast_wrong`, `slow_wrong`, `marked_for_review`).
+- **SM-2 Spaced Repetition**: Automatically computes `nextReviewAt` intervals (1 $\rightarrow$ 3 $\rightarrow$ 7 days).
+- **Deterministic Re-Planner**: When concept mastery drops below 0.60, AlgoPrep dynamically injects a 5-question Revision Quiz into future roadmap days.
+
+### 7. 🤖 Socratic AI Study Tutor
+- **SSE Streaming**: Real-time token streaming with automatic fallback from `gemini-3.5-flash` to `gemini-3.5-flash-lite`.
+- **Tool-Calling Architecture**: The tutor inspects student context using structured function tools (`searchMaterials`, `getTodayPlan`, `getWeakConcepts`, `getAttemptMistakes`).
+- **Academic Integrity Guardrails**: Automatically inspects active test attempts and refuses to divulge direct answers during live examinations.
+
+---
+
+## 🏗️ System Architecture & Data Flow
+
+```mermaid
+graph TB
+    %% Client Tier
+    subgraph Client ["Frontend Layer (React 19 / Vite / Tailwind v4)"]
+        UI["Modern Dark Studio UI<br/>(#09090b / #121215)"]
+        DV["DayView & Roadmap<br/>(KaTeX / Markdown / Citations)"]
+        TutorUI["Socratic Tutor Drawer<br/>(Live SSE Stream)"]
+        CBTUI["Proctored CBT Engine<br/>(Monotonic Auto-Save)"]
+        UI --> DV
+        UI --> TutorUI
+        UI --> CBTUI
+    end
+
+    %% API Tier
+    subgraph Server ["Backend API Gateway (Node.js / Express)"]
+        Auth["JWT Auth & Security<br/>(Access / Refresh / Helmet / RateLimit)"]
+        Router["REST & SSE Router"]
+        Auth --> Router
+    end
+    Client -->|HTTPS / Bearer JWT| Auth
+
+    %% Worker & Queue Tier
+    subgraph Queues ["Asynchronous Job Engine (BullMQ + Redis)"]
+        Redis[("Redis Queue<br/>Job State & Progress")]
+        W_Ingest["Ingestion Worker<br/>(PDF, DOCX, PPTX, OCR)"]
+        W_Roadmap["Roadmap Worker<br/>(Topic Graph & Day Budget)"]
+        W_Notes["Notes Worker<br/>(Grounded RAG Synthesis)"]
+        W_Res["Resource Worker<br/>(YouTube / Wiki / LLM Reranker)"]
+        W_Analysis["Mastery Worker<br/>(Knowledge Tracing & Re-plan)"]
+        
+        Redis --> W_Ingest
+        Redis --> W_Roadmap
+        Redis --> W_Notes
+        Redis --> W_Res
+        Redis --> W_Analysis
+    end
+    Router -->|Dispatch 202 Jobs| Redis
+    Redis -.->|SSE Progress Stream| Client
+
+    %% AI Gateway Tier
+    subgraph AIGateway ["AI Gateway (Google Gemini API)"]
+        LLMGateway["Model Gateway<br/>(Tier Routing & 503 Spike Fallback)"]
+        M_Fast["gemini-3.5-flash-lite<br/>(Fast Extraction / Queries)"]
+        M_Default["gemini-3.5-flash<br/>(Notes / Tutor / Reranking)"]
+        Embedder["gemini-embedding-001<br/>(768-dim Vector Embeddings)"]
+        
+        LLMGateway --> M_Fast
+        LLMGateway --> M_Default
+        LLMGateway --> Embedder
+    end
+    W_Ingest --> Embedder
+    W_Roadmap --> LLMGateway
+    W_Notes --> LLMGateway
+    W_Res --> LLMGateway
+    Router -->|Tutor Chat & SSE| LLMGateway
+
+    %% Database Tier
+    subgraph Persistence ["Persistence Layer (MongoDB Atlas)"]
+        DB_Users[("Users & Profiles")]
+        DB_Workspaces[("Workspaces & Chunks")]
+        DB_Roadmaps[("Roadmaps & Days")]
+        DB_Notes[("Grounded Notes & Citations")]
+        DB_CBT[("Tests, Questions & Attempts")]
+        DB_Mastery[("Concept Mastery & Signals")]
+    end
+    Router --> Persistence
+    Queues --> Persistence
+```
 
 ---
 
 ## 📸 Application Screenshots
 
-
-
-### 🎓 Student Portal
-| Dashboard | Test Interface |
+### 🎓 Student Workspace & Day-by-Day Study
+| Interactive Day Study View | Grounded Notes & KaTeX Math |
 | :---: | :---: |
 | ![Student Dashboard](utils/student_dashboard.png) | ![Test Taking](utils/test_taking_1.png) |
-| **Leaderboard** | **Analytics & AI Revision** |
+| **Leaderboard & Rankings** | **Analytics & Mastery Scorecard** |
 | ![Leaderboard](utils/leaderboard.png) | ![Analytics](utils/analytics.png) |
 
-### 🧑‍🏫 Teacher Portal
-| Educator Dashboard | Syllabus Upload (AI Gen) |
+### 🧑‍🏫 Teacher Portal & LMS Capabilities
+| Educator Dashboard | Syllabus-to-Exam Generator |
 | :---: | :---: |
 | ![Teacher Dashboard](utils/teacher_dashboard.png) | ![Syllabus AI](utils/ai_test_generator.png) |
-| **Test Management** | **Candidate Analytics** |
+| **Test Management** | **Class Roster & Candidate Analytics** |
 | ![Test Management](utils/test_management.png) | ![Candidate Analytics](utils/class_roster.png) |
 
-### 🛡️ Admin Portal & Hiring
-| Admin Dashboard | Hiring Pipeline Workflow |
+### 🛡️ Admin Portal & Hiring Pipeline
+| Admin Overview | Teacher Hiring Pipeline |
 | :---: | :---: |
 | ![Admin Dashboard](utils/admin_dashboard.png) | ![Hiring Pipeline](utils/hiring.png) |
-| **User Management** | **Messaging** |
+| **User Directory** | **Real-Time Direct Messaging** |
 | ![User Management](utils/all_user.png) | ![Messaging](utils/messagin_admin.png) |
 
 ---
 
-## 🛠️ Comprehensive Tech Stack
+## 📡 API Overview & Endpoints
 
-### 🖥️ Frontend (Client)
-- **Core Framework**: React 19, React DOM 19
-- **Build Tool**: Vite (Lightning-fast HMR)
-- **Routing**: React Router DOM v7
-- **Styling**: Tailwind CSS v4, PostCSS
-- **Data Visualization**: Recharts (for Analytics & Scorecards)
-- **Icons**: Lucide React
-- **Real-time**: Socket.io Client
+All protected endpoints require an `Authorization: Bearer <token>` header.
 
-### ⚙️ Backend (Server)
-- **Runtime & Framework**: Node.js, Express.js
-- **Database & ODM**: MongoDB, Mongoose
-- **Authentication & Security**: JWT (JSON Web Tokens), bcryptjs, Helmet, Express Rate Limit, CORS
-- **AI Integration**: Google Gemini API (`@google/genai`)
-- **Schema Validation**: Zod (Strict JSON parsing)
-- **File Processing & Storage**: Multer, Cloudinary SDK, Streamifier
-- **Document Parsing**: PDF-Parse (for Syllabus text extraction)
+### 📂 Workspaces & Material Ingestion
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `POST` | `/api/workspaces` | Create new study workspace |
+| `GET` | `/api/workspaces` | List user workspaces with material counts |
+| `GET` | `/api/workspaces/:id` | Get workspace details, status, and material metadata |
+| `DELETE`| `/api/workspaces/:id` | Cascade delete workspace, materials, chunks, roadmap, notes |
+| `POST` | `/api/workspaces/:id/materials` | Upload material file (PDF, DOCX, PPTX, Image) → Enqueues ingestion |
+| `GET` | `/api/jobs/:jobId/stream` | **SSE Stream**: Real-time progress updates for ingestion & synthesis jobs |
 
-### 🧪 Testing & Quality Assurance
-- **Unit & Integration**: Vitest, Supertest
-- **E2E Testing**: Puppeteer
-- **Mock Database**: MongoDB Memory Server
+### 🗺️ Roadmaps & Study Days
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `POST` | `/api/workspaces/:id/roadmap` | Generate structured day-by-day roadmap |
+| `GET` | `/api/workspaces/:id/roadmap` | Fetch active roadmap, topic graph, and days |
+| `GET` | `/api/days/:dayId` | Fetch full day payload (objectives, notes status, test status) |
+| `PATCH`| `/api/days/:dayId/status` | Update study day status (`pending`, `completed`) |
 
----
+### 📖 Grounded Notes & Citations
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/days/:dayId/notes` | Get generated grounded notes with citation references |
+| `POST` | `/api/days/:dayId/notes/regenerate` | Force regeneration of notes using updated chunks |
 
-## 🏗️ System Architecture & System Design
+### 🎯 Educational Resources
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/days/:dayId/resources` | Fetch two-stage ranked YouTube, Wikipedia & Book resources |
+| `POST` | `/api/resources/:id/feedback` | Submit student relevance feedback (`helpful`, `watched`) |
 
-AlgoPrep employs a robust, zero-trust Client-Server architecture designed for high availability and strict data integrity during live exams. Below is the visual workflow mapping how our React frontend portals, Node.js backend micro-services, MongoDB aggregation pipelines, and the Gemini AI engine interact in real-time.
+### 📝 Test Engine & Attempts (Dual-Mode CBT)
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/tests` | List available platform & generated tests |
+| `POST` | `/api/days/:dayId/test` | Get or dynamically synthesize day practice/exam test |
+| `POST` | `/api/tests/:id/start` | Start attempt, initialize server timer, acquire lock |
+| `PATCH`| `/api/attempts/:id/progress` | Auto-save progress with monotonic version lock |
+| `POST` | `/api/attempts/:id/submit` | Finalize attempt, trigger scoring & mastery evaluation |
+| `GET` | `/api/attempts/:id/review` | Review question answers, explanations, and chunk citations |
+| `GET` | `/api/attempts/:id/analysis` | Retrieve AI analysis scorecard and mastery deltas |
 
-```mermaid
-graph TD
-    %% User Roles
-    subgraph "Frontend Layer (React / Vite)"
-        S["🎓 Student"]
-        T["🧑‍🏫 Teacher"]
-        A["🛡️ Admin"]
-        
-        SP["Student Portal<br/>(Test Engine, Analytics)"]
-        TP["Teacher Portal<br/>(Syllabus Upload, Hiring)"]
-        AP["Admin Portal<br/>(User Mgmt, System Config)"]
-        
-        S ---> SP
-        T ---> TP
-        A ---> AP
-    end
+### 🤖 Socratic AI Study Tutor
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `POST` | `/api/workspaces/:id/chat/sessions` | Create or retrieve tutor chat session |
+| `GET` | `/api/workspaces/:id/chat/sessions` | List workspace chat sessions |
+| `GET` | `/api/chat/sessions/:sid/messages` | Get conversation history |
+| `POST` | `/api/chat/sessions/:sid/messages` | **SSE Stream**: Send prompt and receive streamed tutor response |
 
-    %% Backend API Gateway
-    subgraph "Backend API Layer (Node.js / Express)"
-        API["API Gateway & Auth Router<br/>(JWT Access/Refresh)"]
-        
-        SP --->|REST Requests| API
-        TP --->|REST Requests| API
-        AP --->|REST Requests| API
-        
-        subgraph "Core Micro-Services (Controllers)"
-            CBT["CBT Engine<br/>(Server Timer, Grading, Locks)"]
-            AI["AI Generator<br/>(Multer Parsing, Zod Validation)"]
-            LBD["Leaderboard Engine<br/>($setWindowFields Aggregation)"]
-            PROC["Proctoring Service<br/>(Visibility API, Anti-Cheat)"]
-            HR["Hiring Pipeline<br/>(Teacher Applications)"]
-        end
-        
-        API ---> CBT
-        API ---> AI
-        API ---> LBD
-        API ---> PROC
-        API ---> HR
-    end
-
-    %% External Cloud Services
-    subgraph "External Cloud Services"
-        GEMINI["Google Gemini API<br/>(@google/genai)"]
-        CLOUDINARY["Cloudinary API<br/>(Media & Resume Storage)"]
-    end
-    AI --->|Extracted Syllabus Text / Prompt| GEMINI
-    GEMINI --->|Strict JSON Schema| AI
-    
-    HR --->|Uploads Teacher Resumes| CLOUDINARY
-    API --->|User Profile Avatars| CLOUDINARY
-
-    %% Database Layer
-    subgraph "Database Layer (MongoDB)"
-        DB[("MongoDB Database")]
-        CBT --->|Monotonic Version Updates| DB
-        AI --->|Stores Generated Tests| DB
-        LBD --->|Aggregation Queries| DB
-        PROC --->|Saves Audit Logs| DB
-        HR --->|Application Statuses| DB
-    end
-```
+### 🏆 Leaderboards & Classroom Features
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/leaderboard` | Global & per-test rankings via `$setWindowFields` |
+| `GET` | `/api/memberships/roster` | List enrolled students in educator's classroom |
+| `POST` | `/api/announcements` | Publish classroom announcement |
+| `POST` | `/api/messages` | Send real-time direct message |
 
 ---
 
-## 📡 API Overview & Documentation
-
-AlgoPrep exposes a comprehensive RESTful API. Below is the complete, exhaustive list of all API routes implemented across the micro-services. All protected routes require a JWT Bearer token in the `Authorization` header.
-
-### 🛡️ Authentication & User Management
-| Method | Endpoint | Description | Access |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/api/auth/signup` | Register a new user | Public |
-| `POST` | `/api/auth/login` | Authenticate user & receive JWT tokens | Public |
-| `POST` | `/api/auth/refresh` | Refresh access token | Public |
-| `POST` | `/api/auth/logout` | Invalidate token and logout | Authenticated |
-| `GET` | `/api/users/profile` | Get current user's profile | Authenticated |
-| `PATCH` | `/api/users/profile` | Update profile information | Authenticated |
-| `POST` | `/api/users/avatar` | Upload user profile avatar (Cloudinary) | Authenticated |
-
-### 📝 Test Engine & Attempts (CBT)
-| Method | Endpoint | Description | Access |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/api/tests` | Fetch all available tests | Optional JWT |
-| `POST` | `/api/tests` | Create a new custom test | Teacher |
-| `GET` | `/api/tests/:id` | Fetch specific test details (Masked answers) | Optional JWT |
-| `DELETE`| `/api/tests/:id` | Delete a test | Authenticated |
-| `POST` | `/api/tests/:id/start` | Start a test attempt & server timer | Student |
-| `GET` | `/api/attempts/user/my-attempts`| Fetch candidate's attempt history | Student |
-| `GET` | `/api/attempts/:id` | Get details of an active attempt | Student/Admin |
-| `PATCH` | `/api/attempts/:id/progress` | Auto-save progress with monotonic lock | Student |
-| `POST` | `/api/attempts/:id/submit` | Submit test and calculate final score | Student |
-| `GET` | `/api/attempts/:id/review` | Review submitted test & answer keys | Student |
-
-### 🤖 AI, Analytics & Leaderboard
-| Method | Endpoint | Description | Access |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/api/ai/generate` | Generate syllabus-to-test via Gemini AI | Rate-Limited |
-| `GET` | `/api/attempts/:id/ai-revision` | Get AI-generated 3-step revision plan | Student |
-| `GET` | `/api/leaderboard` | Get global & per-test rankings via Aggregation| Authenticated |
-
-### 🧑‍🏫 Teacher Portal & LMS Features
-| Method | Endpoint | Description | Access |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/api/teachers` | Fetch public directory of teachers | Public |
-| `GET` | `/api/teachers/:id` | Fetch specific teacher details | Public |
-| `POST` | `/api/memberships/join/:teacherId`| Join a teacher's classroom | Student |
-| `DELETE`| `/api/memberships/leave/:teacherId`| Leave a teacher's classroom | Student |
-| `GET` | `/api/memberships/my-teachers` | Fetch teachers the student is following | Student |
-| `GET` | `/api/memberships/roster` | Fetch students enrolled in teacher's class | Teacher |
-| `DELETE`| `/api/memberships/roster/:studentId`| Remove student from class roster | Teacher |
-| `POST` | `/api/announcements` | Create a new class announcement | Teacher |
-| `GET` | `/api/announcements/mine` | Fetch teacher's announcements | Teacher |
-| `DELETE`| `/api/announcements/:id`| Delete an announcement | Teacher |
-| `GET` | `/api/announcements/feed` | Fetch announcement feed for student | Student |
-| `POST` | `/api/lectures` | Create and publish a new lecture | Teacher |
-| `GET` | `/api/lectures/mine` | Fetch teacher's lectures | Teacher |
-| `GET` | `/api/lectures/:id` | View specific lecture details | Authenticated |
-| `DELETE`| `/api/lectures/:id` | Delete a lecture | Teacher |
-| `GET` | `/api/lectures/feed` | Fetch lecture feed for enrolled student | Student |
-
-### 💬 Real-time Messaging
-| Method | Endpoint | Description | Access |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/api/messages` | Send a direct message | Authenticated |
-| `GET` | `/api/messages/contacts` | Fetch list of messaging contacts | Authenticated |
-| `GET` | `/api/messages/conversations` | Fetch recent conversations | Authenticated |
-| `GET` | `/api/messages/conversations/:id`| Fetch messages within a conversation | Authenticated |
-
-### 👑 Admin & Hiring Pipeline
-| Method | Endpoint | Description | Access |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/api/teacher-applications/apply`| Submit application & resume (Cloudinary) | Public |
-| `GET` | `/api/admin/teacher-applications`| List pending teacher applications | Admin |
-| `PATCH` | `/api/admin/teacher-applications/:id`| Approve/Reject application | Admin |
-| `GET` | `/api/admin/users` | List all registered users in system | Admin |
-| `PATCH` | `/api/admin/users/:id/status` | Suspend/Ban or update user status | Admin |
-
-### ⚙️ System
-| Method | Endpoint | Description | Access |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/api/health` | Service health check | Public |
-
----
-
-## 📁 Project Structure
-
-AlgoPrep uses a modern monorepo structure, cleanly separating the React frontend from the Node.js backend.
+## 📁 Repository Structure
 
 ```text
 AlgoPrep/
-├── client/                     # Frontend Workspace (Vite + React)
+├── client/                     # Frontend Application (React 19 + Vite)
 │   ├── src/
-│   │   ├── components/        # Reusable UI components (Modals, QuestionPalette, Timer)
-│   │   ├── context/           # Global state management (AuthContext)
-│   │   ├── pages/             # Route-level views (Dashboard, TestTaking, Leaderboard, SyllabusAI)
-│   │   ├── services/          # API client wrappers handling token auto-refresh
-│   │   └── types/             # Frontend type definitions/constants
-│   └── package.json           # Client dependencies (Tailwind, Recharts, React Router)
+│   │   ├── components/        # UI Components (CBT Engine, QuestionPalette, Timer)
+│   │   │   ├── chat/          # Socratic AI Tutor Drawer & Markdown Streamer
+│   │   │   └── common/        # ErrorBoundaries, Modals, Skeleton Loaders
+│   │   ├── context/           # React Context (AuthContext, SocketContext)
+│   │   ├── pages/             # Route Pages (DayView, WorkspaceView, Dashboard, CBT)
+│   │   ├── services/          # Axios API wrappers with JWT token auto-refresh
+│   │   └── types/             # TypeScript / Prop definitions
+│   ├── package.json           # React 19, Tailwind v4, KaTeX, Recharts
+│   └── vite.config.js         # Vite configuration with proxy rules
 │
-├── server/                     # Backend Workspace (Node.js + Express)
+├── server/                     # Backend Application (Node.js + Express)
 │   ├── src/
-│   │   ├── config/            # Environment vars and Database connection
-│   │   ├── controllers/       # Core business logic for APIs
-│   │   ├── middleware/        # JWT auth, Zod validation, Multer file upload, Rate limiting
-│   │   ├── models/            # Mongoose schemas (User, Test, Attempt, Question)
-│   │   ├── routes/            # Express router definitions
-│   │   ├── seeds/             # Seed scripts (CS Topic Tests, dummy users)
-│   │   ├── services/          # External integrations (Cloudinary storage, Gemini AI)
-│   │   ├── socket/            # Real-time WebSocket handlers
-│   │   └── utils/             # Helper functions (Scoring, PDF extraction, formatters)
+│   │   ├── ai/                # AI Gateway, LLM Routing, Embedder, Retriever
+│   │   │   ├── prompts/       # Structured, versioned prompts for all agents
+│   │   │   └── schemas/       # Zod schemas for structured JSON output
+│   │   ├── config/            # DB connection, DNS resolution, Env configuration
+│   │   ├── controllers/       # HTTP Request Handlers (Workspace, Day, Notes, CBT)
+│   │   ├── middleware/        # JWT Auth, Zod Validation, Multer, Rate Limiting
+│   │   ├── models/            # Mongoose Schemas (Workspace, Chunk, Roadmap, Test, Attempt)
+│   │   ├── parsing/           # Extractors (PDF, DOCX, PPTX, OCR) and Text Chunker
+│   │   ├── queue/             # BullMQ Queue Connections & Worker Initializers
+│   │   ├── resources/         # Multi-Source Adapters (YouTube, Wiki) & Reranker
+│   │   ├── routes/            # Express Routers
+│   │   ├── seeds/             # 25 CS Platform Tests & Dev Accounts
+│   │   ├── services/          # Business Logic (Tutor, Mastery, Re-plan, Notes)
+│   │   ├── socket/            # WebSocket Handlers (Direct Messaging)
+│   │   └── workers/           # BullMQ Workers (Ingest, Roadmap, Notes, Resources)
 │   ├── tests/                 # Vitest & Supertest integration suites
-│   └── package.json           # Server dependencies (Mongoose, GenAI, Zod, JWT)
+│   └── package.json           # Node.js dependencies (BullMQ, Mongoose, GenAI)
 │
-├── INTERVIEW_PREP.md           # Extensive System Design & Architectural Guide
-└── README.md                   # Project Documentation
+├── utils/                     # Architectural diagrams, mock assets, and logos
+├── .env.example               # Complete environment variable template
+├── INTERVIEW_PREP.md          # Comprehensive System Design & Interview Guide
+└── README.md                  # Master Project Documentation
 ```
 
 ---
 
-## ⚡ Installation and Setup
-
-Follow these steps to get AlgoPrep running on your local machine for development and testing.
+## ⚡ Installation & Local Setup
 
 ### 1. Prerequisites
-- **Node.js**: v18.x LTS or higher
-- **npm** or **pnpm** package manager
-- **MongoDB**: A running local instance (`mongodb://127.0.0.1:27017`) or a MongoDB Atlas cluster URI.
+- **Node.js**: v20.x or higher
+- **npm** or **pnpm**
+- **MongoDB**: A running local MongoDB instance or a free [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) cluster.
+- **Redis**: A running local Redis instance (`redis://127.0.0.1:6379`) or a managed cloud Redis instance (e.g. Upstash).
 
-### 2. Clone the Repository & Install Dependencies
-Clone the project and install the dependencies for the root, server, and client workspaces:
-
+### 2. Clone the Repository
 ```bash
-# Clone the repository
 git clone https://github.com/Soupal23/AlgoPrep.git
 cd AlgoPrep
-
-# Install root dependencies (for concurrently)
-npm install
-
-# Install backend dependencies
-cd server
-npm install
-cd ..
-
-# Install frontend dependencies
-cd client
-npm install
-cd ..
 ```
 
-### 3. Environment Configuration
-Create a `.env` file in the **root** directory of the project. You can copy the provided `.env.example` template:
+### 3. Install Dependencies
+```bash
+# Install root orchestration dependencies
+npm install
 
+# Install server dependencies
+npm install --prefix server
+
+# Install client dependencies
+npm install --prefix client
+```
+
+### 4. Configure Environment Variables
+Copy `.env.example` to `.env` in the root directory:
 ```bash
 cp .env.example .env
 ```
 
-Ensure the following essential variables are populated:
+Populate the required credentials:
 ```env
 PORT=5000
-MONGODB_URI=mongodb://127.0.0.1:27017/algoprep
-JWT_ACCESS_SECRET=your_super_secure_access_secret
-JWT_REFRESH_SECRET=your_super_secure_refresh_secret
+MONGODB_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/algoprep?retryWrites=true&w=majority
+REDIS_URL=redis://127.0.0.1:6379
+JWT_ACCESS_SECRET=your_super_strong_jwt_access_secret_min_32_chars
+JWT_REFRESH_SECRET=your_super_strong_jwt_refresh_secret_min_32_chars
 GEMINI_API_KEY=your_gemini_api_key_here
 NODE_ENV=development
+RUN_WORKERS=true
 ```
 
-### 4. Database Seeding (First-Time Setup)
-Seed your MongoDB database with the 25 core CS topic tests (375 questions) and generate dummy student and admin accounts:
-
+### 5. Seed Core Platform Tests
+Populate the database with the 25 core Computer Science platform tests (375 questions) and initial developer accounts:
 ```bash
-# From the root directory
 npm run seed
 ```
-*(Check your console output for the generated admin credentials if you did not specify `ADMIN_SEED_PASSWORD` in your `.env`)*
+*(Default dev accounts created: `admin@algoprep.com` / `admin123456`, `student@algoprep.com` / `password123`)*
 
-### 5. Running the Application Locally
-AlgoPrep uses `concurrently` in the root workspace to launch both the frontend and backend simultaneously. 
-
-From the **root directory**, run:
+### 6. Launch the Development Server
+Launch both the backend API server and Vite frontend client concurrently:
 ```bash
 npm run dev
 ```
-
-- The **Backend API** will start on `http://localhost:5000`
-- The **Vite Frontend** will start on `http://localhost:5173`
-
-Open your browser and navigate to `http://localhost:5173` to start using AlgoPrep!
+- **Backend API**: `http://localhost:5000`
+- **Frontend App**: `http://localhost:5173`
 
 ---
 
-## ⚙️ Configuration Variables
+## 🧪 Testing & Quality Assurance
 
-AlgoPrep requires a `.env` file at the root of the project to manage environment-specific variables securely. Below is a comprehensive list of all configuration variables used by the application, their purposes, and their defaults.
+AlgoPrep includes comprehensive automated test suites covering CBT monotonic locking, anti-cheat validation, grounded notes generation, and AI tutor sessions.
 
-### Backend (Server) Configuration
+```bash
+# Run all server integration and unit tests
+npm test --prefix server
 
-| Variable | Description | Default / Example |
-| :--- | :--- | :--- |
-| `PORT` | The port the Node.js API server listens on | `5000` |
-| `MONGODB_URI` | The connection string for the MongoDB instance | `mongodb://127.0.0.1:27017/algoprep` |
-| `NODE_ENV` | Current execution environment (`development`, `production`) | `development` |
-| `JWT_ACCESS_SECRET` | Secret key for signing short-lived access tokens | *(Required string)* |
-| `JWT_REFRESH_SECRET` | Secret key for signing long-lived refresh tokens | *(Required string)* |
-| `GEMINI_API_KEY` | Google API Key required for AI generation features | *(Required for AI)* |
-| `ADMIN_SEED_PASSWORD` | Pre-defined password for the `admin@algoprep.com` account when running the `npm run seed` script | *(Generates random password if empty)* |
-| `CLOUDINARY_CLOUD_NAME` | Cloudinary account name for production media/resume storage | *(Optional in dev)* |
-| `CLOUDINARY_API_KEY` | Cloudinary API Key | *(Optional in dev)* |
-| `CLOUDINARY_API_SECRET` | Cloudinary API Secret | *(Optional in dev)* |
+# Run specific test suites
+npm test --prefix server -- tests/notes.test.js tests/chat.test.js
 
-### Frontend (Client) Configuration
+# Build client for production verification
+npm run build --prefix client
+```
 
-Create a `.env` file inside the `client` directory if you need to override frontend-specific Vite variables (by default, Vite proxies `/api` to `http://localhost:5000`):
+---
 
-| Variable | Description | Default / Example |
-| :--- | :--- | :--- |
-| `VITE_API_URL` | The absolute base URL for all API calls made by the React frontend | `/api` |
+## 🛡️ License & Acknowledgements
+
+AlgoPrep is developed for computer science students, educators, and candidates preparing for technical interviews. Distributed under the MIT License. Built with Google Gemini API, React 19, BullMQ, and MongoDB Atlas.
