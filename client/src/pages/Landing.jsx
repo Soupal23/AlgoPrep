@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { resolveFileUrl } from '../utils/fileUrl';
+import { Logo } from '../components/Logo';
 import {
-  Terminal,
   ArrowRight,
   Lock,
   Mail,
@@ -92,11 +92,8 @@ export const Landing = () => {
       <div className="flex-1 flex flex-col items-center justify-center py-8">
         
         {/* Brand Header */}
-        <div className="text-center mb-8 space-y-2">
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center justify-center gap-2">
-            <Terminal className="w-6 h-6 text-white" />
-            <span>AlgoPrep</span>
-          </h1>
+        <div className="text-center mb-8 flex flex-col items-center justify-center">
+          <Logo variant="full" size="xl" className="h-16 sm:h-20" linkTo={null} />
         </div>
 
         {/* Auth Card */}
@@ -337,7 +334,7 @@ export const Landing = () => {
       <footer className="pt-6 border-t border-zinc-700 text-center text-xs text-zinc-400 font-mono">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <Terminal className="w-4 h-4 text-zinc-400" />
+            <Logo variant="icon" size="xs" linkTo={null} />
             <span className="font-semibold text-white">AlgoPrep</span>
           </div>
           <div>

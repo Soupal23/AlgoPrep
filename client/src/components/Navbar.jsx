@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { resolveFileUrl } from '../utils/fileUrl';
+import { Logo } from './Logo';
 import {
-  Terminal,
   LogOut,
   User as UserIcon,
   ShieldCheck,
@@ -72,14 +72,7 @@ export const Navbar = () => {
         
         {/* Left: Brand Logo + Navigation Links */}
         <div className="flex items-center gap-6 h-full">
-          <Link to="/" className="flex items-center gap-2 shrink-0 group">
-            <div className="w-6 h-6 rounded-md bg-zinc-900 border border-zinc-700 flex items-center justify-center text-[#ffa116] group-hover:border-[#ffa116] transition-colors">
-              <Terminal className="w-3.5 h-3.5" />
-            </div>
-            <span className="font-semibold text-sm tracking-tight text-white">
-              AlgoPrep
-            </span>
-          </Link>
+          <Logo variant="full" size="sm" className="h-7 hover:opacity-90 transition-opacity" />
 
           {/* Desktop Horizontal Nav Links */}
           {renderNavLinks()}
