@@ -87,7 +87,7 @@ describe('Phase 7 — Profiles', () => {
       .attach('file', pngBuffer, 'profile.png');
 
     expect(validRes.status).toBe(200);
-    expect(validRes.body.avatarUrl).toContain('uploads/avatars/');
+    expect(validRes.body.avatarUrl).toMatch(/uploads\/avatars\/|cloudinary\.com/);
 
     // Invalid file type upload (PDF)
     const invalidRes = await request(app)

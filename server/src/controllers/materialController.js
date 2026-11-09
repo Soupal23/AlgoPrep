@@ -60,6 +60,8 @@ export const uploadMaterials = async (req, res, next) => {
         logger.error({ err: storageErr.message }, 'Failed to save uploaded file to storage');
       }
 
+      const isCloud = savedPathOrUrl && (savedPathOrUrl.startsWith('http://') || savedPathOrUrl.startsWith('https://'));
+
       // 2. Create Material record
       const material = await Material.create({
         workspaceId,
@@ -68,7 +70,8 @@ export const uploadMaterials = async (req, res, next) => {
         fileName: file.originalname,
         mimeType: file.mimetype,
         sizeBytes: file.size,
-        status: 'pending'
+        status: 'pending',
+        cloudinaryUrl: isCloud ? savedPathOrUrl : ''
       });
 
       // 3. Create Job record
@@ -90,8 +93,8 @@ export const uploadMaterials = async (req, res, next) => {
         materialId: material._id.toString(),
         workspaceId: workspaceId.toString(),
         userId: currentUserId,
-        filePath: savedPathOrUrl && !savedPathOrUrl.startsWith('http') ? path.resolve(savedPathOrUrl) : null,
-        fileUrl: savedPathOrUrl && savedPathOrUrl.startsWith('http') ? savedPathOrUrl : null,
+        filePath: savedPathOrUrl && !isCloud ? path.resolve(savedPathOrUrl) : null,
+        fileUrl: isCloud ? savedPathOrUrl : null,
         mimeType: file.mimetype,
         originalName: file.originalname,
         jobId: job._id.toString()

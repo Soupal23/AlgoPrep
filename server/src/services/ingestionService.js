@@ -18,6 +18,7 @@ export const ingestMaterial = async ({
   userId,
   buffer = null,
   filePath = null,
+  fileUrl = null,
   mimeType = '',
   originalName = '',
   jobId = null
@@ -55,15 +56,18 @@ export const ingestMaterial = async ({
       }
     }
 
-    if (!fileBuffer && fileUrl && (fileUrl.startsWith('http://') || fileUrl.startsWith('https://'))) {
+    const resolvedUrl = fileUrl || material.cloudinaryUrl || null;
+    if (!fileBuffer && resolvedUrl && (resolvedUrl.startsWith('http://') || resolvedUrl.startsWith('https://'))) {
       try {
-        const response = await fetch(fileUrl);
+        const response = await fetch(resolvedUrl);
         if (response.ok) {
           const arrayBuf = await response.arrayBuffer();
           fileBuffer = Buffer.from(arrayBuf);
+        } else {
+          logger.warn({ status: response.status, resolvedUrl }, 'Could not fetch remote fileUrl: bad response');
         }
       } catch (fetchErr) {
-        logger.warn({ err: fetchErr.message, fileUrl }, 'Could not fetch remote fileUrl for ingestion');
+        logger.warn({ err: fetchErr.message, resolvedUrl }, 'Could not fetch remote fileUrl for ingestion');
       }
     }
 
