@@ -5,6 +5,7 @@ class ApiService {
     this.accessToken = localStorage.getItem('algoprep_access_token');
     this.refreshToken = localStorage.getItem('algoprep_refresh_token');
     this.user = this.getStoredUser();
+    this.refreshPromise = null;
   }
 
   setTokens(accessToken, refreshToken) {
@@ -65,28 +66,39 @@ class ApiService {
 
     // Handle token expiration & automatic refresh
     if (response.status === 401 && this.refreshToken && !endpoint.includes('/auth/')) {
-      try {
-        const refreshRes = await fetch(`${API_BASE}/auth/refresh`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ refreshToken: this.refreshToken })
-        });
+      if (!this.refreshPromise) {
+        this.refreshPromise = (async () => {
+          try {
+            const refreshRes = await fetch(`${API_BASE}/auth/refresh`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ refreshToken: this.refreshToken })
+            });
 
-        if (refreshRes.ok) {
-          const data = await refreshRes.json();
-          this.setTokens(data.accessToken);
-          headers['Authorization'] = `Bearer ${data.accessToken}`;
-          response = await fetch(`${API_BASE}${endpoint}`, {
-            ...options,
-            headers
-          });
-        } else {
-          this.clearTokens();
-          window.location.href = '/';
-        }
-      } catch (err) {
-        this.clearTokens();
-        window.location.href = '/';
+            if (refreshRes.ok) {
+              const data = await refreshRes.json();
+              this.setTokens(data.accessToken);
+              return data.accessToken;
+            } else {
+              this.clearTokens();
+              return null;
+            }
+          } catch (err) {
+            this.clearTokens();
+            return null;
+          } finally {
+            this.refreshPromise = null;
+          }
+        })();
+      }
+
+      const refreshedToken = await this.refreshPromise;
+      if (refreshedToken) {
+        headers['Authorization'] = `Bearer ${refreshedToken}`;
+        response = await fetch(`${API_BASE}${endpoint}`, {
+          ...options,
+          headers
+        });
       }
     }
 

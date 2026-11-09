@@ -98,7 +98,12 @@ export const refresh = async (req, res) => {
     const payload = verifyRefreshToken(refreshToken);
     const user = await User.findById(payload.userId);
 
-    if (!user || user.refreshToken !== refreshToken) {
+    if (!user) {
+      res.status(401).json({ error: 'User not found' });
+      return;
+    }
+
+    if (user.refreshToken && user.refreshToken !== refreshToken) {
       res.status(401).json({ error: 'Invalid or revoked refresh token' });
       return;
     }
