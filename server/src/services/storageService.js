@@ -17,26 +17,37 @@ cloudinary.config({
  */
 
 export const saveUploadedFile = async ({ buffer, originalname, subfolder }) => {
-  // Production Cloud Storage Hook
-  if (config.nodeEnv === 'production') {
-    return new Promise((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        {
-          folder: `algoprep/${subfolder}`,
-          resource_type: 'auto',
-          use_filename: true,
-          unique_filename: true
-        },
-        (error, result) => {
-          if (error) return reject(error);
-          resolve(result.secure_url);
-        }
-      );
-      streamifier.createReadStream(buffer).pipe(uploadStream);
-    });
+  const hasCloudinary = Boolean(
+    config.cloudinaryCloudName &&
+    config.cloudinaryApiKey &&
+    config.cloudinaryApiSecret
+  );
+
+  // Optional Cloudinary Upload (only when all keys are explicitly configured)
+  if (hasCloudinary) {
+    try {
+      const cloudUrl = await new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          {
+            folder: `algoprep/${subfolder}`,
+            resource_type: 'auto',
+            use_filename: true,
+            unique_filename: true
+          },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result.secure_url);
+          }
+        );
+        streamifier.createReadStream(buffer).pipe(uploadStream);
+      });
+      return cloudUrl;
+    } catch (cloudErr) {
+      console.warn('Cloudinary upload failed, falling back to local disk storage:', cloudErr.message);
+    }
   }
 
-  // Local Disk Storage (Development)
+  // Local Disk Storage (Default & Fail-Safe)
   const safeFilename = `${Date.now()}-${originalname.replace(/\s+/g, '_')}`;
   const targetDir = path.resolve('uploads', subfolder);
 
@@ -45,7 +56,7 @@ export const saveUploadedFile = async ({ buffer, originalname, subfolder }) => {
 
   await fs.writeFile(targetPath, buffer);
 
-  // Return normalized URL path for database storage
+  // Return normalized path for server storage
   return `uploads/${subfolder}/${safeFilename}`;
 };
 

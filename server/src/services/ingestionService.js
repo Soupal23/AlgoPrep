@@ -48,7 +48,23 @@ export const ingestMaterial = async ({
     // 1. Resolve buffer
     let fileBuffer = buffer;
     if (!fileBuffer && filePath) {
-      fileBuffer = await fs.readFile(filePath);
+      try {
+        fileBuffer = await fs.readFile(filePath);
+      } catch (readErr) {
+        logger.warn({ err: readErr.message, filePath }, 'Could not read local file path for ingestion');
+      }
+    }
+
+    if (!fileBuffer && fileUrl && (fileUrl.startsWith('http://') || fileUrl.startsWith('https://'))) {
+      try {
+        const response = await fetch(fileUrl);
+        if (response.ok) {
+          const arrayBuf = await response.arrayBuffer();
+          fileBuffer = Buffer.from(arrayBuf);
+        }
+      } catch (fetchErr) {
+        logger.warn({ err: fetchErr.message, fileUrl }, 'Could not fetch remote fileUrl for ingestion');
+      }
     }
 
     if (!fileBuffer) {
