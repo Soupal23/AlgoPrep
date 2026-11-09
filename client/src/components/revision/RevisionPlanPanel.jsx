@@ -69,13 +69,13 @@ export const RevisionPlanPanel = ({ attemptId, onJumpToQuestion }) => {
 
   if (error && !data?.plan) {
     return (
-      <div className="max-w-md mx-auto my-12 p-8 bg-[#14111f] rounded-2xl border border-rose-800 text-center space-y-4">
+      <div className="max-w-md mx-auto my-12 p-8 bg-[#121215] rounded-2xl border border-rose-800 text-center space-y-4">
         <AlertCircle className="w-10 h-10 text-rose-400 mx-auto" />
         <h3 className="text-base font-bold text-white">Revision Plan Unavailable</h3>
         <p className="text-xs text-rose-300">{error}</p>
         <button
           onClick={loadPlan}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold shadow-lg transition-colors"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-amber-500 hover:bg-amber-400 text-black text-xs font-semibold shadow-[0_0_15px_rgba(245,158,11,0.25)] transition-colors"
         >
           <RefreshCw className="w-3.5 h-3.5" />
           <span>Retry Generation</span>
@@ -94,25 +94,22 @@ export const RevisionPlanPanel = ({ attemptId, onJumpToQuestion }) => {
   });
 
   return (
-    <div className="space-y-7">
+    <div className="space-y-6">
       {/* Action Header Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-[#383050]">
+      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-zinc-700">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-2xl bg-purple-500/20 text-purple-400 border border-purple-500/30">
-            <Sparkles className="w-6 h-6" />
+          <div className="w-9 h-9 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center shrink-0">
+            <Sparkles className="w-4 h-4" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-white flex items-center gap-2">
-              <span>Personalized Revision Diagnostics</span>
+            <h2 className="text-lg font-bold text-white flex items-center gap-2">
+              <span>Revision Plan</span>
               {source === 'ai' && (
-                <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-purple-950/90 text-purple-300 border border-purple-700/60">
+                <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-[#18181b] text-amber-400 border border-zinc-700">
                   AI Synthesized
                 </span>
               )}
             </h2>
-            <p className="text-xs text-slate-400">
-              Targeted remediation plan, behavioral pattern diagnosis, and curated learning materials
-            </p>
           </div>
         </div>
 
@@ -120,7 +117,7 @@ export const RevisionPlanPanel = ({ attemptId, onJumpToQuestion }) => {
         <div className="flex items-center gap-2.5 no-print">
           <button
             onClick={handlePrint}
-            className="px-3.5 py-2 rounded-xl bg-[#1c1729] hover:bg-[#251e35] text-slate-300 hover:text-white text-xs font-semibold border border-[#383050] transition-colors flex items-center gap-1.5"
+            className="px-4 py-2 rounded-full bg-[#18181b] hover:bg-[#202025] text-zinc-300 hover:text-white text-xs font-semibold border border-zinc-700 transition-colors flex items-center gap-1.5"
             title="Export or print this revision plan to PDF"
           >
             <Printer className="w-3.5 h-3.5" />
@@ -130,15 +127,14 @@ export const RevisionPlanPanel = ({ attemptId, onJumpToQuestion }) => {
           <button
             onClick={() => setShowConfirmModal(true)}
             disabled={!canRegenerate || regenerating}
-            className={`px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all flex items-center gap-1.5 ${
+            className={`px-4 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 ${
               canRegenerate && !regenerating
-                ? 'bg-purple-600/90 hover:bg-purple-600 text-white border-purple-500 shadow-md shadow-purple-900/20'
-                : 'bg-slate-800/60 text-slate-500 border-slate-700 cursor-not-allowed'
+                ? 'bg-amber-500 hover:bg-amber-400 text-black font-semibold shadow-[0_0_15px_rgba(245,158,11,0.25)]'
+                : 'bg-[#18181b] text-zinc-600 border border-zinc-700 cursor-not-allowed'
             }`}
-            title={canRegenerate ? `Regenerate plan with fresh AI reasoning (${remainingRegens} left)` : 'Maximum regenerations reached'}
           >
             <RotateCcw className={`w-3.5 h-3.5 ${regenerating ? 'animate-spin' : ''}`} />
-            <span>{regenerating ? 'Regenerating...' : `Regenerate AI (${remainingRegens} left)`}</span>
+            <span>{regenerating ? 'Regenerating...' : `Regenerate (${remainingRegens} left)`}</span>
           </button>
         </div>
       </div>
@@ -189,16 +185,11 @@ export const RevisionPlanPanel = ({ attemptId, onJumpToQuestion }) => {
       {/* Section 3: Weak Concepts Breakdown */}
       <div className="space-y-4">
         <div className="flex items-center justify-between pb-1">
-          <div>
-            <h3 className="text-lg font-bold text-white flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-rose-500" />
-              <span>Targeted Concepts for Remediation</span>
-            </h3>
-            <p className="text-xs text-slate-400">
-              Categorized by misconception trap, prioritized by urgency and recurring frequency
-            </p>
-          </div>
-          <span className="text-xs font-mono text-slate-400">
+          <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-amber-500" />
+            <span>Focus Areas</span>
+          </h3>
+          <span className="text-xs font-mono text-zinc-400">
             {plan?.weakConcepts?.length || 0} Areas Identified
           </span>
         </div>
@@ -215,11 +206,11 @@ export const RevisionPlanPanel = ({ attemptId, onJumpToQuestion }) => {
             ))}
           </div>
         ) : (
-          <div className="p-8 rounded-2xl bg-[#14111f] border border-emerald-900/50 text-center space-y-2">
-            <p className="text-emerald-300 font-bold text-sm">
-              🎉 Zero Weak Concepts Detected!
+          <div className="p-8 rounded-2xl bg-[#121215] border border-zinc-700 text-center space-y-2">
+            <p className="text-emerald-400 font-bold text-sm">
+              Zero Weak Concepts Detected
             </p>
-            <p className="text-xs text-slate-400 max-w-md mx-auto">
+            <p className="text-xs text-zinc-400 max-w-md mx-auto">
               You achieved full mastery across all concepts tested. Continue challenging yourself with advanced modules!
             </p>
           </div>
@@ -231,10 +222,10 @@ export const RevisionPlanPanel = ({ attemptId, onJumpToQuestion }) => {
 
       {/* Section 5: All Curated Resources */}
       {plan?.resources?.length > 0 && (
-        <div className="bg-[#14111f] rounded-3xl p-6 border border-[#383050] space-y-4">
+        <div className="bg-[#121215] rounded-2xl p-6 border border-zinc-700 space-y-4">
           <div className="flex items-center gap-2.5">
-            <BookOpen className="w-5 h-5 text-purple-400" />
-            <h3 className="text-base font-bold text-white">All Recommended Study Links</h3>
+            <BookOpen className="w-5 h-5 text-amber-400" />
+            <h3 className="text-base font-bold text-white">Recommended Study Links</h3>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {plan.resources.map((res) => (
@@ -246,26 +237,26 @@ export const RevisionPlanPanel = ({ attemptId, onJumpToQuestion }) => {
 
       {/* Confirmation Modal for Regeneration */}
       {showConfirmModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="max-w-md w-full bg-[#14111f] p-6 rounded-2xl border border-[#383050] shadow-2xl space-y-4">
-            <div className="flex items-center gap-3 text-purple-400">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+          <div className="max-w-md w-full bg-[#121215] p-6 rounded-2xl border border-zinc-700 shadow-2xl space-y-4">
+            <div className="flex items-center gap-3 text-amber-400">
               <Sparkles className="w-6 h-6" />
               <h3 className="text-base font-bold text-white">Regenerate Revision Plan?</h3>
             </div>
-            <p className="text-xs text-slate-300 leading-relaxed">
+            <p className="text-xs text-zinc-300 leading-relaxed">
               This will make a fresh AI query with the latest behavioral signals.
               You have <strong>{remainingRegens}</strong> regeneration{remainingRegens === 1 ? '' : 's'} remaining for this test attempt.
             </p>
             <div className="flex justify-end gap-3 pt-2">
               <button
                 onClick={() => setShowConfirmModal(false)}
-                className="px-4 py-2 rounded-xl bg-[#1c1729] hover:bg-[#251e35] text-slate-300 text-xs font-semibold"
+                className="px-4 py-2 rounded-full bg-[#18181b] hover:bg-[#202025] text-zinc-300 text-xs font-semibold border border-zinc-700 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleRegenerate}
-                className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold shadow-lg"
+                className="px-4 py-2 rounded-full bg-amber-500 hover:bg-amber-400 text-black text-xs font-semibold shadow-[0_0_15px_rgba(245,158,11,0.25)] transition-colors"
               >
                 Confirm & Regenerate
               </button>

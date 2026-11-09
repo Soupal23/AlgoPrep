@@ -4,9 +4,16 @@ const attemptSchema = new Schema(
   {
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
     testId: { type: Schema.Types.ObjectId, ref: 'Test', required: true, index: true },
+    workspaceId: { type: Schema.Types.ObjectId, ref: 'Workspace', default: null, index: true },
+    dayId: { type: Schema.Types.ObjectId, ref: 'Day', default: null, index: true },
     answers: {
       type: Map,
-      of: Number,
+      of: Schema.Types.Mixed,
+      default: new Map()
+    },
+    grading: {
+      type: Map,
+      of: Schema.Types.Mixed,
       default: new Map()
     },
     questionStates: {

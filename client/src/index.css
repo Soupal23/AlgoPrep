@@ -1,44 +1,42 @@
 @import "tailwindcss";
+@import "katex/dist/katex.min.css";
 
 @layer base {
   body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    background-color: #0a0a0f;
-    color: #f0eef5;
+    background-color: #09090b;
+    color: #fafafa;
   }
 }
 
-/* Glassmorphism utility */
+/* LeetCode Studio Dark Panels with Crisp Visible Borders */
 .glass-panel {
-  background: #14111f;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid #383050;
+  background: #121215;
+  border: 1px solid #3f3f46;
 }
 
 .glass-card {
-  background: #1c1729;
-  backdrop-filter: blur(8px);
-  border: 1px solid #383050;
+  background: #121215;
+  border: 1px solid #3f3f46;
 }
 
-/* Custom Scrollbars */
+/* Custom Scrollbars - Minimalist Charcoal */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0a0a0f;
+  background: #09090b;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #251e35;
-  border-radius: 4px;
+  background: #27272a;
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3a2f50;
+  background: #3f3f46;
 }
 
 /* Print / PDF Export Styles */
@@ -49,27 +47,27 @@
 
   body {
     background: #ffffff !important;
-    color: #0f172a !important;
+    color: #09090b !important;
   }
 
   .glass-panel, .glass-card {
     background: #ffffff !important;
-    border: 1px solid #cbd5e1 !important;
+    border: 1px solid #e4e4e7 !important;
     box-shadow: none !important;
-    color: #0f172a !important;
+    color: #09090b !important;
   }
 
   h1, h2, h3, h4, p, span, div {
-    color: #0f172a !important;
+    color: #09090b !important;
   }
 
   .text-white, .text-slate-100, .text-slate-200, .text-slate-300, .text-slate-400 {
-    color: #1e293b !important;
+    color: #18181b !important;
   }
 
-  .bg-\[\#14111f\], .bg-\[\#1c1729\], .bg-slate-950, .bg-slate-900 {
-    background: #f8fafc !important;
-    border-color: #e2e8f0 !important;
+  .bg-\[\#161b22\], .bg-\[\#21262d\], .bg-\[\#121215\], .bg-\[\#18181b\] {
+    background: #ffffff !important;
+    border-color: #e4e4e7 !important;
   }
 }
 

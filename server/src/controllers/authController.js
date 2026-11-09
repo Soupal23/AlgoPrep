@@ -1,7 +1,6 @@
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import { User } from '../models/User.js';
-import { TeacherApplication } from '../models/TeacherApplication.js';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwt.js';
 import { config } from '../config/env.js';
 
@@ -18,63 +17,13 @@ export const loginSchema = z.object({
 });
 
 export const signup = async (req, res) => {
-  const { name, email, password, role } = req.body;
+  const { name, email, password } = req.body;
   const normalizedEmail = email.toLowerCase().trim();
 
-  let existingUser = await User.findOne({ email: normalizedEmail });
+  const existingUser = await User.findOne({ email: normalizedEmail });
   if (existingUser) {
-    if (role === 'teacher') {
-      const approvedApplication = await TeacherApplication.findOne({
-        email: normalizedEmail,
-        status: 'approved'
-      });
-
-      if (approvedApplication && existingUser.role === 'teacher') {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        existingUser.password = hashedPassword;
-        if (name) existingUser.name = name;
-
-        const payload = { userId: existingUser._id.toString(), email: existingUser.email, role: existingUser.role, isActive: existingUser.isActive };
-        const accessToken = generateAccessToken(payload);
-        const refreshToken = generateRefreshToken(payload);
-        existingUser.refreshToken = refreshToken;
-        await existingUser.save();
-
-        res.status(201).json({
-          message: 'Teacher registration completed successfully',
-          accessToken,
-          refreshToken,
-          user: {
-            id: existingUser._id,
-            name: existingUser.name,
-            email: existingUser.email,
-            role: existingUser.role,
-            isActive: existingUser.isActive
-          }
-        });
-        return;
-      }
-    }
-
     res.status(400).json({ error: 'User with this email already exists' });
     return;
-  }
-
-  let finalRole = 'student';
-
-  if (role === 'teacher') {
-    const approvedApplication = await TeacherApplication.findOne({
-      email: normalizedEmail,
-      status: 'approved'
-    });
-
-    if (!approvedApplication) {
-      res.status(400).json({
-        error: 'Email is not whitelisted for teacher registration. Please submit a teacher application first.'
-      });
-      return;
-    }
-    finalRole = 'teacher';
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -82,7 +31,7 @@ export const signup = async (req, res) => {
     name,
     email: normalizedEmail,
     password: hashedPassword,
-    role: finalRole,
+    role: 'student',
     isActive: true
   });
 
@@ -103,32 +52,9 @@ export const signup = async (req, res) => {
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
-  const normalizedEmail = email.toLowerCase();
+  const normalizedEmail = (email || '').toLowerCase().trim();
 
-  let user = await User.findOne({ email: normalizedEmail });
-
-  const adminPass = config.adminSeedPassword || 'password123';
-  // Auto-provision demo accounts if database has not been seeded yet
-  if (!user && normalizedEmail === 'student@algoprep.com' && password === 'password123') {
-    const hashedPassword = await bcrypt.hash('password123', 10);
-    user = await User.create({
-      name: 'Alex Student',
-      email: 'student@algoprep.com',
-      password: hashedPassword,
-      role: 'student',
-      isActive: true
-    });
-  } else if (!user && normalizedEmail === 'admin@algoprep.com' && password === adminPass) {
-    const hashedPassword = await bcrypt.hash(adminPass, 10);
-    user = await User.create({
-      name: 'Admin Instructor',
-      email: 'admin@algoprep.com',
-      password: hashedPassword,
-      role: 'admin',
-      isActive: true
-    });
-  }
-
+  const user = await User.findOne({ email: normalizedEmail });
   if (!user) {
     res.status(401).json({ error: 'Invalid email or password' });
     return;

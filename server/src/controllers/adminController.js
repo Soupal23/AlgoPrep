@@ -1,10 +1,15 @@
 import { User } from '../models/User.js';
+import { Workspace } from '../models/Workspace.js';
+import { Roadmap } from '../models/Roadmap.js';
+import { Attempt } from '../models/Attempt.js';
+import { Job } from '../models/Job.js';
+import { observability } from '../utils/observability.js';
 
 export const getUsers = async (req, res) => {
   const { role, isActive } = req.query;
   const filter = {};
 
-  if (role && ['student', 'teacher', 'admin'].includes(role)) {
+  if (role && ['student', 'admin'].includes(role)) {
     filter.role = role;
   }
 
@@ -53,4 +58,31 @@ export const updateUserStatus = async (req, res) => {
       updatedAt: user.updatedAt
     }
   });
+};
+
+export const getObservabilityStatsController = async (req, res) => {
+  try {
+    const stats = observability.getStats();
+
+    const [totalWorkspaces, totalRoadmaps, totalAttempts, totalJobs] = await Promise.all([
+      Workspace.countDocuments(),
+      Roadmap.countDocuments(),
+      Attempt.countDocuments(),
+      Job.countDocuments()
+    ]);
+
+    res.json({
+      success: true,
+      llmMetrics: stats,
+      platformMetrics: {
+        totalWorkspaces,
+        totalRoadmaps,
+        totalAttempts,
+        totalJobs
+      },
+      timestamp: new Date()
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Failed to retrieve observability metrics' });
+  }
 };

@@ -34,7 +34,10 @@ export const generateAITestController = async (req, res, next) => {
       timeLimitMinutes: generatedData.timeLimitMinutes || 30,
       markingScheme: generatedData.markingScheme || { correct: 4, incorrect: -1 },
       totalQuestions: generatedData.questions.length,
+      kind: 'quick',
+      mode: 'practice',
       isAIGenerated: true,
+      ownerId: req.user.userId,
       createdBy: req.user.userId,
       conceptTagging: {
         status: 'done'

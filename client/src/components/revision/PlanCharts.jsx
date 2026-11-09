@@ -17,7 +17,7 @@ export const PlanCharts = ({ stats, conceptBreakdown = [] }) => {
   const pieData = [
     { name: 'Correct', value: stats.correct, color: '#10b981' },
     { name: 'Incorrect', value: stats.incorrect, color: '#f43f5e' },
-    { name: 'Unattempted', value: stats.unattempted, color: '#64748b' }
+    { name: 'Unattempted', value: stats.unattempted, color: '#71717a' }
   ].filter((d) => d.value > 0);
 
   const barData = conceptBreakdown.map((c) => {
@@ -35,7 +35,7 @@ export const PlanCharts = ({ stats, conceptBreakdown = [] }) => {
     if (active && payload && payload.length) {
       const data = payload[0];
       return (
-        <div className="bg-[#1c1729] p-2.5 rounded-xl border border-[#383050] text-xs shadow-xl font-mono">
+        <div className="bg-[#18181b] p-2.5 rounded-xl border border-zinc-700 text-xs shadow-xl font-mono">
           <span style={{ color: data.payload.color }} className="font-bold">
             {data.name}:
           </span>{' '}
@@ -50,10 +50,10 @@ export const PlanCharts = ({ stats, conceptBreakdown = [] }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="bg-[#1c1729] p-2.5 rounded-xl border border-[#383050] text-xs shadow-xl space-y-1">
+        <div className="bg-[#18181b] p-2.5 rounded-xl border border-zinc-700 text-xs shadow-xl space-y-1">
           <div className="font-bold text-white">{data.fullConcept}</div>
-          <div className="text-slate-300 font-mono">
-            Accuracy: <span className="text-purple-400 font-bold">{data.accuracy}%</span> ({data.correct}/{data.total})
+          <div className="text-zinc-300 font-mono">
+            Accuracy: <span className="text-amber-400 font-bold">{data.accuracy}%</span> ({data.correct}/{data.total})
           </div>
         </div>
       );
@@ -64,12 +64,11 @@ export const PlanCharts = ({ stats, conceptBreakdown = [] }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {/* Response Distribution Donut */}
-      <div className="bg-[#14111f] rounded-3xl p-6 border border-[#383050] shadow-xl flex flex-col justify-between">
+      <div className="bg-[#121215] rounded-2xl p-6 border border-zinc-700 shadow-sm flex flex-col justify-between">
         <div className="mb-2">
           <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
             Response Distribution
           </h3>
-          <p className="text-xs text-slate-400">Scorecard breakdown across total items</p>
         </div>
 
         <div className="h-52 w-full">
@@ -83,7 +82,7 @@ export const PlanCharts = ({ stats, conceptBreakdown = [] }) => {
                 dataKey="value"
               >
                 {pieData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} stroke="#14111f" strokeWidth={2} />
+                  <Cell key={`cell-${index}`} fill={entry.color} stroke="#121215" strokeWidth={2} />
                 ))}
               </Pie>
               <Tooltip content={<CustomPieTooltip />} />
@@ -91,7 +90,7 @@ export const PlanCharts = ({ stats, conceptBreakdown = [] }) => {
           </ResponsiveContainer>
         </div>
 
-        <div className="flex justify-center gap-4 text-xs font-mono pt-2 border-t border-[#383050]/60">
+        <div className="flex justify-center gap-4 text-xs font-mono pt-3 border-t border-zinc-700">
           <span className="flex items-center gap-1.5 text-emerald-400 font-semibold">
             <span className="w-2 h-2 rounded-full bg-emerald-400" />
             {stats.correct} Correct
@@ -100,45 +99,44 @@ export const PlanCharts = ({ stats, conceptBreakdown = [] }) => {
             <span className="w-2 h-2 rounded-full bg-rose-400" />
             {stats.incorrect} Incorrect
           </span>
-          <span className="flex items-center gap-1.5 text-slate-400 font-semibold">
-            <span className="w-2 h-2 rounded-full bg-slate-400" />
+          <span className="flex items-center gap-1.5 text-zinc-400 font-semibold">
+            <span className="w-2 h-2 rounded-full bg-zinc-500" />
             {stats.unattempted} Skipped
           </span>
         </div>
       </div>
 
       {/* Accuracy per Concept Bar Chart */}
-      <div className="bg-[#14111f] rounded-3xl p-6 border border-[#383050] shadow-xl flex flex-col justify-between">
+      <div className="bg-[#121215] rounded-2xl p-6 border border-zinc-700 shadow-sm flex flex-col justify-between">
         <div className="mb-2">
           <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
             Concept Competency (%)
           </h3>
-          <p className="text-xs text-slate-400">Accuracy rate grouped by core technical concepts</p>
         </div>
 
         <div className="h-52 w-full">
           {barData.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={barData} layout="vertical" margin={{ top: 5, right: 20, left: 20, bottom: 5 }}>
-                <XAxis type="number" domain={[0, 100]} tick={{ fill: '#94a3b8', fontSize: 10 }} unit="%" />
+                <XAxis type="number" domain={[0, 100]} tick={{ fill: '#a1a1aa', fontSize: 10 }} unit="%" />
                 <YAxis
                   dataKey="concept"
                   type="category"
-                  tick={{ fill: '#e2e8f0', fontSize: 11 }}
+                  tick={{ fill: '#d4d4d8', fontSize: 11 }}
                   width={90}
                 />
                 <Tooltip content={<CustomBarTooltip />} />
-                <Bar dataKey="accuracy" fill="#a855f7" radius={[0, 6, 6, 0]} />
+                <Bar dataKey="accuracy" fill="#f59e0b" radius={[0, 6, 6, 0]} />
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-full flex items-center justify-center text-xs text-slate-500 font-mono">
+            <div className="h-full flex items-center justify-center text-xs text-zinc-500 font-mono">
               No concept metrics available
             </div>
           )}
         </div>
 
-        <div className="text-[11px] text-slate-500 text-center font-mono pt-2 border-t border-[#383050]/60">
+        <div className="text-[11px] text-zinc-500 text-center font-mono pt-3 border-t border-zinc-700">
           Target: 80%+ threshold for subject competency
         </div>
       </div>

@@ -1,37 +1,23 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { SocketProvider } from './context/SocketContext';
 import { Navbar } from './components/Navbar';
 import { RoleRoute } from './components/RoleRoute';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
-// Core & Student Pages
+// Core Pages
 import { Landing } from './pages/Landing';
 import { Dashboard } from './pages/Dashboard';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { TestTaking } from './pages/TestTaking';
 import { Results } from './pages/Results';
-import { Leaderboard } from './pages/Leaderboard';
 import { Profile } from './pages/Profile';
 import { SyllabusAI } from './pages/SyllabusAI';
-
-// Phase 5B Pages
-import { TeacherHub } from './pages/TeacherHub';
-import { BrowseTeachers } from './pages/BrowseTeachers';
-import { AnnouncementFeed } from './pages/AnnouncementFeed';
-import { RecordedLectures } from './pages/RecordedLectures';
-import { Messages } from './pages/Messages';
-
-// Phase 6B Pages
-import { TeacherDashboard } from './pages/TeacherDashboard';
-import { TeacherRoster } from './pages/TeacherRoster';
-import { TeacherAnnouncements } from './pages/TeacherAnnouncements';
-import { TeacherLectures } from './pages/TeacherLectures';
-import { TeacherTests } from './pages/TeacherTests';
-
-// Phase 7B Pages
-import { TeachHere } from './pages/TeachHere';
 import { AdminDashboard } from './pages/AdminDashboard';
+import { Workspaces } from './pages/Workspaces';
+import { WorkspaceDetail } from './pages/WorkspaceDetail';
+import { RoadmapView } from './pages/RoadmapView';
+import { DayView } from './pages/DayView';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
@@ -44,7 +30,6 @@ const ProtectedRoute = ({ children }) => {
 const GuestRoute = ({ children }) => {
   const { user, isAuthenticated } = useAuth();
   if (isAuthenticated && user) {
-    if (user.role === 'teacher') return <Navigate to="/teacher/dashboard" replace />;
     if (user.role === 'admin') return <Navigate to="/admin" replace />;
     return <Navigate to="/dashboard" replace />;
   }
@@ -56,118 +41,71 @@ export const AppContent = () => {
   const location = useLocation();
 
   const isTestRoute = location.pathname.startsWith('/test/');
-  const isSidebarVisible = !!user && !isTestRoute;
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-[#f0eef5] flex flex-col font-sans">
+    <div className="min-h-screen bg-[#09090b] text-[#fafafa] flex flex-col font-sans selection:bg-white selection:text-black">
       {!isTestRoute && <Navbar />}
-      <main className={`flex-1 ${isSidebarVisible ? 'md:ml-64' : ''}`}>
-        <Routes>
+      <main className="flex-1">
+        <ErrorBoundary>
+          <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
           <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
-          <Route path="/teach-here" element={<TeachHere />} />
 
-          {/* Student Routes */}
+          {/* Student / Core Routes */}
+          <Route
+            path="/workspaces"
+            element={
+              <ProtectedRoute>
+                <Workspaces />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/workspaces/:id"
+            element={
+              <ProtectedRoute>
+                <WorkspaceDetail />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/workspaces/:id/roadmap"
+            element={
+              <ProtectedRoute>
+                <RoadmapView />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/workspaces/:workspaceId/days/:dayId"
+            element={
+              <ProtectedRoute>
+                <DayView />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/days/:dayId"
+            element={
+              <ProtectedRoute>
+                <DayView />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/dashboard"
             element={
-              <RoleRoute allowedRoles={['student']}>
+              <RoleRoute allowedRoles={['student', 'admin']}>
                 <Dashboard />
-              </RoleRoute>
-            }
-          />
-          <Route
-            path="/teachers"
-            element={
-              <RoleRoute allowedRoles={['student']}>
-                <TeacherHub />
-              </RoleRoute>
-            }
-          />
-          <Route
-            path="/announcements"
-            element={
-              <RoleRoute allowedRoles={['student']}>
-                <Navigate to="/teachers?tab=announcements" replace />
-              </RoleRoute>
-            }
-          />
-          <Route
-            path="/lectures"
-            element={
-              <RoleRoute allowedRoles={['student']}>
-                <Navigate to="/teachers?tab=lectures" replace />
               </RoleRoute>
             }
           />
           <Route
             path="/test/:id"
             element={
-              <RoleRoute allowedRoles={['student']}>
+              <RoleRoute allowedRoles={['student', 'admin']}>
                 <TestTaking />
-              </RoleRoute>
-            }
-          />
-
-          {/* Teacher Routes */}
-          <Route
-            path="/teacher/dashboard"
-            element={
-              <RoleRoute allowedRoles={['teacher']}>
-                <TeacherDashboard />
-              </RoleRoute>
-            }
-          />
-          <Route
-            path="/teacher/roster"
-            element={
-              <RoleRoute allowedRoles={['teacher']}>
-                <TeacherRoster />
-              </RoleRoute>
-            }
-          />
-          <Route
-            path="/teacher/announcements"
-            element={
-              <RoleRoute allowedRoles={['teacher']}>
-                <TeacherAnnouncements />
-              </RoleRoute>
-            }
-          />
-          <Route
-            path="/teacher/lectures"
-            element={
-              <RoleRoute allowedRoles={['teacher']}>
-                <TeacherLectures />
-              </RoleRoute>
-            }
-          />
-          <Route
-            path="/teacher/tests"
-            element={
-              <RoleRoute allowedRoles={['teacher']}>
-                <TeacherTests />
-              </RoleRoute>
-            }
-          />
-
-          {/* Admin Routes */}
-          <Route
-            path="/admin"
-            element={
-              <RoleRoute allowedRoles={['admin']}>
-                <AdminDashboard />
-              </RoleRoute>
-            }
-          />
-
-          {/* Shared Authenticated Routes */}
-          <Route
-            path="/messages"
-            element={
-              <RoleRoute allowedRoles={['student', 'teacher', 'admin']}>
-                <Messages />
               </RoleRoute>
             }
           />
@@ -176,14 +114,6 @@ export const AppContent = () => {
             element={
               <ProtectedRoute>
                 <Results />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/leaderboard"
-            element={
-              <ProtectedRoute>
-                <Leaderboard />
               </ProtectedRoute>
             }
           />
@@ -204,8 +134,19 @@ export const AppContent = () => {
             }
           />
 
+          {/* Admin Routes */}
+          <Route
+            path="/admin"
+            element={
+              <RoleRoute allowedRoles={['admin']}>
+                <AdminDashboard />
+              </RoleRoute>
+            }
+          />
+
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        </ErrorBoundary>
       </main>
     </div>
   );
@@ -215,9 +156,7 @@ export const App = () => {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <SocketProvider>
-          <AppContent />
-        </SocketProvider>
+        <AppContent />
       </AuthProvider>
     </BrowserRouter>
   );

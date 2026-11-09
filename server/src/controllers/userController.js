@@ -37,8 +37,8 @@ export const updateProfile = async (req, res) => {
       email: user.email,
       role: user.role,
       bio: user.bio,
-      avatarUrl: user.avatarUrl,
       subjectFocus: user.subjectFocus,
+      avatarUrl: user.avatarUrl,
       isActive: user.isActive
     }
   });
@@ -82,30 +82,7 @@ export const uploadAvatarController = async (req, res) => {
       role: user.role,
       bio: user.bio,
       avatarUrl: user.avatarUrl,
-      subjectFocus: user.subjectFocus,
       isActive: user.isActive
     }
   });
-};
-
-export const getTeachers = async (req, res) => {
-  const teachers = await User.find({ role: 'teacher', isActive: true })
-    .select('_id name email bio avatarUrl subjectFocus createdAt')
-    .sort({ name: 1 });
-
-  res.json({ teachers });
-};
-
-export const getTeacherById = async (req, res) => {
-  const { id } = req.params;
-
-  const teacher = await User.findOne({ _id: id, role: 'teacher', isActive: true })
-    .select('_id name email bio avatarUrl subjectFocus createdAt');
-
-  if (!teacher) {
-    res.status(404).json({ error: 'Teacher profile not found' });
-    return;
-  }
-
-  res.json({ teacher });
 };

@@ -139,3 +139,18 @@ export const revisionRegenerateLimiter = createLimiter({
   errorMessage: 'Too many revision plan regenerations. Please wait a while before regenerating again.'
 });
 
+export const uploadLimiter = createLimiter({
+  windowMs: 15 * MINUTE,
+  limit: envInt('RATE_LIMIT_UPLOAD_MAX', 30),
+  keyGenerator: userKey,
+  errorMessage: 'Too many file uploads. Please wait a while before uploading more documents.'
+});
+
+export const chatLimiter = createLimiter({
+  windowMs: 15 * MINUTE,
+  limit: envInt('RATE_LIMIT_CHAT_MAX', 60),
+  keyGenerator: userKey,
+  errorMessage: 'You are chatting too fast with the AI tutor. Please pause for a moment.'
+});
+
+

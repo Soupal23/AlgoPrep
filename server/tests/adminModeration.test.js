@@ -46,10 +46,10 @@ describe('Phase 13 — Admin Moderation & Soft Deactivation', () => {
     });
 
     await User.create({
-      name: 'Teacher One',
-      email: 'teacher1@algoprep.com',
+      name: 'Student Two',
+      email: 'student2@algoprep.com',
       password: 'password123',
-      role: 'teacher',
+      role: 'student',
       isActive: true
     });
 
@@ -151,17 +151,9 @@ describe('Phase 13 — Admin Moderation & Soft Deactivation', () => {
     expect(refreshRes.status).toBe(403);
     expect(refreshRes.body.error).toBe('Account is deactivated');
 
-    // 4. Historical attempt and leaderboard data integrity check
+    // 4. Historical attempt data integrity check
     const dbAttempt = await Attempt.findById(attempt._id).populate('userId', 'name email');
     expect(dbAttempt).not.toBeNull();
     expect(dbAttempt.userId.name).toBe('Student ToDeactivate');
-
-    const leaderboardRes = await request(app)
-      .get(`/api/leaderboard?testId=${testItem._id}`)
-      .set('Authorization', `Bearer ${adminToken}`);
-
-    expect(leaderboardRes.status).toBe(200);
-    expect(leaderboardRes.body.leaderboard.length).toBeGreaterThanOrEqual(1);
-    expect(leaderboardRes.body.leaderboard[0].user.name).toBe('Student ToDeactivate');
   });
 });

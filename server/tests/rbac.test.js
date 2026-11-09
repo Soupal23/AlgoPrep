@@ -44,21 +44,13 @@ describe('Phase 5 — RBAC & Security Verification', () => {
     expect(dbUser.role).toBe('student');
   });
 
-  it('should allow student to start test attempt but block teacher with 403', async () => {
+  it('should allow student to start platform test attempt and block unauthenticated requests with 401', async () => {
     const studentPassword = await bcrypt.hash('password123', 10);
     const student = await User.create({
       name: 'Student One',
       email: 'student1@test.com',
       password: studentPassword,
       role: 'student',
-      isActive: true
-    });
-
-    const teacher = await User.create({
-      name: 'Teacher One',
-      email: 'teacher1@test.com',
-      password: studentPassword,
-      role: 'teacher',
       isActive: true
     });
 
@@ -69,7 +61,7 @@ describe('Phase 5 — RBAC & Security Verification', () => {
       timeLimitMinutes: 30,
       markingScheme: { correct: 4, incorrect: -1, unattempted: 0 },
       totalQuestions: 1,
-      createdBy: teacher._id
+      kind: 'platform'
     });
 
     const studentToken = generateAccessToken({
@@ -79,25 +71,16 @@ describe('Phase 5 — RBAC & Security Verification', () => {
       isActive: true
     });
 
-    const teacherToken = generateAccessToken({
-      userId: teacher._id.toString(),
-      email: teacher.email,
-      role: teacher.role,
-      isActive: true
-    });
-
     // Student start test -> 200 OK
     const studentRes = await request(app)
       .post(`/api/tests/${testItem._id}/start`)
       .set('Authorization', `Bearer ${studentToken}`);
     expect(studentRes.status).toBe(200);
 
-    // Teacher start test -> 403 Forbidden
-    const teacherRes = await request(app)
-      .post(`/api/tests/${testItem._id}/start`)
-      .set('Authorization', `Bearer ${teacherToken}`);
-    expect(teacherRes.status).toBe(403);
-    expect(teacherRes.body.error).toContain('Forbidden');
+    // Unauthenticated start test -> 401 Unauthorized
+    const unauthRes = await request(app)
+      .post(`/api/tests/${testItem._id}/start`);
+    expect(unauthRes.status).toBe(401);
   });
 
   it('should block login for deactivated users', async () => {

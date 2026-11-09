@@ -97,49 +97,4 @@ describe('Phase 7 — Profiles', () => {
 
     expect(invalidRes.status).toBe(400);
   });
-
-  it('should allow logged-in students to view public teacher profile and directory', async () => {
-    const teacher = await User.create({
-      name: 'Prof. Alan Turing',
-      email: 'turing@algoprep.com',
-      password: 'hashedpassword',
-      role: 'teacher',
-      bio: 'Pioneer of Computer Science',
-      subjectFocus: 'Theory of Computation',
-      isActive: true
-    });
-
-    const student = await User.create({
-      name: 'Student User',
-      email: 'student@test.com',
-      password: 'hashedpassword',
-      role: 'student',
-      isActive: true
-    });
-
-    const studentToken = generateAccessToken({
-      userId: student._id.toString(),
-      email: student.email,
-      role: student.role,
-      isActive: true
-    });
-
-    // List teachers
-    const listRes = await request(app)
-      .get('/api/teachers')
-      .set('Authorization', `Bearer ${studentToken}`);
-
-    expect(listRes.status).toBe(200);
-    expect(listRes.body.teachers.length).toBe(1);
-    expect(listRes.body.teachers[0].name).toBe('Prof. Alan Turing');
-
-    // Get specific teacher
-    const detailRes = await request(app)
-      .get(`/api/teachers/${teacher._id}`)
-      .set('Authorization', `Bearer ${studentToken}`);
-
-    expect(detailRes.status).toBe(200);
-    expect(detailRes.body.teacher.name).toBe('Prof. Alan Turing');
-    expect(detailRes.body.teacher.subjectFocus).toBe('Theory of Computation');
-  });
 });

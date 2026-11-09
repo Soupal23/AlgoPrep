@@ -11,6 +11,7 @@ import {
   buildFallbackPlan
 } from '../services/revisionPlanService.js';
 import { selectCandidates } from '../data/resourceCatalog.js';
+import { generateAttemptAnalysis } from '../services/masteryService.js';
 import mongoose from 'mongoose';
 
 export const saveProgress = async (req, res) => {
@@ -51,6 +52,29 @@ export const saveProgress = async (req, res) => {
       return;
     }
 
+    const test = await Test.findById(attempt.testId);
+    if (!test) {
+      res.status(404).json({ error: 'Associated test not found' });
+      return;
+    }
+
+    const startTime = new Date(attempt.startedAt).getTime();
+    const penaltyMs = (attempt.penaltySeconds || 0) * 1000;
+    const testDurationMs = test.timeLimitMinutes * 60 * 1000;
+    const effectiveEndMs = startTime + testDurationMs - penaltyMs;
+    const gracePeriodMs = 15000; // 15s grace period for in-flight requests
+
+    if (Date.now() > effectiveEndMs + gracePeriodMs) {
+      attempt.status = 'expired';
+      await attempt.save();
+      res.status(400).json({
+        error: 'Test time limit has expired',
+        isExpired: true,
+        timeRemainingSeconds: 0
+      });
+      return;
+    }
+
     if (answers && typeof answers === 'object') {
       Object.entries(answers).forEach(([qId, optionIdx]) => {
         if (typeof optionIdx === 'number') {
@@ -71,10 +95,12 @@ export const saveProgress = async (req, res) => {
       if (!attempt.questionTimeSpent) {
         attempt.questionTimeSpent = new Map();
       }
+      const maxQuestionSec = test.timeLimitMinutes * 60;
       Object.entries(questionTimeSpent).forEach(([qId, timeSpent]) => {
         if (typeof timeSpent === 'number' && timeSpent >= 0) {
           const current = attempt.questionTimeSpent.get(qId) || 0;
-          attempt.questionTimeSpent.set(qId, Math.max(current, Math.round(timeSpent)));
+          const clampedTime = Math.min(Math.round(timeSpent), maxQuestionSec);
+          attempt.questionTimeSpent.set(qId, Math.max(current, clampedTime));
         }
       });
     }
@@ -83,30 +109,23 @@ export const saveProgress = async (req, res) => {
       attempt.lastSavedVersion = version;
     }
 
-    let timeRemainingSeconds = undefined;
-    let endTimeIso = undefined;
-
     if (tabSwitchEvent) {
       attempt.tabSwitches += 1;
-      const penalty = typeof tabSwitchEvent.penaltySeconds === 'number' ? tabSwitchEvent.penaltySeconds : 600;
+      // In practice mode, record event without deducting test time. In exam mode, apply 600s server penalty.
+      const penalty = test.mode === 'practice' ? 0 : 600;
       attempt.penaltySeconds = (attempt.penaltySeconds || 0) + penalty;
       attempt.tabSwitchEvents.push({
         timestamp: new Date(tabSwitchEvent.timestamp || Date.now()),
-        reason: tabSwitchEvent.reason || 'tab_switch',
+        reason: typeof tabSwitchEvent.reason === 'string' ? tabSwitchEvent.reason.slice(0, 100) : 'tab_switch',
         penaltySeconds: penalty
       });
     }
 
     await attempt.save();
 
-    const test = await Test.findById(attempt.testId);
-    if (test) {
-      const startTime = new Date(attempt.startedAt).getTime();
-      const penaltyMs = (attempt.penaltySeconds || 0) * 1000;
-      const effectiveEndMs = startTime + test.timeLimitMinutes * 60 * 1000 - penaltyMs;
-      timeRemainingSeconds = Math.max(0, Math.floor((effectiveEndMs - Date.now()) / 1000));
-      endTimeIso = new Date(effectiveEndMs).toISOString();
-    }
+    const updatedEffectiveEndMs = startTime + testDurationMs - ((attempt.penaltySeconds || 0) * 1000);
+    const timeRemainingSeconds = Math.max(0, Math.floor((updatedEffectiveEndMs - Date.now()) / 1000));
+    const endTimeIso = new Date(updatedEffectiveEndMs).toISOString();
 
     res.json({
       success: true,
@@ -203,11 +222,22 @@ export const submitAttempt = async (req, res) => {
     attempt.timeSpentSeconds = actualTimeSpent;
     attempt.status = 'submitted';
     attempt.submittedAt = now;
+    if (test.workspaceId) attempt.workspaceId = test.workspaceId;
+    if (test.dayId) attempt.dayId = test.dayId;
     if (typeof version === 'number') {
       attempt.lastSavedVersion = version;
     }
 
     await attempt.save();
+
+    // Trigger asynchronous mastery calculation & attempt analysis
+    setImmediate(async () => {
+      try {
+        await generateAttemptAnalysis({ attemptId: attempt._id, userId: attempt.userId });
+      } catch (analysisErr) {
+        console.error('Background mastery/analysis generation error:', analysisErr);
+      }
+    });
 
     res.json({
       message: 'Test submitted successfully',
@@ -283,6 +313,11 @@ export const getAttemptReview = async (req, res) => {
       return;
     }
 
+    if (attempt.status !== 'submitted' && attempt.status !== 'expired') {
+      res.status(409).json({ error: 'Review is only available after attempt submission or expiration' });
+      return;
+    }
+
     const questions = await Question.find({ testId: attempt.testId._id }).sort({ order: 1 });
 
     const userAnswers = attempt.answers || new Map();
@@ -322,6 +357,9 @@ export const getAttemptReview = async (req, res) => {
         timeSpent,
         isMarked,
         concept: q.concept || null,
+        conceptKey: q.conceptKey || null,
+        bloomLevel: q.bloomLevel || null,
+        sourceChunkIds: q.sourceChunkIds || [],
         difficulty: q.difficulty || null
       };
     });
@@ -519,5 +557,24 @@ export const regenerateAIRevisionPlan = async (req, res) => {
   } catch (err) {
     console.error('regenerateAIRevisionPlan error:', err);
     res.status(500).json({ error: 'Failed to regenerate revision plan' });
+  }
+};
+
+export const getAttemptAnalysisController = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user?.userId;
+
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const analysis = await generateAttemptAnalysis({ attemptId: id, userId });
+    res.json({ analysis });
+  } catch (err) {
+    console.error('getAttemptAnalysis error:', err);
+    const status = err.statusCode || 500;
+    res.status(status).json({ error: err.message || 'Failed to get attempt analysis' });
   }
 };

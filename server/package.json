@@ -4,32 +4,38 @@
   "type": "module",
   "main": "src/server.js",
   "scripts": {
-    "dev": "node --watch src/server.js",
+    "dev": "node --watch-path=src src/server.js",
     "start": "node src/server.js",
     "seed": "node src/seeds/seed.js",
     "backfill:concepts": "node src/scripts/backfillConcepts.js",
-    "test": "vitest run"
+    "test": "vitest run",
+    "eval": "node src/evals/evalRunner.js"
   },
   "dependencies": {
     "@google/genai": "latest",
     "bcryptjs": "^3.0.2",
+    "bullmq": "^6.5.3",
     "cloudinary": "^1.41.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-rate-limit": "^8.7.0",
     "helmet": "^8.3.0",
+    "ioredis": "^6.0.0",
     "jsonwebtoken": "^9.0.2",
-    "mongodb-memory-server": "^10.1.4",
+    "mammoth": "^1.13.0",
     "mongoose": "^8.12.0",
     "multer": "^1.4.5-lts.1",
-    "multer-storage-cloudinary": "^4.0.0",
+    "officeparser": "^8.4.1",
+    "p-retry": "^8.0.1",
     "pdf-parse": "^1.1.1",
-    "socket.io": "^4.8.3",
+    "pino": "^10.4.0",
     "streamifier": "^0.1.1",
+    "unpdf": "^2.1.0",
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "mongodb-memory-server": "^10.1.4",
     "puppeteer": "^25.8.0",
     "supertest": "^7.0.0",
     "vitest": "^3.0.6"

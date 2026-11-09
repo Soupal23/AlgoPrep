@@ -2,39 +2,33 @@ import mongoose from 'mongoose';
 import { Test } from '../models/Test.js';
 import { Question } from '../models/Question.js';
 import { Attempt } from '../models/Attempt.js';
-import { Membership } from '../models/Membership.js';
 
 export const getTests = async (req, res) => {
   try {
     const userId = req.user?.userId;
     const userRole = req.user?.role;
 
-    let filter = { teacherId: null, isAIGenerated: { $ne: true } };
+    let filter = {};
 
-    if (userId) {
+    if (userRole === 'admin') {
+      filter = {};
+    } else if (userId) {
       const userObjId = mongoose.Types.ObjectId.isValid(userId) ? new mongoose.Types.ObjectId(userId) : userId;
-
-      if (userRole === 'teacher') {
-        filter = {
-          $or: [
-            { teacherId: null, isAIGenerated: { $ne: true } },
-            { teacherId: userId },
-            { isAIGenerated: true, createdBy: userObjId }
-          ]
-        };
-      } else if (userRole === 'student') {
-        const memberships = await Membership.find({ studentId: userId, status: 'active' }).select('teacherId');
-        const teacherIds = memberships.map((m) => m.teacherId);
-        filter = {
-          $or: [
-            { teacherId: null, isAIGenerated: { $ne: true } },
-            { teacherId: { $in: teacherIds } },
-            { isAIGenerated: true, createdBy: userObjId }
-          ]
-        };
-      } else if (userRole === 'admin') {
-        filter = {}; // Admin sees all tests
-      }
+      filter = {
+        $or: [
+          { kind: 'platform' },
+          { kind: { $exists: false } },
+          { ownerId: userObjId },
+          { createdBy: userObjId }
+        ]
+      };
+    } else {
+      filter = {
+        $or: [
+          { kind: 'platform' },
+          { kind: { $exists: false }, isAIGenerated: { $ne: true } }
+        ]
+      };
     }
 
     const tests = await Test.find(filter).sort({ createdAt: -1 });
@@ -48,6 +42,7 @@ export const getTestById = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user?.userId;
+    const userRole = req.user?.role;
     const test = await Test.findById(id);
 
     if (!test) {
@@ -55,8 +50,12 @@ export const getTestById = async (req, res) => {
       return;
     }
 
-    if (test.isAIGenerated && (!userId || test.createdBy?.toString() !== userId.toString())) {
-      res.status(403).json({ error: 'Forbidden: This AI-generated test is private to the user who created it' });
+    const isPlatform = test.kind === 'platform' || (!test.isAIGenerated && !test.ownerId && !test.teacherId);
+    const isOwner = userId && (test.ownerId?.toString() === userId.toString() || test.createdBy?.toString() === userId.toString());
+    const isAdmin = userRole === 'admin';
+
+    if (!isPlatform && !isOwner && !isAdmin) {
+      res.status(403).json({ error: 'Forbidden: This test is private to the user who created it' });
       return;
     }
 
@@ -67,61 +66,6 @@ export const getTestById = async (req, res) => {
     res.json({ test, questions });
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch test details' });
-  }
-};
-
-export const createTeacherTest = async (req, res) => {
-  try {
-    const teacherId = req.user?.userId;
-    const {
-      title,
-      description,
-      topic,
-      timeLimitMinutes,
-      markingScheme,
-      validFrom,
-      validUntil,
-      questions
-    } = req.body;
-
-    if (!title || !description || !topic || !Array.isArray(questions) || questions.length === 0) {
-      res.status(400).json({ error: 'Title, description, topic, and at least one question are required' });
-      return;
-    }
-
-    const test = await Test.create({
-      title: title.trim(),
-      description: description.trim(),
-      topic: topic.trim(),
-      timeLimitMinutes: timeLimitMinutes || 15,
-      markingScheme: markingScheme || { correct: 4, incorrect: -1 },
-      totalQuestions: questions.length,
-      teacherId,
-      validFrom: validFrom ? new Date(validFrom) : null,
-      validUntil: validUntil ? new Date(validUntil) : null,
-      createdBy: teacherId
-    });
-
-    const questionDocs = questions.map((q, idx) => ({
-      testId: test._id,
-      questionText: q.questionText,
-      options: q.options,
-      correctOptionIndex: q.correctOptionIndex,
-      explanation: q.explanation || '',
-      order: idx + 1,
-      concept: q.concept && q.concept.trim() ? q.concept.trim() : null,
-      difficulty: ['easy', 'medium', 'hard'].includes(q.difficulty) ? q.difficulty : null,
-      tagSource: (q.concept && q.concept.trim()) || q.difficulty ? 'teacher' : null
-    }));
-
-    await Question.insertMany(questionDocs);
-
-    res.status(201).json({
-      message: 'Teacher test created successfully',
-      test
-    });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to create teacher test' });
   }
 };
 
@@ -141,38 +85,16 @@ export const startTestAttempt = async (req, res) => {
       return;
     }
 
-    // 0. Check AI test privacy gating
-    if (test.isAIGenerated && test.createdBy?.toString() !== userId.toString()) {
-      res.status(403).json({ error: 'Forbidden: This AI-generated test is private to the user who created it' });
+    const isPlatform = test.kind === 'platform' || (!test.isAIGenerated && !test.ownerId && !test.teacherId);
+    const isOwner = test.ownerId?.toString() === userId.toString() || test.createdBy?.toString() === userId.toString();
+    const isAdmin = req.user?.role === 'admin';
+
+    if (!isPlatform && !isOwner && !isAdmin) {
+      res.status(403).json({ error: 'Forbidden: This test is private to the user who created it' });
       return;
     }
 
-    // 1. Check teacher-owned test membership gating
-    if (test.teacherId) {
-      const membership = await Membership.findOne({
-        studentId: userId,
-        teacherId: test.teacherId,
-        status: 'active'
-      });
-
-      if (!membership) {
-        res.status(403).json({ error: "Forbidden: You must join this teacher's class to take this test" });
-        return;
-      }
-    }
-
-    // 2. Check time availability window
     const now = new Date();
-
-    if (test.validFrom && now < new Date(test.validFrom)) {
-      res.status(400).json({ error: 'Test is not available yet' });
-      return;
-    }
-
-    if (test.validUntil && now > new Date(test.validUntil)) {
-      res.status(400).json({ error: 'Test window has expired' });
-      return;
-    }
 
     let attempt = await Attempt.findOne({
       userId,
@@ -194,8 +116,9 @@ export const startTestAttempt = async (req, res) => {
         await attempt.save();
         attempt = null;
       } else {
-        // Detect if attempt is resumed after initial creation (> 5s to avoid initial StrictMode double-invocations)
-        if (now.getTime() - startTime > 5000) {
+        // Only apply penalty in exam mode or legacy platform tests
+        const isExamMode = test.mode !== 'practice';
+        if (now.getTime() - startTime > 5000 && isExamMode) {
           wasResumed = true;
           attempt.tabSwitches += 1;
           attempt.penaltySeconds = (attempt.penaltySeconds || 0) + 600;
@@ -210,17 +133,30 @@ export const startTestAttempt = async (req, res) => {
     }
 
     if (!attempt) {
-      attempt = new Attempt({
+      // Re-check for any recent in-progress attempt created within last 10s to prevent concurrent duplicate creation
+      const tenSecondsAgo = new Date(now.getTime() - 10000);
+      attempt = await Attempt.findOne({
         userId,
         testId: id,
-        startedAt: now,
         status: 'in-progress',
-        lastSavedVersion: 0,
-        tabSwitches: 0,
-        penaltySeconds: 0,
-        tabSwitchEvents: []
+        startedAt: { $gte: tenSecondsAgo }
       });
-      await attempt.save();
+
+      if (!attempt) {
+        attempt = new Attempt({
+          userId,
+          testId: id,
+          workspaceId: test.workspaceId || null,
+          dayId: test.dayId || null,
+          startedAt: now,
+          status: 'in-progress',
+          lastSavedVersion: 0,
+          tabSwitches: 0,
+          penaltySeconds: 0,
+          tabSwitchEvents: []
+        });
+        await attempt.save();
+      }
     }
 
     const questions = await Question.find({ testId: id })
@@ -276,7 +212,12 @@ export const deleteTest = async (req, res) => {
       return;
     }
 
-    const isOwner = test.teacherId?.toString() === userId?.toString() || test.createdBy?.toString() === userId?.toString();
+    if (test.kind === 'platform') {
+      res.status(403).json({ error: 'Cannot delete core platform test benchmarks via API' });
+      return;
+    }
+
+    const isOwner = test.ownerId?.toString() === userId?.toString() || test.createdBy?.toString() === userId?.toString();
     if (userRole !== 'admin' && !isOwner) {
       res.status(403).json({ error: 'Forbidden: You do not have permission to delete this test' });
       return;
@@ -291,4 +232,3 @@ export const deleteTest = async (req, res) => {
     res.status(500).json({ error: 'Failed to delete test' });
   }
 };
-

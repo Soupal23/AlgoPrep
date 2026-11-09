@@ -1,35 +1,48 @@
-const API_BASE = import.meta.env.VITE_API_URL || '/api';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 class ApiService {
   constructor() {
     this.accessToken = localStorage.getItem('algoprep_access_token');
     this.refreshToken = localStorage.getItem('algoprep_refresh_token');
+    this.user = this.getStoredUser();
   }
 
-  setTokens(access, refresh) {
-    this.accessToken = access;
-    localStorage.setItem('algoprep_access_token', access);
-    if (refresh) {
-      this.refreshToken = refresh;
-      localStorage.setItem('algoprep_refresh_token', refresh);
+  setTokens(accessToken, refreshToken) {
+    if (accessToken) {
+      this.accessToken = accessToken;
+      localStorage.setItem('algoprep_access_token', accessToken);
+    }
+    if (refreshToken) {
+      this.refreshToken = refreshToken;
+      localStorage.setItem('algoprep_refresh_token', refreshToken);
     }
   }
 
   clearTokens() {
     this.accessToken = null;
     this.refreshToken = null;
+    this.user = null;
     localStorage.removeItem('algoprep_access_token');
     localStorage.removeItem('algoprep_refresh_token');
     localStorage.removeItem('algoprep_user');
   }
 
   getStoredUser() {
-    const raw = localStorage.getItem('algoprep_user');
-    return raw ? JSON.parse(raw) : null;
+    const userStr = localStorage.getItem('algoprep_user');
+    try {
+      return userStr ? JSON.parse(userStr) : null;
+    } catch (e) {
+      return null;
+    }
   }
 
   setStoredUser(user) {
-    localStorage.setItem('algoprep_user', JSON.stringify(user));
+    this.user = user;
+    if (user) {
+      localStorage.setItem('algoprep_user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('algoprep_user');
+    }
   }
 
   async request(endpoint, options = {}) {
@@ -50,7 +63,8 @@ class ApiService {
       headers
     });
 
-    if (response.status === 401 && this.refreshToken && endpoint !== '/auth/login' && endpoint !== '/auth/signup') {
+    // Handle token expiration & automatic refresh
+    if (response.status === 401 && this.refreshToken && !endpoint.includes('/auth/')) {
       try {
         const refreshRes = await fetch(`${API_BASE}/auth/refresh`, {
           method: 'POST',
@@ -113,10 +127,8 @@ class ApiService {
   }
 
   // Auth API
-  async signup(name, email, password, role) {
+  async signup(name, email, password) {
     const payload = { name, email, password };
-    if (role) payload.role = role;
-
     const res = await this.request('/auth/signup', {
       method: 'POST',
       body: JSON.stringify(payload)
@@ -173,56 +185,6 @@ class ApiService {
     return res;
   }
 
-  // Teacher Directory API
-  async getTeachers() {
-    return this.request('/teachers');
-  }
-
-  async getTeacherById(id) {
-    return this.request(`/teachers/${id}`);
-  }
-
-  // Memberships API
-  async joinClass(teacherId) {
-    return this.request(`/memberships/join/${teacherId}`, { method: 'POST' });
-  }
-
-  async leaveClass(teacherId) {
-    return this.request(`/memberships/leave/${teacherId}`, { method: 'DELETE' });
-  }
-
-  async getMyTeachers() {
-    return this.request('/memberships/my-teachers');
-  }
-
-  async getTeacherRoster() {
-    return this.request('/memberships/roster');
-  }
-
-  async removeStudentFromRoster(studentId) {
-    return this.request(`/memberships/roster/${studentId}`, { method: 'DELETE' });
-  }
-
-  // Announcements API
-  async postAnnouncement(payload) {
-    return this.request('/announcements', {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    });
-  }
-
-  async getMyAnnouncements() {
-    return this.request('/announcements/mine');
-  }
-
-  async deleteAnnouncement(id) {
-    return this.request(`/announcements/${id}`, { method: 'DELETE' });
-  }
-
-  async getStudentAnnouncementsFeed() {
-    return this.request('/announcements/feed');
-  }
-
   // Tests API
   async getTests() {
     return this.request('/tests');
@@ -230,13 +192,6 @@ class ApiService {
 
   async getTestById(id) {
     return this.request(`/tests/${id}`);
-  }
-
-  async createTeacherTest(payload) {
-    return this.request('/tests', {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    });
   }
 
   async deleteTest(id) {
@@ -249,75 +204,6 @@ class ApiService {
     const query = window.location.search.includes('retake=true') ? '?retake=true' : '';
     return this.request(`/tests/${testId}/start${query}`, {
       method: 'POST'
-    });
-  }
-
-  // Lectures API
-  async postLecture(payload) {
-    return this.request('/lectures', {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    });
-  }
-
-  async getMyLectures() {
-    return this.request('/lectures/mine');
-  }
-
-  async deleteLecture(id) {
-    return this.request(`/lectures/${id}`, { method: 'DELETE' });
-  }
-
-  async getStudentLecturesFeed() {
-    return this.request('/lectures/feed');
-  }
-
-  async getLectureById(id) {
-    return this.request(`/lectures/${id}`);
-  }
-
-  // Messages API
-  async sendMessage(recipientId, content) {
-    return this.request('/messages', {
-      method: 'POST',
-      body: JSON.stringify({ recipientId, content })
-    });
-  }
-
-  async getConversations() {
-    return this.request('/messages/conversations');
-  }
-
-  async getMessageContacts() {
-    return this.request('/messages/contacts');
-  }
-
-  async getConversationMessages(conversationId, params = {}) {
-    const query = new URLSearchParams();
-    if (params.page) query.append('page', params.page);
-    if (params.limit) query.append('limit', params.limit);
-    if (params.since) query.append('since', params.since);
-    const qStr = query.toString() ? `?${query.toString()}` : '';
-    return this.request(`/messages/conversations/${conversationId}${qStr}`);
-  }
-
-  // Teacher Application API
-  async submitTeacherApplication(formData) {
-    return this.request('/teacher-applications/apply', {
-      method: 'POST',
-      body: formData
-    });
-  }
-
-  async getTeacherApplications(status = '') {
-    const qStr = status ? `?status=${status}` : '';
-    return this.request(`/admin/teacher-applications${qStr}`);
-  }
-
-  async updateTeacherApplicationStatus(id, status) {
-    return this.request(`/admin/teacher-applications/${id}`, {
-      method: 'PATCH',
-      body: JSON.stringify({ status })
     });
   }
 
@@ -360,6 +246,10 @@ class ApiService {
     return this.request(`/attempts/${attemptId}/review`);
   }
 
+  async getAttemptAnalysis(attemptId) {
+    return this.request(`/attempts/${attemptId}/analysis`);
+  }
+
   async getAIRevisionPlan(attemptId) {
     return this.request(`/attempts/${attemptId}/ai-revision`);
   }
@@ -374,22 +264,265 @@ class ApiService {
     return this.request('/attempts/user/my-attempts');
   }
 
-  // Leaderboard API
-  async getLeaderboard(testId = '', page = 1, limit = 10) {
-    const query = new URLSearchParams();
-    if (testId) query.append('testId', testId);
-    query.append('page', page.toString());
-    query.append('limit', limit.toString());
-    return this.request(`/leaderboard?${query.toString()}`);
-  }
-
-  // AI Syllabus generator
+  // AI Syllabus generator / Quick Quiz
   async generateAITest(formData) {
     return this.request('/ai/generate', {
       method: 'POST',
       body: formData
     });
   }
+
+  // Workspaces API
+  async getWorkspaces() {
+    return this.request('/workspaces');
+  }
+
+  async createWorkspace(data) {
+    return this.request('/workspaces', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  }
+
+  async getWorkspaceById(id) {
+    return this.request(`/workspaces/${id}`);
+  }
+
+  async updateWorkspace(id, data) {
+    return this.request(`/workspaces/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    });
+  }
+
+  async deleteWorkspace(id) {
+    return this.request(`/workspaces/${id}`, {
+      method: 'DELETE'
+    });
+  }
+
+  async uploadMaterials(workspaceId, formData) {
+    return this.request(`/workspaces/${workspaceId}/materials`, {
+      method: 'POST',
+      body: formData
+    });
+  }
+
+  async getMaterials(workspaceId) {
+    return this.request(`/workspaces/${workspaceId}/materials`);
+  }
+
+  async deleteMaterial(workspaceId, materialId) {
+    return this.request(`/workspaces/${workspaceId}/materials/${materialId}`, {
+      method: 'DELETE'
+    });
+  }
+
+  async searchWorkspace(workspaceId, query, k = 6) {
+    return this.request(`/workspaces/${workspaceId}/search`, {
+      method: 'POST',
+      body: JSON.stringify({ query, k })
+    });
+  }
+
+  // Jobs API
+  async getJob(jobId) {
+    return this.request(`/jobs/${jobId}`);
+  }
+
+  async getJobStreamTicket(jobId) {
+    return this.request(`/jobs/${jobId}/stream-ticket`, {
+      method: 'POST'
+    });
+  }
+
+  // Roadmap & Days API
+  async getRoadmap(workspaceId) {
+    return this.request(`/workspaces/${workspaceId}/roadmap`);
+  }
+
+  async generateRoadmap(workspaceId, settings) {
+    return this.request(`/workspaces/${workspaceId}/roadmap`, {
+      method: 'POST',
+      body: JSON.stringify(settings)
+    });
+  }
+
+  async regenerateRoadmap(roadmapId, settings) {
+    return this.request(`/roadmaps/${roadmapId}/regenerate`, {
+      method: 'POST',
+      body: JSON.stringify({ settings })
+    });
+  }
+
+  async reorderDays(roadmapId, dayIds) {
+    return this.request(`/roadmaps/${roadmapId}/days/reorder`, {
+      method: 'PATCH',
+      body: JSON.stringify({ dayIds })
+    });
+  }
+
+  async getDay(dayId) {
+    return this.request(`/days/${dayId}`);
+  }
+
+  async updateDayStatus(dayId, status) {
+    return this.request(`/days/${dayId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status })
+    });
+  }
+
+  // Day Notes API (Phase 5)
+  async getDayNotes(dayId, isSync = false) {
+    return this.request(`/days/${dayId}/notes${isSync ? '?sync=true' : ''}`);
+  }
+
+  async regenerateDayNotes(dayId, isSync = false) {
+    return this.request(`/days/${dayId}/notes/regenerate${isSync ? '?sync=true' : ''}`, {
+      method: 'POST'
+    });
+  }
+
+  async markNotesRead(dayId) {
+    return this.request(`/days/${dayId}/notes/read`, {
+      method: 'POST'
+    });
+  }
+
+  // Curated Resources API (Phase 6)
+  async getDayResources(dayId, isSync = false) {
+    return this.request(`/days/${dayId}/resources${isSync ? '?sync=true' : ''}`);
+  }
+
+  async regenerateDayResources(dayId, isSync = false) {
+    return this.request(`/days/${dayId}/resources/regenerate${isSync ? '?sync=true' : ''}`, {
+      method: 'POST'
+    });
+  }
+
+  async saveResourceFeedback(resourceId, feedback = {}) {
+    return this.request(`/resources/${resourceId}/feedback`, {
+      method: 'POST',
+      body: JSON.stringify(feedback)
+    });
+  }
+
+  // Day CBT Diagnostic Test API (Phase 7)
+  async getDayTest(dayId, isSync = false) {
+    return this.request(`/days/${dayId}/test${isSync ? '?sync=true' : ''}`, {
+      method: 'POST'
+    });
+  }
+
+  async getWorkspaceTests(workspaceId) {
+    return this.request(`/workspaces/${workspaceId}/tests`);
+  }
+
+  async getWorkspaceMastery(workspaceId) {
+    return this.request(`/workspaces/${workspaceId}/mastery`);
+  }
+
+  async getRoadmapChanges(roadmapId) {
+    return this.request(`/roadmaps/${roadmapId}/changes`);
+  }
+
+  async generateFinalMock(roadmapId) {
+    return this.request(`/roadmaps/${roadmapId}/final-mock`, {
+      method: 'POST'
+    });
+  }
+
+  // AI Tutor Chat API (Phase 9)
+  async createChatSession(workspaceId, payload = {}) {
+    return this.request(`/workspaces/${workspaceId}/chat/sessions`, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  }
+
+  async getChatSessions(workspaceId) {
+    return this.request(`/workspaces/${workspaceId}/chat/sessions`);
+  }
+
+  async getChatMessages(sessionId) {
+    return this.request(`/chat/sessions/${sessionId}/messages`);
+  }
+
+  async deleteChatSession(sessionId) {
+    return this.request(`/chat/sessions/${sessionId}`, {
+      method: 'DELETE'
+    });
+  }
+
+  async streamChatMessage(sessionId, message, { onMeta, onChunk, onDone, onError, signal } = {}) {
+    try {
+      const response = await fetch(`${API_BASE}/chat/sessions/${sessionId}/messages`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(this.accessToken ? { Authorization: `Bearer ${this.accessToken}` } : {})
+        },
+        body: JSON.stringify({ message }),
+        signal
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Stream failed with status ${response.status}`);
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder('utf-8');
+      let buffer = '';
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const events = buffer.split('\n\n');
+        buffer = events.pop() || '';
+
+        for (const eventBlock of events) {
+          if (!eventBlock.trim() || eventBlock.startsWith(':')) continue;
+
+          let eventType = 'message';
+          let dataStr = '';
+
+          const lines = eventBlock.split('\n');
+          for (const line of lines) {
+            if (line.startsWith('event:')) {
+              eventType = line.slice(6).trim();
+            } else if (line.startsWith('data:')) {
+              dataStr += line.slice(5).trim();
+            }
+          }
+
+          if (!dataStr) continue;
+
+          try {
+            const data = JSON.parse(dataStr);
+            if (eventType === 'meta') {
+              if (onMeta) onMeta(data);
+            } else if (eventType === 'chunk') {
+              if (onChunk) onChunk(data.text);
+            } else if (eventType === 'done') {
+              if (onDone) onDone(data);
+            } else if (eventType === 'error') {
+              if (onError) onError(new Error(data.error || 'Chat stream error'));
+            }
+          } catch (jsonErr) {
+            console.warn('Failed to parse SSE data:', dataStr);
+          }
+        }
+      }
+    } catch (err) {
+      if (onError) onError(err);
+      else throw err;
+    }
+  }
 }
 
 export const api = new ApiService();
+export default api;

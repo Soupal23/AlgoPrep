@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Terminal, Lock, Mail, ArrowRight } from 'lucide-react';
+import { Lock, Mail, ArrowRight } from 'lucide-react';
+import { Logo } from '../components/Logo';
 
 export const Login = () => {
   const [email, setEmail] = useState('');
@@ -9,7 +10,7 @@ export const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { login, signup } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -19,7 +20,7 @@ export const Login = () => {
 
     try {
       await login(email, password);
-      navigate('/');
+      navigate('/dashboard');
     } catch (err) {
       setError(err.message || 'Login failed');
     } finally {
@@ -27,12 +28,12 @@ export const Login = () => {
     }
   };
 
-  const handleDemoLogin = async () => {
+  const handleDemoStudentLogin = async () => {
     setError('');
     setLoading(true);
     try {
-      await login('teacher@algoprep.com', 'password123');
-      navigate('/teacher/dashboard');
+      await login('student@algoprep.com', 'password123');
+      navigate('/dashboard');
     } catch (err) {
       setError(err.message || 'Demo login failed');
     } finally {
@@ -44,10 +45,11 @@ export const Login = () => {
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4">
       <div className="glass-panel max-w-md w-full rounded-3xl p-8 border border-[#383050] bg-[#14111f] shadow-xl">
         <div className="text-center mb-8">
-          <div className="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center mx-auto mb-4 shadow-sm">
-            <Terminal className="w-6 h-6 text-white" />
+          <div className="w-16 h-16 rounded-2xl bg-zinc-900 border border-zinc-700/80 flex items-center justify-center mx-auto mb-4 shadow-sm p-2">
+            <Logo variant="icon" size="lg" linkTo={null} />
           </div>
           <h2 className="text-2xl font-extrabold text-[#f0eef5]">Welcome back to AlgoPrep</h2>
+          <p className="text-xs text-[#9f99b0] mt-1">Sign in to your learning dashboard</p>
         </div>
 
         {error && (
@@ -103,11 +105,11 @@ export const Login = () => {
 
         <div className="mt-6 pt-6 border-t border-[#383050] flex flex-col gap-3 text-center">
           <button
-            onClick={handleDemoLogin}
+            onClick={handleDemoStudentLogin}
             disabled={loading}
             className="w-full py-2.5 rounded-xl text-xs font-semibold bg-[#1c1729] border border-[#383050] text-purple-400 hover:bg-[#251e35] transition-colors"
           >
-            Instant Demo Login (Teacher)
+            Instant Demo Login (Student)
           </button>
 
           <p className="text-xs text-[#9f99b0]">
@@ -121,3 +123,5 @@ export const Login = () => {
     </div>
   );
 };
+
+export default Login;

@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Terminal, Lock, Mail, User as UserIcon, ArrowRight, Briefcase } from 'lucide-react';
+import { Lock, Mail, User as UserIcon, ArrowRight } from 'lucide-react';
+import { Logo } from '../components/Logo';
 
 export const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('student'); // 'student' | 'teacher'
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -20,14 +20,8 @@ export const Register = () => {
     setLoading(true);
 
     try {
-      const user = await signup(name, email, password, role);
-      if (user.role === 'teacher') {
-        navigate('/teacher/dashboard');
-      } else if (user.role === 'admin') {
-        navigate('/admin');
-      } else {
-        navigate('/dashboard');
-      }
+      await signup(name, email, password);
+      navigate('/dashboard');
     } catch (err) {
       setError(err.message || 'Registration failed');
     } finally {
@@ -39,10 +33,11 @@ export const Register = () => {
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4">
       <div className="glass-panel max-w-md w-full rounded-3xl p-8 border border-[#383050] bg-[#14111f] shadow-xl">
         <div className="text-center mb-8">
-          <div className="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center mx-auto mb-4 shadow-sm">
-            <Terminal className="w-6 h-6 text-white" />
+          <div className="w-16 h-16 rounded-2xl bg-zinc-900 border border-zinc-700/80 flex items-center justify-center mx-auto mb-4 shadow-sm p-2">
+            <Logo variant="icon" size="lg" linkTo={null} />
           </div>
           <h2 className="text-2xl font-extrabold text-[#f0eef5]">Create AlgoPrep Account</h2>
+          <p className="text-xs text-[#9f99b0] mt-1">Start your journey to mastery</p>
         </div>
 
         {error && (
@@ -52,47 +47,6 @@ export const Register = () => {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Account Role Selector */}
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[#9f99b0] mb-2">
-              I am registering as:
-            </label>
-            <div className="grid grid-cols-2 gap-3 p-1 rounded-xl bg-[#1c1729] border border-[#383050]">
-              <button
-                type="button"
-                onClick={() => setRole('student')}
-                className={`py-2 rounded-lg text-xs font-bold transition-all ${
-                  role === 'student'
-                    ? 'bg-indigo-600 text-white shadow-sm'
-                    : 'text-[#9f99b0] hover:text-[#f0eef5]'
-                }`}
-              >
-                Student
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setRole('teacher')}
-                className={`py-2 rounded-lg text-xs font-bold transition-all ${
-                  role === 'teacher'
-                    ? 'bg-purple-600 text-white shadow-sm'
-                    : 'text-[#9f99b0] hover:text-[#f0eef5]'
-                }`}
-              >
-                Teacher Candidate
-              </button>
-            </div>
-            {role === 'teacher' && (
-              <p className="text-[11px] text-amber-400 mt-2 bg-amber-950/40 p-2.5 rounded-lg border border-amber-900 leading-normal">
-                Teacher registration requires prior approval of an application submitted at{' '}
-                <Link to="/teach-here" className="underline font-bold">
-                  Teach Here
-                </Link>
-                .
-              </p>
-            )}
-          </div>
-
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-[#9f99b0] mb-2">
               Full Name
@@ -154,18 +108,11 @@ export const Register = () => {
           </button>
         </form>
 
-        <div className="mt-6 pt-6 border-t border-[#383050] text-center space-y-2">
+        <div className="mt-6 pt-6 border-t border-[#383050] text-center">
           <p className="text-xs text-[#9f99b0]">
             Already have an account?{' '}
             <Link to="/login" className="text-indigo-400 font-semibold hover:underline">
               Log in
-            </Link>
-          </p>
-
-          <p className="text-xs text-[#9f99b0]">
-            Want to teach on AlgoPrep?{' '}
-            <Link to="/teach-here" className="text-purple-400 font-semibold hover:underline">
-              Apply via Teach Here
             </Link>
           </p>
         </div>
@@ -173,3 +120,5 @@ export const Register = () => {
     </div>
   );
 };
+
+export default Register;
