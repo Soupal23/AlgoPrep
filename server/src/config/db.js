@@ -24,22 +24,7 @@ export const connectDB = async () => {
       process.exit(1);
     }
 
-    // Try fallback MongoDB Atlas cluster if primary failed due to IP whitelist
-    const fallbackAtlasUri = 'mongodb+srv://soupalpurkayastha_db_user:zZBj5nZvqdNlXHPc@algoprep.nm8i51j.mongodb.net/algoprep?appName=algoprep';
-    if (config.mongoUri !== fallbackAtlasUri) {
-      try {
-        console.warn(`Primary MongoDB connection failed (${err.message}). Trying backup Atlas cluster...`);
-        await mongoose.connect(fallbackAtlasUri, {
-          serverSelectionTimeoutMS: 5000,
-        });
-        console.log(`Connected to Backup MongoDB Atlas at ${fallbackAtlasUri.replace(/:[^:]*@/, ':***@')}`);
-        return;
-      } catch (fallbackAtlasErr) {
-        console.warn(`Backup Atlas cluster also failed (${fallbackAtlasErr.message}).`);
-      }
-    }
-
-    console.warn(`MongoDB Atlas connection failed. Falling back to mongodb-memory-server...`);
+    console.warn(`MongoDB Atlas connection failed (${err.message}). Falling back to mongodb-memory-server...`);
     try {
       mongoMemoryServer = await MongoMemoryServer.create();
       const uri = mongoMemoryServer.getUri();
